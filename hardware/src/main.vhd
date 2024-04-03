@@ -10,19 +10,6 @@ END CPU_ent;
 
 -- Architecture definition
 ARCHITECTURE CPU_arch OF CPU_ent IS
-  COMPONENT uMem
-    PORT (
-      uAddr : IN unsigned(7 DOWNTO 0);
-      uData : OUT unsigned(23 DOWNTO 0));
-  END COMPONENT;
-
-  COMPONENT pMem
-    PORT (
-      pAddr : IN unsigned(23 DOWNTO 0);
-      pData : IN unsigned(31 DOWNTO 0));
-  END COMPONENT;
-  --TODO: HAVE A BIG CONVERSATION ABOUT THESE SIZES :D
-
   -- Microcode memory
   SIGNAL micro_instr : unsigned(23 DOWNTO 0); -- EX. "000_000_0000_0_0_0000_00000000" => "TB_FB_ALU_P_uP_SEQ_uADR"
   -- Fields of the microcode instruction
@@ -51,11 +38,34 @@ ARCHITECTURE CPU_arch OF CPU_ent IS
 
   SIGNAL GRX, GR0, GR1, GR2, GR3, GR4, GR5, GR6, GR7 : unsigned(23 DOWNTO 0);
   -- THe bus!
-  SIGNAL DATA_BUS : unsigned(23 DOWNTO 0);
+  SIGNAL data_bus : unsigned(23 DOWNTO 0);
 
   SIGNAL Z, N, C, V : STD_LOGIC;
 
 BEGIN
+  ----------------------
+  --- INSTANTIATIONS ---
+  ----------------------
+  ALU_inst : ENTITY work.ALU_ent
+    PORT MAP(
+      A => data_bus,
+      ALU_op => ALU_op,
+      result => ALU_result,
+      clk => clk,
+      rst => rst,
+      Z => Z,
+      N => N,
+      C => C,
+      V => V
+    );
+  uMem_inst : ENTITY work.uMem
+  PORT MAP(
+    uAddr => uPC,
+    uData => micro_instr
+  );
+
+
+
   -- Instruction fetch to IR
   fetch_instructions : PROCESS (clk)
   BEGIN
@@ -63,7 +73,7 @@ BEGIN
       IF rst = '1' THEN
         IR <= (OTHERS => '0');
       ELSIF (FB = "100") THEN
-        IR <= DATA_BUS;
+        IR <= data_bus;
       END IF;
     END IF;
   END PROCESS;
@@ -75,7 +85,7 @@ BEGIN
       IF (rst = '1') THEN
         PC <= (OTHERS => '0');
       ELSIF (FB = "010") THEN
-        PC <= DATA_BUS;
+        PC <= data_bus;
       ELSIF (P = '1') THEN
         PC <= PC + 1;
       END IF;
@@ -131,31 +141,11 @@ BEGIN
       IF rst = '1' THEN
         ASR <= (OTHERS => '0');
       ELSIF (FB = "000") THEN
-        ASR <= DATA_BUS;
+        ASR <= data_bus;
       END IF;
     END IF;
   END PROCESS;
 
-  -- Arithmetic Logic Unit
-  ALU_inst : ENTITY work.ALU_ent
-    PORT MAP
-    (
-      A => DATA_BUS,
-      ALU_op => ALU_op,
-      result => ALU_result,
-      clk => clk,
-      rst => rst,
-      Z => Z,
-      N => N,
-      C => C,
-      V => V
-    );
-
-  -- Micro memory instantiated!
-  uMem_inst : uMem PORT MAP(
-    uAddr => uPC,
-    uData => micro_instr
-  );
 
   -- general registers
   GRx <=
@@ -169,7 +159,7 @@ BEGIN
     GR7 WHEN (assembly_GRx = "111");
 
   -- the buss(y)
-  DATA_BUS <=
+  data_bus <=
     ASR WHEN (TB = "000") ELSE
     assembly_instr WHEN (TB = "001") ELSE
     PC WHEN (TB = "010") ELSE
