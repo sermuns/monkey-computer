@@ -6,14 +6,14 @@ ENTITY ALU_ent IS
   PORT (
     data_bus : IN unsigned(23 DOWNTO 0);
     AR_out : OUT unsigned(23 DOWNTO 0);
-    operation : IN unsigned(3 DOWNTO 0)
+    ALU_op : IN unsigned(3 DOWNTO 0)
   );
 END ENTITY;
 
 ARCHITECTURE ALU_arch OF ALU_ent IS
   SIGNAL AR : unsigned(11 DOWNTO 0);
 BEGIN
-  WITH operation SELECT AR_out <=
+  WITH ALU_op SELECT AR_out <=
     data_bus WHEN "0000",
     AR + data_bus WHEN "0001",
     AR - data_bus WHEN "0010",
