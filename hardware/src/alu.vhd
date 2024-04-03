@@ -53,12 +53,12 @@ BEGIN
       ELSE
         CASE ALU_op IS
           WHEN noop_op => NULL;
-          WHEN add_op | sub_op => 
+          WHEN add_op | sub_op =>
             Z <= Zc;
             N <= Nc;
             C <= Cc;
             V <= Vc;
-          WHEN mul_op => 
+          WHEN mul_op =>
             Z <= Zc;
             N <= Nc;
             C <= Cc;

@@ -1,10 +1,7 @@
-
 LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
 
--- usage: 
--- give uAddr, get uData at that address
 ENTITY pMem IS
     PORT (
         pAddr : IN unsigned(11 DOWNTO 0);
