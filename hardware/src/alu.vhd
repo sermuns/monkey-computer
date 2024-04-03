@@ -4,24 +4,19 @@ USE ieee.NUMERIC_STD.ALL;
 
 ENTITY ALU_ent IS
   PORT (
-    FB_val : IN unsigned(11 DOWNTO 0);
-    val : OUT unsigned(11 DOWNTO 0);
+    data_bus : IN unsigned(23 DOWNTO 0);
+    AR_out : OUT unsigned(23 DOWNTO 0);
     operation : IN unsigned(3 DOWNTO 0)
   );
 END ENTITY;
 
 ARCHITECTURE ALU_arch OF ALU_ent IS
+  SIGNAL AR : unsigned(11 DOWNTO 0);
 BEGIN
-  --And?
-  --Shifts?
-  PROCESS (operation, FB_val)
-  BEGIN
-    WITH operation SELECT val <=
-      FB_val WHEN "0000",
-      val + FB_val WHEN "0001",
-      val - FB_val WHEN "0010",
-      val * FB_val WHEN "0011",
-      (OTHERS => '0') WHEN OTHERS;
-  END PROCESS;
-
+  WITH operation SELECT AR_out <=
+    data_bus WHEN "0000",
+    AR + data_bus WHEN "0001",
+    AR - data_bus WHEN "0010",
+    AR * data_bus WHEN "0011",
+    (OTHERS => '0') WHEN OTHERS;
 END ARCHITECTURE ALU_arch;

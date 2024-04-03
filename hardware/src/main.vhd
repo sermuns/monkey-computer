@@ -25,13 +25,13 @@ ARCHITECTURE CPU_arch OF CPU IS
   END COMPONENT;
   --TODO: HAVE A BIG CONVERSATION ABOUT THESE SIZES :D
   -- Signals for microcode memory
-  SIGNAL uInst : unsigned(23 DOWNTO 0);
-  ALIAS TB : unsigned(2 DOWNTO 0) IS uInst(23 DOWNTO 21);
-  ALIAS FB : unsigned(2 DOWNTO 0) IS uInst(20 DOWNTO 18);
-  ALIAS ALU : unsigned(3 DOWNTO 0) IS uInst(17 DOWNTO 14);
-  ALIAS P : STD_LOGIC IS uInst(13);
-  ALIAS SEQ : unsigned(3 DOWNTO 0) IS uInst(12 DOWNTO 9);
-  ALIAS ADR : unsigned(8 DOWNTO 0) IS uInst(8 DOWNTO 0);
+  SIGNAL MicroInstruction : unsigned(23 DOWNTO 0);
+  ALIAS TB : unsigned(2 DOWNTO 0) IS MicroInstruction(23 DOWNTO 21);
+  ALIAS FB : unsigned(2 DOWNTO 0) IS MicroInstruction(20 DOWNTO 18);
+  ALIAS ALU_op : unsigned(3 DOWNTO 0) IS MicroInstruction(17 DOWNTO 14);
+  ALIAS P : STD_LOGIC IS MicroInstruction(13);
+  ALIAS SEQ : unsigned(3 DOWNTO 0) IS MicroInstruction(12 DOWNTO 9);
+  ALIAS ADR : unsigned(8 DOWNTO 0) IS MicroInstruction(8 DOWNTO 0);
 
   -- Signals for program memory currently 22 bits 
   SIGNAL PM : unsigned (21 DOWNTO 0);
@@ -47,8 +47,8 @@ BEGIN
   ALU_inst : ENTITY work.ALU_ent
     PORT MAP
     (
-      FB_val => FB,
-      operation => ALU
+      data_bus => DATA_BUS,
+      operation => ALU_op
     );
 
 END CPU_arch;
