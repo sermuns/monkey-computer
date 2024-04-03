@@ -1,14 +1,15 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.NUMERIC_STD.ALL;
-ENTITY CPU IS
+
+ENTITY CPU_ent IS
   PORT (
     clk : IN STD_LOGIC;
     rst : IN STD_LOGIC);
-END CPU;
+END CPU_ent;
 
 -- Architecture definition
-ARCHITECTURE CPU_arch OF CPU IS
+ARCHITECTURE CPU_arch OF CPU_ent IS
   COMPONENT uMem
 
     PORT (
