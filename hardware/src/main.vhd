@@ -35,6 +35,7 @@ ARCHITECTURE CPU_arch OF CPU_ent IS
   SIGNAL uPC : unsigned(8 DOWNTO 0); -- unknown 
   SIGNAL IR : unsigned(23 DOWNTO 0);
   SIGNAL ASR : unsigned(1023 DOWNTO 0);
+  SIGNAL AR : unsigned(23 DOWNTO 0);
 
   SIGNAL GRX, GR0, GR1, GR2, GR3, GR4, GR5, GR6, GR7 : unsigned(23 DOWNTO 0);
   -- THe bus!
@@ -49,23 +50,19 @@ BEGIN
   ALU_inst : ENTITY work.ALU_ent
     PORT MAP(
       A => data_bus,
+      B => AR,
       op => ALU_op,
       result => ALU_result,
       clk => clk,
       rst => rst,
-      Z => Z,
-      N => N,
-      C => C,
-      V => V
+      flags => (Z, N, C, V)
     );
+
   uMem_inst : ENTITY work.uMem
-  PORT MAP(
-    uAddr => uPC,
-    uData => micro_instr
-  );
-
-
-
+    PORT MAP(
+      uAddr => uPC,
+      uData => micro_instr
+    );
   -- Instruction fetch to IR
   fetch_instructions : PROCESS (clk)
   BEGIN
@@ -145,8 +142,6 @@ BEGIN
       END IF;
     END IF;
   END PROCESS;
-
-
   -- general registers
   GRx <=
     GR0 WHEN (assembly_GRx = "000") ELSE
