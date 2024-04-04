@@ -4,23 +4,18 @@ USE IEEE.NUMERIC_STD.ALL;
 
 ENTITY pMem IS
     PORT (
-        pAddr : IN unsigned(11 DOWNTO 0);
-        pData : OUT unsigned(23 DOWNTO 0));
+        adress : IN unsigned(11 DOWNTO 0);
+        data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0));
 END pMem;
 
 ARCHITECTURE func OF pMem IS
-    TYPE p_mem_t IS ARRAY(11 DOWNTO 0) OF unsigned(23 DOWNTO 0);
+    TYPE p_mem_t IS ARRAY(0 TO 8) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
     CONSTANT p_mem_c : p_mem_t :=
-    --"00000_000_00_00000000000000" = "OP_GRx_M_ADR"
+    -- 00000_000_00_000000000000_00
+    -- OP    GRx M  ADR          *unused
+    -- 5     3   2  12           2
     (
-    b"00001_000_00_00000000000000",
-    b"00000_000_00_10000000000000",
-    b"00000_000_00_00000000000000",
-    b"00000_000_00_10000000000000",
-    b"00000_000_00_10000000000000",
-    b"00000_000_00_10000000000000",
-    b"00000_000_00_10000000000000",
-    b"00000_000_00_00000000000000",
+    b"00000_000_00_00000000111100", -- LOAD GR0, 0, 0d60
     b"00000_000_00_00000000000000",
     b"00000_000_00_00000000000000",
     b"00000_000_00_00000000000000",
@@ -34,5 +29,5 @@ ARCHITECTURE func OF pMem IS
     SIGNAL p_mem : p_mem_t := p_mem_c;
 
 BEGIN
-    pData <= p_mem(TO_INTEGER(pAddr));
+    data <= p_mem(TO_INTEGER(adress));
 END ARCHITECTURE;
