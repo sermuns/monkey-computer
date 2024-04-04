@@ -9,31 +9,35 @@ ENTITY CPU_ent IS
 END CPU_ent;
 
 -- Architecture definition
-ARCHITECTURE CPU_arch OF CPU_ent IS
+ARCHITECTURE func OF CPU_ent IS
   -- Microcode memory
-  SIGNAL micro_instr : unsigned(23 DOWNTO 0); -- EX. "000_000_0000_0_0_0000_00000000" => "TB_FB_ALU_P_uP_SEQ_uADR"
+  -- 000_000_0000_0_0000_00000000
+  -- TB  FB  ALU  P SEQ  uADR
+  SIGNAL micro_instr : unsigned(23 DOWNTO 0);
   -- Fields of the microcode instruction
   ALIAS TB : unsigned(2 DOWNTO 0) IS micro_instr(23 DOWNTO 21);
   ALIAS FB : unsigned(2 DOWNTO 0) IS micro_instr(20 DOWNTO 18);
   ALIAS ALU_op : unsigned(3 DOWNTO 0) IS micro_instr(17 DOWNTO 14);
   ALIAS P : STD_LOGIC IS micro_instr(13);
-  ALIAS SEQ : unsigned(3 DOWNTO 0) IS micro_instr(12 DOWNTO 9);
-  ALIAS micro_ADR : unsigned(7 DOWNTO 0) IS micro_instr(8and DOWNTO 0);
+  ALIAS SEQ : unsigned(3 DOWNTO 0) IS micro_instr(12 DOWNTO 8);
+  ALIAS micro_ADR : unsigned(7 DOWNTO 0) IS micro_instr(7 DOWNTO 0);
 
   -- Main memory: program, heap and stack
-  SIGNAL assembly_instr : unsigned (23 DOWNTO 0); -- EX. "00000_000_00_0000000000000" => "OP_GRx_M_ADR"
+  SIGNAL PM : unsigned(23 DOWNTO 0);
+
+  -- Instruction register
+  SIGNAL IR : unsigned (23 DOWNTO 0); -- EX. "00000_000_00_0000000000000" => "OP_GRx_M_ADR"
   -- Field of the assembly instruction
-  ALIAS assembly_OP : unsigned(4 DOWNTO 0) IS assembly_instr(23 DOWNTO 19);
-  ALIAS assembly_GRx : unsigned(2 DOWNTO 0) IS assembly_instr(18 DOWNTO 16);
-  ALIAS assembly_M : unsigned(2 DOWNTO 0) IS assembly_instr(15 DOWNTO 14);
-  ALIAS assembly_ADR : unsigned(8 DOWNTO 0) IS assembly_instr(13 DOWNTO 0);
+  ALIAS assembly_OP : unsigned(4 DOWNTO 0) IS IR(23 DOWNTO 19);
+  ALIAS assembly_GRx : unsigned(2 DOWNTO 0) IS IR(18 DOWNTO 16);
+  ALIAS assembly_M : unsigned(2 DOWNTO 0) IS IR(15 DOWNTO 14);
+  ALIAS assembly_ADR : unsigned(8 DOWNTO 0) IS IR(13 DOWNTO 0);
 
   SIGNAL ALU_result : unsigned(23 DOWNTO 0);
 
   -- Specific registers for the CPU
   SIGNAL PC : unsigned(11 DOWNTO 0);
   SIGNAL uPC : unsigned(8 DOWNTO 0); -- unknown 
-  SIGNAL IR : unsigned(23 DOWNTO 0);
   SIGNAL ASR : unsigned(1023 DOWNTO 0);
   SIGNAL AR : unsigned(23 DOWNTO 0);
 
@@ -57,12 +61,17 @@ BEGIN
       rst => rst,
       flags => (Z, N, C, V)
     );
-
+  pMem_inst : ENTITY work.pMem
+    PORT MAP(
+      adress => PC,
+      data => PM
+    );
   uMem_inst : ENTITY work.uMem
     PORT MAP(
-      uAddr => uPC,
-      uData => micro_instr
+      address => uPC,
+      data => micro_instr
     );
+
   -- Instruction fetch to IR
   fetch_instructions : PROCESS (clk)
   BEGIN
@@ -97,10 +106,10 @@ BEGIN
         uPC <= (OTHERS => '0');
       ELSIF (SEQ = "0000") THEN
         uPC <= uPC + 1;
-      ELSIF (SEQ = "0001") THEN
-        uPC <= K1;
-      ELSIF (SEQ = "0010") THEN
-        uPC <= K2;
+        -- ELSIF (SEQ = "0001") THEN
+        --   uPC <= K1;
+        -- ELSIF (SEQ = "0010") THEN
+        --   uPC <= K2;
       ELSIF (SEQ = "0011") THEN
         uPC <= (OTHERS => '0');
       ELSIF (SEQ = "0100") THEN
@@ -156,11 +165,11 @@ BEGIN
   -- the buss(y)
   data_bus <=
     ASR WHEN (TB = "000") ELSE
-    assembly_instr WHEN (TB = "001") ELSE
+    IR WHEN (TB = "001") ELSE
     PC WHEN (TB = "010") ELSE
     ALU_result WHEN (TB = "011") ELSE
     IR WHEN (TB = "100") ELSE
     GRx WHEN (TB = "101") ELSE
     (OTHERS => '0');
 
-END CPU_arch;
+END func;
