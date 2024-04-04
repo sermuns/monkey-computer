@@ -1,10 +1,9 @@
-.PHONY: clean alu_test alu_test_gtk
+.PHONY: clean alu_wave cpu_wave
 
-FILES = src/*
+FILES = src/*.vhd
 WORKDIR = work
 WAVEDIR = wave
 SAVEDIR = save
-WAVEFILE = $(WAVEDIR)/ALU_ent_tb.ghw
 FLAGS = --std=08 --workdir=$(WORKDIR)
 
 # try to compile all files
@@ -18,7 +17,7 @@ clean:
 
 cpu:
 	@mkdir -p $(WORKDIR)
-	@ghdl -a $(FLAGS) src/uMem.vhd src/pMem.vhd src/cpu.vhd 
+	@ghdl -a $(FLAGS) src/alu.vhd src/uMem.vhd src/pMem.vhd src/cpu.vhd 
 
 cpu_tb: cpu
 	ghdl -a $(FLAGS) src/cpu_tb.vhd
@@ -35,7 +34,7 @@ alu_test:
 	@ghdl -a $(FLAGS) src/alu.vhd src/alu_tb.vhd 
 	@ghdl -e $(FLAGS) ALU_ent_tb
 	@mkdir -p $(WAVEDIR)
-	@ghdl -r $(FLAGS) ALU_ent_tb --wave=$(WAVEFILE)
+	@ghdl -r $(FLAGS) ALU_ent_tb --wave=$(WAVEDIR)/alu_tb.ghw
 
 alu_wave: alu_test
-	@gtkwave -a $(SAVEDIR)/alu_test_save.gtkw $(WAVEFILE)
+	@gtkwave -a $(SAVEDIR)/alu_test_save.gtkw $(WAVEDIR)/alu_tb.ghw

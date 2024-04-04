@@ -18,26 +18,50 @@ ARCHITECTURE func OF cpu IS
     SIGNAL IR : STD_LOGIC_VECTOR (23 DOWNTO 0); -- EX. "00000_000_00_0000000000000" => "OP_GRx_M_ADR"
     -- Field of the assembly instruction
     ALIAS OP : STD_LOGIC_VECTOR(4 DOWNTO 0) IS IR(23 DOWNTO 19);
-    ALIAS GRx : STD_LOGIC_VECTOR(2 DOWNTO 0) IS IR(18 DOWNTO 16);
+    ALIAS GRx_num : STD_LOGIC_VECTOR(2 DOWNTO 0) IS IR(18 DOWNTO 16);
     ALIAS M : STD_LOGIC_VECTOR(1 DOWNTO 0) IS IR(15 DOWNTO 14);
     ALIAS ADR : STD_LOGIC_VECTOR(11 DOWNTO 0) IS IR(13 DOWNTO 2);
 
     -- MICRO
     SIGNAL uPC : unsigned(7 DOWNTO 0) := (OTHERS => '0');
     SIGNAL uPM : STD_LOGIC_VECTOR(22 DOWNTO 0);
-    ALIAS TB : STD_LOGIC_VECTOR(2 DOWNTO 0) IS uPM(22 DOWNTO 20);
-    ALIAS FB : STD_LOGIC_VECTOR(2 DOWNTO 0) IS uPM(19 DOWNTO 17);
-    ALIAS ALU_op : STD_LOGIC_VECTOR(3 DOWNTO 0) IS uPM(16 DOWNTO 13);
-    ALIAS P : STD_LOGIC IS uPM(12);
-    ALIAS SEQ : STD_LOGIC_VECTOR(3 DOWNTO 0) IS uPM(11 DOWNTO 8);
-    ALIAS uADR : STD_LOGIC_VECTOR(7 DOWNTO 0) IS uPM(7 DOWNTO 0);
+    ALIAS TB IS uPM(22 DOWNTO 20);
+    ALIAS FB IS uPM(19 DOWNTO 17);
+    ALIAS ALU_op IS uPM(16 DOWNTO 13);
+    ALIAS P IS uPM(12);
+    ALIAS SEQ IS uPM(11 DOWNTO 8);
+    ALIAS uADR IS uPM(7 DOWNTO 0);
 
     SIGNAL K1, K2 : unsigned(7 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL data_bus : STD_LOGIC_VECTOR(23 DOWNTO 0);
+
+    SIGNAL data_bus : unsigned(23 DOWNTO 0);
+
+    -- GENERAL REGISTERS
+    TYPE register_file_t IS ARRAY(0 TO 7) OF unsigned(data_bus'LENGTH - 1 DOWNTO 0);
+    SIGNAL register_file : register_file_t := (OTHERS => (OTHERS => '0'));
+    SIGNAL GRx : unsigned(data_bus'LENGTH - 1 DOWNTO 0);
+
+    SIGNAL AR : unsigned(data_bus'LENGTH - 1 DOWNTO 0);
+    SIGNAL ALU : unsigned(data_bus'LENGTH - 1 DOWNTO 0);
 
     -- ALU
-    SIGNAL Z, N, C, V : STD_LOGIC;
+    SIGNAL flags : STD_LOGIC_VECTOR(3 DOWNTO 0);
+    ALIAS Z IS flags(0);
+    ALIAS N IS flags(1);
+    ALIAS C IS flags(2);
+    ALIAS V IS flags(3);
 BEGIN
+    -- ALU
+    ALU_inst : ENTITY work.ALU_ent
+        PORT MAP(
+            A => data_bus,
+            B => AR,
+            op => unsigned(ALU_op),
+            result => ALU,
+            clk => clk,
+            rst => rst,
+            flags => flags
+        );
     -- PROGRAM MEMORY
     pMem : ENTITY work.pMem
         PORT MAP(
@@ -102,5 +126,32 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+
+    -- ASSEMBLY / MACRO
+    PROCESS (clk, rst)
+    BEGIN
+        IF rising_edge(clk) THEN
+            IF rst = '1' THEN
+                PC <= (OTHERS => '0');
+            ELSIF (FB = "010") THEN
+                PC <= unsigned(data_bus);
+            ELSIF (P = '1') THEN
+                PC <= PC + 1;
+            END IF;
+        END IF;
+    END PROCESS;
+
+    -- GENERAL REGISTERS (GRx)
+    GRx <= register_file(TO_INTEGER(unsigned(GRx_num)));
+
+    -- DATA BUS (TO-BUS)
+    data_bus <=
+        -- ASR WHEN (TB = "000") ELSE
+        unsigned(PM) WHEN (TB = "001") ELSE
+        PC WHEN (TB = "010") ELSE
+        -- ALU WHEN (TB = "011") ELSE
+        unsigned(IR) WHEN (TB = "100") ELSE
+        GRx WHEN (TB = "101") ELSE
+        (OTHERS => '0');
 
 END ARCHITECTURE;
