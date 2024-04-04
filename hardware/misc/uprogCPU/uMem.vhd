@@ -17,6 +17,15 @@ constant u_mem_c : u_mem_t :=
    --OP_TB_FB_PC_uPC_uAddr
   (b"00_011_100_0_0_000000", -- ASR:=PC
    b"00_010_001_1_1_000000", -- IR:=PM, PC:=PC+1
+--   ASR := PC
+--IR := PM, PC++
+--uPC := K2
+--ASR := IR, uPC := K1
+--ASR:=PC, PC:= PC+1, uPC:= K1
+--ASR:= IR
+--ASR:= PM, uPC:= K1
+--AR := IR
+
    b"00_000_000_0_0_000000",
    b"00_000_000_0_0_000000",
    b"00_000_000_0_0_000000",
