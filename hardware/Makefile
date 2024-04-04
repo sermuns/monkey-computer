@@ -20,5 +20,6 @@ alu_test:
 	@mkdir -p $(WAVEDIR)
 	@ghdl -r $(FLAGS) ALU_ent_tb --wave=$(WAVEFILE)
 
-alu_test_gtk: alu_test
+# run test, open gtkwave
+alu_wave: alu_test
 	@gtkwave -a src/alu_test_save.gtkw $(WAVEFILE)

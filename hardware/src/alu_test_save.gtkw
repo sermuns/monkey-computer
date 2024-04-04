@@ -1,30 +1,37 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Thu Apr  4 09:32:08 2024
+[*] Thu Apr  4 10:33:24 2024
 [*]
 [dumpfile] "/home/sermuns/Git/code/hardware/wave/ALU_ent_tb.ghw"
-[dumpfile_mtime] "Thu Apr  4 09:31:57 2024"
-[dumpfile_size] 913
+[dumpfile_mtime] "Thu Apr  4 10:32:49 2024"
+[dumpfile_size] 1023
 [savefile] "/home/sermuns/Git/code/hardware/src/alu_test_save.gtkw"
 [timestart] 0
-[size] 1125 600
+[size] 1210 600
 [pos] -1 -1
-*0.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-23.879026 0 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.alu_ent_tb.
+[treeopen] top.alu_ent_tb.dut.
 [sst_width] 233
-[signals_width] 126
+[signals_width] 234
 [sst_expanded] 1
 [sst_vpaned_height] 136
 @22
 #{top.alu_ent_tb.dut.a[23:0]} top.alu_ent_tb.dut.a[23] top.alu_ent_tb.dut.a[22] top.alu_ent_tb.dut.a[21] top.alu_ent_tb.dut.a[20] top.alu_ent_tb.dut.a[19] top.alu_ent_tb.dut.a[18] top.alu_ent_tb.dut.a[17] top.alu_ent_tb.dut.a[16] top.alu_ent_tb.dut.a[15] top.alu_ent_tb.dut.a[14] top.alu_ent_tb.dut.a[13] top.alu_ent_tb.dut.a[12] top.alu_ent_tb.dut.a[11] top.alu_ent_tb.dut.a[10] top.alu_ent_tb.dut.a[9] top.alu_ent_tb.dut.a[8] top.alu_ent_tb.dut.a[7] top.alu_ent_tb.dut.a[6] top.alu_ent_tb.dut.a[5] top.alu_ent_tb.dut.a[4] top.alu_ent_tb.dut.a[3] top.alu_ent_tb.dut.a[2] top.alu_ent_tb.dut.a[1] top.alu_ent_tb.dut.a[0]
-#{top.alu_ent_tb.dut.alu_op[3:0]} top.alu_ent_tb.dut.alu_op[3] top.alu_ent_tb.dut.alu_op[2] top.alu_ent_tb.dut.alu_op[1] top.alu_ent_tb.dut.alu_op[0]
 #{top.alu_ent_tb.dut.b[23:0]} top.alu_ent_tb.dut.b[23] top.alu_ent_tb.dut.b[22] top.alu_ent_tb.dut.b[21] top.alu_ent_tb.dut.b[20] top.alu_ent_tb.dut.b[19] top.alu_ent_tb.dut.b[18] top.alu_ent_tb.dut.b[17] top.alu_ent_tb.dut.b[16] top.alu_ent_tb.dut.b[15] top.alu_ent_tb.dut.b[14] top.alu_ent_tb.dut.b[13] top.alu_ent_tb.dut.b[12] top.alu_ent_tb.dut.b[11] top.alu_ent_tb.dut.b[10] top.alu_ent_tb.dut.b[9] top.alu_ent_tb.dut.b[8] top.alu_ent_tb.dut.b[7] top.alu_ent_tb.dut.b[6] top.alu_ent_tb.dut.b[5] top.alu_ent_tb.dut.b[4] top.alu_ent_tb.dut.b[3] top.alu_ent_tb.dut.b[2] top.alu_ent_tb.dut.b[1] top.alu_ent_tb.dut.b[0]
 @28
 top.alu_ent_tb.dut.clk
 @22
+#{top.alu_ent_tb.dut.op[3:0]} top.alu_ent_tb.dut.op[3] top.alu_ent_tb.dut.op[2] top.alu_ent_tb.dut.op[1] top.alu_ent_tb.dut.op[0]
 #{top.alu_ent_tb.dut.result[23:0]} top.alu_ent_tb.dut.result[23] top.alu_ent_tb.dut.result[22] top.alu_ent_tb.dut.result[21] top.alu_ent_tb.dut.result[20] top.alu_ent_tb.dut.result[19] top.alu_ent_tb.dut.result[18] top.alu_ent_tb.dut.result[17] top.alu_ent_tb.dut.result[16] top.alu_ent_tb.dut.result[15] top.alu_ent_tb.dut.result[14] top.alu_ent_tb.dut.result[13] top.alu_ent_tb.dut.result[12] top.alu_ent_tb.dut.result[11] top.alu_ent_tb.dut.result[10] top.alu_ent_tb.dut.result[9] top.alu_ent_tb.dut.result[8] top.alu_ent_tb.dut.result[7] top.alu_ent_tb.dut.result[6] top.alu_ent_tb.dut.result[5] top.alu_ent_tb.dut.result[4] top.alu_ent_tb.dut.result[3] top.alu_ent_tb.dut.result[2] top.alu_ent_tb.dut.result[1] top.alu_ent_tb.dut.result[0]
 @28
 top.alu_ent_tb.dut.rst
+top.alu_ent_tb.dut.zc
+@29
+top.alu_ent_tb.dut.nc
+@28
+top.alu_ent_tb.dut.cc
+top.alu_ent_tb.dut.vc
 [pattern_trace] 1
 [pattern_trace] 0

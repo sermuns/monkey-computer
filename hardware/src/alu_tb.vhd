@@ -24,7 +24,7 @@ BEGIN
     PORT MAP(
       A => A_tb,
       B => B_tb,
-      ALU_op => ALU_op_tb,
+      op => ALU_op_tb,
       result => result_tb,
       clk => clk_tb,
       rst => rst_tb

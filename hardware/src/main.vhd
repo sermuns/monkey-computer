@@ -49,7 +49,7 @@ BEGIN
   ALU_inst : ENTITY work.ALU_ent
     PORT MAP(
       A => data_bus,
-      ALU_op => ALU_op,
+      op => ALU_op,
       result => ALU_result,
       clk => clk,
       rst => rst,
