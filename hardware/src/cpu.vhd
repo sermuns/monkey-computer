@@ -37,8 +37,8 @@ ARCHITECTURE func OF cpu IS
     SIGNAL data_bus : unsigned(23 DOWNTO 0);
 
     -- GENERAL REGISTERS
-    TYPE register_file_t IS ARRAY(0 TO 7) OF unsigned(data_bus'LENGTH - 1 DOWNTO 0);
-    SIGNAL register_file : register_file_t := (OTHERS => (OTHERS => '0'));
+    TYPE GR_t IS ARRAY(0 TO 7) OF unsigned(data_bus'LENGTH - 1 DOWNTO 0);
+    SIGNAL GR : GR_t := (OTHERS => (OTHERS => '0'));
     SIGNAL GRx : unsigned(data_bus'LENGTH - 1 DOWNTO 0);
 
     SIGNAL AR : unsigned(data_bus'LENGTH - 1 DOWNTO 0);
@@ -142,7 +142,7 @@ BEGIN
     END PROCESS;
 
     -- GENERAL REGISTERS (GRx)
-    GRx <= register_file(TO_INTEGER(unsigned(GRx_num)));
+    GRx <= GR(TO_INTEGER(unsigned(GRx_num)));
 
     -- DATA BUS (TO-BUS)
     data_bus <=
