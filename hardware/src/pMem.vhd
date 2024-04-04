@@ -9,7 +9,7 @@ ENTITY pMem IS
 END pMem;
 
 ARCHITECTURE func OF pMem IS
-    TYPE p_mem_t IS ARRAY(0 TO 8) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
+    TYPE p_mem_t IS ARRAY(NATURAL RANGE <>) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
     CONSTANT p_mem_c : p_mem_t :=
     -- 00000_000_00_000000000000_00
     -- OP    GRx M  ADR          *unused
@@ -25,9 +25,6 @@ ARCHITECTURE func OF pMem IS
     b"00000_000_00_00000000000000",
     b"00000_000_00_00000000000000"
     );
-
-    SIGNAL p_mem : p_mem_t := p_mem_c;
-
 BEGIN
-    data <= p_mem(TO_INTEGER(adress));
+    data <= p_mem_c(TO_INTEGER(adress));
 END ARCHITECTURE;
