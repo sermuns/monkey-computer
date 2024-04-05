@@ -1,22 +1,23 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Thu Apr  4 17:44:14 2024
+[*] Fri Apr  5 06:28:11 2024
 [*]
 [dumpfile] "/home/sermuns/Git/code/hardware/wave/cpu_tb.ghw"
-[dumpfile_mtime] "Thu Apr  4 17:43:45 2024"
-[dumpfile_size] 2568
-[savefile] "/home/sermuns/Git/code/hardware/save/cpu_test_save.gtkw"
+[dumpfile_mtime] "Fri Apr  5 06:27:42 2024"
+[dumpfile_size] 2994
+[savefile] "/home/sermuns/Git/code/hardware/save/cpu_tb_save.gtkw"
 [timestart] 0
 [size] 1920 1016
 [pos] -1 -1
-*-23.728483 4230000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-23.728483 42180000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.cpu_tb.
-[treeopen] top.cpu_tb.uut.
 [sst_width] 315
 [signals_width] 185
 [sst_expanded] 1
 [sst_vpaned_height] 280
+@420
+top.cpu_tb.clock_count_tb
 @22
 #{top.cpu_tb.uut.alu[23:0]} top.cpu_tb.uut.alu[23] top.cpu_tb.uut.alu[22] top.cpu_tb.uut.alu[21] top.cpu_tb.uut.alu[20] top.cpu_tb.uut.alu[19] top.cpu_tb.uut.alu[18] top.cpu_tb.uut.alu[17] top.cpu_tb.uut.alu[16] top.cpu_tb.uut.alu[15] top.cpu_tb.uut.alu[14] top.cpu_tb.uut.alu[13] top.cpu_tb.uut.alu[12] top.cpu_tb.uut.alu[11] top.cpu_tb.uut.alu[10] top.cpu_tb.uut.alu[9] top.cpu_tb.uut.alu[8] top.cpu_tb.uut.alu[7] top.cpu_tb.uut.alu[6] top.cpu_tb.uut.alu[5] top.cpu_tb.uut.alu[4] top.cpu_tb.uut.alu[3] top.cpu_tb.uut.alu[2] top.cpu_tb.uut.alu[1] top.cpu_tb.uut.alu[0]
 @28
@@ -48,8 +49,6 @@ top.cpu_tb.uut.alu_inst.rst
 @28
 top.cpu_tb.uut.rst
 @22
-#{top.cpu_tb.uut.umem.address[7:0]} top.cpu_tb.uut.umem.address[7] top.cpu_tb.uut.umem.address[6] top.cpu_tb.uut.umem.address[5] top.cpu_tb.uut.umem.address[4] top.cpu_tb.uut.umem.address[3] top.cpu_tb.uut.umem.address[2] top.cpu_tb.uut.umem.address[1] top.cpu_tb.uut.umem.address[0]
-#{top.cpu_tb.uut.umem.data[22:0]} top.cpu_tb.uut.umem.data[22] top.cpu_tb.uut.umem.data[21] top.cpu_tb.uut.umem.data[20] top.cpu_tb.uut.umem.data[19] top.cpu_tb.uut.umem.data[18] top.cpu_tb.uut.umem.data[17] top.cpu_tb.uut.umem.data[16] top.cpu_tb.uut.umem.data[15] top.cpu_tb.uut.umem.data[14] top.cpu_tb.uut.umem.data[13] top.cpu_tb.uut.umem.data[12] top.cpu_tb.uut.umem.data[11] top.cpu_tb.uut.umem.data[10] top.cpu_tb.uut.umem.data[9] top.cpu_tb.uut.umem.data[8] top.cpu_tb.uut.umem.data[7] top.cpu_tb.uut.umem.data[6] top.cpu_tb.uut.umem.data[5] top.cpu_tb.uut.umem.data[4] top.cpu_tb.uut.umem.data[3] top.cpu_tb.uut.umem.data[2] top.cpu_tb.uut.umem.data[1] top.cpu_tb.uut.umem.data[0]
 #{top.cpu_tb.uut.upc[7:0]} top.cpu_tb.uut.upc[7] top.cpu_tb.uut.upc[6] top.cpu_tb.uut.upc[5] top.cpu_tb.uut.upc[4] top.cpu_tb.uut.upc[3] top.cpu_tb.uut.upc[2] top.cpu_tb.uut.upc[1] top.cpu_tb.uut.upc[0]
 #{top.cpu_tb.uut.upm[22:0]} top.cpu_tb.uut.upm[22] top.cpu_tb.uut.upm[21] top.cpu_tb.uut.upm[20] top.cpu_tb.uut.upm[19] top.cpu_tb.uut.upm[18] top.cpu_tb.uut.upm[17] top.cpu_tb.uut.upm[16] top.cpu_tb.uut.upm[15] top.cpu_tb.uut.upm[14] top.cpu_tb.uut.upm[13] top.cpu_tb.uut.upm[12] top.cpu_tb.uut.upm[11] top.cpu_tb.uut.upm[10] top.cpu_tb.uut.upm[9] top.cpu_tb.uut.upm[8] top.cpu_tb.uut.upm[7] top.cpu_tb.uut.upm[6] top.cpu_tb.uut.upm[5] top.cpu_tb.uut.upm[4] top.cpu_tb.uut.upm[3] top.cpu_tb.uut.upm[2] top.cpu_tb.uut.upm[1] top.cpu_tb.uut.upm[0]
 [pattern_trace] 1
