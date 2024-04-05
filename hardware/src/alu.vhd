@@ -3,8 +3,8 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.NUMERIC_STD.ALL;
 ENTITY ALU_ent IS
   PORT (
-    A : IN unsigned(23 DOWNTO 0);
-    B : IN unsigned(23 DOWNTO 0);
+    A : BUFFER unsigned(23 DOWNTO 0) := (OTHERS => '0');
+    B : BUFFER unsigned(23 DOWNTO 0);
     op : IN unsigned(3 DOWNTO 0);
     result : BUFFER unsigned(23 DOWNTO 0) := (OTHERS => '0');
 
@@ -21,6 +21,7 @@ ARCHITECTURE ALU_arch OF ALU_ent IS
   CONSTANT add_op : unsigned(3 DOWNTO 0) := "0001";
   CONSTANT sub_op : unsigned(3 DOWNTO 0) := "0010";
   CONSTANT mul_op : unsigned(3 DOWNTO 0) := "0011";
+  CONSTANT load_op : unsigned(3 DOWNTO 0) := "0100";
 
   -- candidate flags
   SIGNAL Zc, Nc, Cc, Vc : STD_LOGIC := '0';
@@ -35,6 +36,7 @@ BEGIN
       WHEN add_op => result <= A + B; -- addition
       WHEN sub_op => result <= A - B; -- subtraction
       WHEN mul_op => result <= resize(A * B, result'length);
+      WHEN load_op => result <= B; -- load, R := B
       WHEN OTHERS => NULL;
     END CASE;
   END PROCESS;
