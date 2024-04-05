@@ -7,10 +7,11 @@
 100  IR   
 101  GRx  
 ## ALU
-0000  NOP
-0001  ADD
-0010  SUB
-0011  MUL
+0000  NOP 
+0001  ADD   R := A + B
+0010  SUB   R := A - B
+0011  MUL   R := A * B
+0100  LOAD  R := B
 ## SEQ
 0000  uPC++
 0001  uPC := K1
