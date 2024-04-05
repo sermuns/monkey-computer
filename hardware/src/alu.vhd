@@ -4,7 +4,7 @@ USE ieee.NUMERIC_STD.ALL;
 ENTITY ALU_ent IS
   PORT (
     A : BUFFER unsigned(23 DOWNTO 0) := (OTHERS => '0');
-    B : BUFFER unsigned(23 DOWNTO 0);
+    B : BUFFER unsigned(23 DOWNTO 0) := (OTHERS => '0');
     op : IN unsigned(3 DOWNTO 0);
     result : BUFFER unsigned(23 DOWNTO 0) := (OTHERS => '0');
 
@@ -24,7 +24,7 @@ ARCHITECTURE ALU_arch OF ALU_ent IS
   CONSTANT load_op : unsigned(3 DOWNTO 0) := "0100";
 
   -- candidate flags
-  SIGNAL Zc, Nc, Cc, Vc : STD_LOGIC := '0';
+  SIGNAL Zc, Nc, Cc, Vc : STD_LOGIC;
 
 BEGIN
   ALU_proc : PROCESS (A, B, op)
@@ -41,14 +41,17 @@ BEGIN
     END CASE;
   END PROCESS;
 
+  -- all zeroes?
   Zc <=
     '1' WHEN result = (result'length - 1 DOWNTO 0 => '0')
     ELSE
     '0';
 
+  -- negative bit set
   Nc <=
     result(result'high);
 
+  -- carry out?
   Cc <=
     result(result'high);
 
