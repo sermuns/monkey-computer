@@ -14,6 +14,8 @@ ARCHITECTURE testbench OF cpu_tb IS
   SIGNAL clk_tb : STD_LOGIC := '0';
   SIGNAL rst_tb : STD_LOGIC := '0';
 
+  SIGNAL clock_count_tb : NATURAL := 0;
+
 BEGIN
   -- Instantiate the Unit Under Test (UUT)
   UUT : ENTITY work.cpu PORT MAP(
@@ -31,7 +33,13 @@ BEGIN
       WAIT FOR CLK_PERIOD / 2;
     END LOOP;
     stop;
-  END PROCESS clk_process;
+  END PROCESS;
+
+  clk_counter : PROCESS
+  BEGIN
+    WAIT UNTIL rising_edge(clk_tb);
+    clock_count_tb <= clock_count_tb + 1; -- rising edge => increment clock count
+  END PROCESS;
 
   -- Stimulus process
   stimulus_process : PROCESS
@@ -44,6 +52,6 @@ BEGIN
 
     WAIT;
 
-  END PROCESS stimulus_process;
+  END PROCESS;
 
 END ARCHITECTURE;
