@@ -159,6 +159,18 @@ BEGIN
     -- GENERAL REGISTERS (GRx)
     GRx <= GR(TO_INTEGER(unsigned(GRx_num)));
 
+    -- ASR
+    PROCESS (clk, rst)
+    BEGIN
+        IF rising_edge(clk) THEN
+            IF rst = '1' THEN
+                ASR <= (OTHERS => '0');
+            ELSIF (FB = "000") THEN
+                ASR <= data_bus;
+            END IF;
+        END IF;
+    END PROCESS;
+
     -- DATA BUS (TO-BUS)
     data_bus <=
         ASR WHEN (TB = "000") ELSE
