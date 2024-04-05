@@ -20,7 +20,7 @@ ARCHITECTURE func OF cpu IS
     ALIAS OP : STD_LOGIC_VECTOR(4 DOWNTO 0) IS IR(23 DOWNTO 19);
     ALIAS GRx_num : STD_LOGIC_VECTOR(2 DOWNTO 0) IS IR(18 DOWNTO 16);
     ALIAS M : STD_LOGIC_VECTOR(1 DOWNTO 0) IS IR(15 DOWNTO 14);
-    ALIAS ADR : STD_LOGIC_VECTOR(11 DOWNTO 0) IS IR(13 DOWNTO 2);
+    ALIAS ADR : STD_LOGIC_VECTOR(11 DOWNTO 0) IS IR(11 DOWNTO 0);
 
     -- MICRO
     SIGNAL uPC : unsigned(7 DOWNTO 0) := (OTHERS => '0');
@@ -39,9 +39,10 @@ ARCHITECTURE func OF cpu IS
     -- GENERAL REGISTERS
     TYPE GR_t IS ARRAY(0 TO 7) OF unsigned(data_bus'LENGTH - 1 DOWNTO 0);
     SIGNAL GR : GR_t := (OTHERS => (OTHERS => '0'));
+
     SIGNAL GRx : unsigned(data_bus'LENGTH - 1 DOWNTO 0);
 
-    SIGNAL ASR : unsigned(data_bus'LENGTH - 1 DOWNTO 0);
+    SIGNAL ASR : unsigned(11 DOWNTO 0) := (OTHERS => '0');
 
     -- ALU
     SIGNAL AR : unsigned(data_bus'LENGTH - 1 DOWNTO 0) := (OTHERS => '0');
@@ -53,10 +54,11 @@ ARCHITECTURE func OF cpu IS
     ALIAS C IS flags(2);
     ALIAS V IS flags(3);
 BEGIN
+    
     -- PROGRAM MEMORY
     pMem : ENTITY work.pMem
         PORT MAP(
-            adress => PC,
+            adress => ASR,
             data => PM
         );
     -- MICRO MEMORY
@@ -150,14 +152,15 @@ BEGIN
         IF rising_edge(clk) THEN
             IF rst = '1' THEN
                 IR <= (OTHERS => '0');
-            ELSIF (FB = "001") THEN
+            ELSIF (FB = "100") THEN
                 IR <= STD_LOGIC_VECTOR(data_bus);
             END IF;
         END IF;
     END PROCESS;
 
-    -- GENERAL REGISTERS (GRx)
+    -- GENERAL REGISTERS (GRx) 
     GRx <= GR(TO_INTEGER(unsigned(GRx_num)));
+    GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus when (FB = "101") ;
 
     -- ASR
     PROCESS (clk, rst)
@@ -166,16 +169,27 @@ BEGIN
             IF rst = '1' THEN
                 ASR <= (OTHERS => '0');
             ELSIF (FB = "000") THEN
-                ASR <= data_bus;
+                ASR <= data_bus(11 DOWNTO 0);
             END IF;
         END IF;
     END PROCESS;
 
+    K2 <=
+        "00000011" WHEN (M = "00") ELSE -- Direkt
+        "00000100" WHEN (M = "01") ELSE -- Omedelbar
+        "00000110" WHEN (M = "10") ELSE
+        "00000111" WHEN (M = "11") ELSE
+        (OTHERS => '0');
+
+    K1 <= "00001010" WHEN (OP = "00000")
+        ELSE
+        (OTHERS => '0'); -- LDA
+
     -- DATA BUS (TO-BUS)
     data_bus <=
-        ASR WHEN (TB = "000") ELSE
+        (data_bus'RANGE => '0') + ASR WHEN (TB = "000") ELSE
         unsigned(PM) WHEN (TB = "001") ELSE
-        (data_bus'RANGE => '0') + PC WHEN (TB = "010") ELSE
+        (data_bus'RANGE => '0') + PC WHEN (TB = "010") ELSE -- Padding + Pc
         ALU WHEN (TB = "011") ELSE
         unsigned(IR) WHEN (TB = "100") ELSE
         GRx WHEN (TB = "101") ELSE

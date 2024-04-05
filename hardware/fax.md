@@ -24,6 +24,10 @@
 1000  IF C=1 uPC := uADR
 1001  IF C=0 uPC := uADR
 
+# K1 Values
+00000 -> 1010 (Load)
+
+
 # Assembly 
 ## OP-koder
 00000 LOAD  
@@ -33,4 +37,7 @@
 ## Moder (M)
 00 Omedelbar (Immediate)
 01 Direkt (Direct)
+10 indirekt (????)
+11 Indexerad (Indexed)
 ...
+

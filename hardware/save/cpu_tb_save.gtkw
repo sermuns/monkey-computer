@@ -1,21 +1,22 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Fri Apr  5 06:28:11 2024
+[*] Fri Apr  5 12:45:11 2024
 [*]
 [dumpfile] "/home/sermuns/Git/code/hardware/wave/cpu_tb.ghw"
-[dumpfile_mtime] "Fri Apr  5 06:27:42 2024"
-[dumpfile_size] 2994
+[dumpfile_mtime] "Fri Apr  5 12:44:52 2024"
+[dumpfile_size] 2751
 [savefile] "/home/sermuns/Git/code/hardware/save/cpu_tb_save.gtkw"
 [timestart] 0
-[size] 1920 1016
+[size] 3072 1600
 [pos] -1 -1
-*-23.728483 42180000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-22.988565 16140000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.cpu_tb.
-[sst_width] 315
-[signals_width] 185
+[treeopen] top.cpu_tb.uut.
+[sst_width] 388
+[signals_width] 348
 [sst_expanded] 1
-[sst_vpaned_height] 280
+[sst_vpaned_height] 496
 @420
 top.cpu_tb.clock_count_tb
 @22
@@ -24,7 +25,16 @@ top.cpu_tb.clock_count_tb
 top.cpu_tb.uut.alu_inst.clk
 @22
 #{top.cpu_tb.uut.alu_inst.flags[3:0]} top.cpu_tb.uut.alu_inst.flags[3] top.cpu_tb.uut.alu_inst.flags[2] top.cpu_tb.uut.alu_inst.flags[1] top.cpu_tb.uut.alu_inst.flags[0]
+@c00022
 #{top.cpu_tb.uut.alu_inst.op[3:0]} top.cpu_tb.uut.alu_inst.op[3] top.cpu_tb.uut.alu_inst.op[2] top.cpu_tb.uut.alu_inst.op[1] top.cpu_tb.uut.alu_inst.op[0]
+@28
+top.cpu_tb.uut.alu_inst.op[3]
+top.cpu_tb.uut.alu_inst.op[2]
+top.cpu_tb.uut.alu_inst.op[1]
+top.cpu_tb.uut.alu_inst.op[0]
+@1401200
+-group_end
+@22
 #{top.cpu_tb.uut.alu_inst.result[23:0]} top.cpu_tb.uut.alu_inst.result[23] top.cpu_tb.uut.alu_inst.result[22] top.cpu_tb.uut.alu_inst.result[21] top.cpu_tb.uut.alu_inst.result[20] top.cpu_tb.uut.alu_inst.result[19] top.cpu_tb.uut.alu_inst.result[18] top.cpu_tb.uut.alu_inst.result[17] top.cpu_tb.uut.alu_inst.result[16] top.cpu_tb.uut.alu_inst.result[15] top.cpu_tb.uut.alu_inst.result[14] top.cpu_tb.uut.alu_inst.result[13] top.cpu_tb.uut.alu_inst.result[12] top.cpu_tb.uut.alu_inst.result[11] top.cpu_tb.uut.alu_inst.result[10] top.cpu_tb.uut.alu_inst.result[9] top.cpu_tb.uut.alu_inst.result[8] top.cpu_tb.uut.alu_inst.result[7] top.cpu_tb.uut.alu_inst.result[6] top.cpu_tb.uut.alu_inst.result[5] top.cpu_tb.uut.alu_inst.result[4] top.cpu_tb.uut.alu_inst.result[3] top.cpu_tb.uut.alu_inst.result[2] top.cpu_tb.uut.alu_inst.result[1] top.cpu_tb.uut.alu_inst.result[0]
 @28
 top.cpu_tb.uut.alu_inst.rst
@@ -40,16 +50,17 @@ top.cpu_tb.uut.alu_inst.rst
 #{top.cpu_tb.uut.gr[5][23:0]} top.cpu_tb.uut.gr[5][23] top.cpu_tb.uut.gr[5][22] top.cpu_tb.uut.gr[5][21] top.cpu_tb.uut.gr[5][20] top.cpu_tb.uut.gr[5][19] top.cpu_tb.uut.gr[5][18] top.cpu_tb.uut.gr[5][17] top.cpu_tb.uut.gr[5][16] top.cpu_tb.uut.gr[5][15] top.cpu_tb.uut.gr[5][14] top.cpu_tb.uut.gr[5][13] top.cpu_tb.uut.gr[5][12] top.cpu_tb.uut.gr[5][11] top.cpu_tb.uut.gr[5][10] top.cpu_tb.uut.gr[5][9] top.cpu_tb.uut.gr[5][8] top.cpu_tb.uut.gr[5][7] top.cpu_tb.uut.gr[5][6] top.cpu_tb.uut.gr[5][5] top.cpu_tb.uut.gr[5][4] top.cpu_tb.uut.gr[5][3] top.cpu_tb.uut.gr[5][2] top.cpu_tb.uut.gr[5][1] top.cpu_tb.uut.gr[5][0]
 #{top.cpu_tb.uut.gr[6][23:0]} top.cpu_tb.uut.gr[6][23] top.cpu_tb.uut.gr[6][22] top.cpu_tb.uut.gr[6][21] top.cpu_tb.uut.gr[6][20] top.cpu_tb.uut.gr[6][19] top.cpu_tb.uut.gr[6][18] top.cpu_tb.uut.gr[6][17] top.cpu_tb.uut.gr[6][16] top.cpu_tb.uut.gr[6][15] top.cpu_tb.uut.gr[6][14] top.cpu_tb.uut.gr[6][13] top.cpu_tb.uut.gr[6][12] top.cpu_tb.uut.gr[6][11] top.cpu_tb.uut.gr[6][10] top.cpu_tb.uut.gr[6][9] top.cpu_tb.uut.gr[6][8] top.cpu_tb.uut.gr[6][7] top.cpu_tb.uut.gr[6][6] top.cpu_tb.uut.gr[6][5] top.cpu_tb.uut.gr[6][4] top.cpu_tb.uut.gr[6][3] top.cpu_tb.uut.gr[6][2] top.cpu_tb.uut.gr[6][1] top.cpu_tb.uut.gr[6][0]
 #{top.cpu_tb.uut.gr[7][23:0]} top.cpu_tb.uut.gr[7][23] top.cpu_tb.uut.gr[7][22] top.cpu_tb.uut.gr[7][21] top.cpu_tb.uut.gr[7][20] top.cpu_tb.uut.gr[7][19] top.cpu_tb.uut.gr[7][18] top.cpu_tb.uut.gr[7][17] top.cpu_tb.uut.gr[7][16] top.cpu_tb.uut.gr[7][15] top.cpu_tb.uut.gr[7][14] top.cpu_tb.uut.gr[7][13] top.cpu_tb.uut.gr[7][12] top.cpu_tb.uut.gr[7][11] top.cpu_tb.uut.gr[7][10] top.cpu_tb.uut.gr[7][9] top.cpu_tb.uut.gr[7][8] top.cpu_tb.uut.gr[7][7] top.cpu_tb.uut.gr[7][6] top.cpu_tb.uut.gr[7][5] top.cpu_tb.uut.gr[7][4] top.cpu_tb.uut.gr[7][3] top.cpu_tb.uut.gr[7][2] top.cpu_tb.uut.gr[7][1] top.cpu_tb.uut.gr[7][0]
-#{top.cpu_tb.uut.grx[23:0]} top.cpu_tb.uut.grx[23] top.cpu_tb.uut.grx[22] top.cpu_tb.uut.grx[21] top.cpu_tb.uut.grx[20] top.cpu_tb.uut.grx[19] top.cpu_tb.uut.grx[18] top.cpu_tb.uut.grx[17] top.cpu_tb.uut.grx[16] top.cpu_tb.uut.grx[15] top.cpu_tb.uut.grx[14] top.cpu_tb.uut.grx[13] top.cpu_tb.uut.grx[12] top.cpu_tb.uut.grx[11] top.cpu_tb.uut.grx[10] top.cpu_tb.uut.grx[9] top.cpu_tb.uut.grx[8] top.cpu_tb.uut.grx[7] top.cpu_tb.uut.grx[6] top.cpu_tb.uut.grx[5] top.cpu_tb.uut.grx[4] top.cpu_tb.uut.grx[3] top.cpu_tb.uut.grx[2] top.cpu_tb.uut.grx[1] top.cpu_tb.uut.grx[0]
+@28
 #{top.cpu_tb.uut.ir[23:0]} top.cpu_tb.uut.ir[23] top.cpu_tb.uut.ir[22] top.cpu_tb.uut.ir[21] top.cpu_tb.uut.ir[20] top.cpu_tb.uut.ir[19] top.cpu_tb.uut.ir[18] top.cpu_tb.uut.ir[17] top.cpu_tb.uut.ir[16] top.cpu_tb.uut.ir[15] top.cpu_tb.uut.ir[14] top.cpu_tb.uut.ir[13] top.cpu_tb.uut.ir[12] top.cpu_tb.uut.ir[11] top.cpu_tb.uut.ir[10] top.cpu_tb.uut.ir[9] top.cpu_tb.uut.ir[8] top.cpu_tb.uut.ir[7] top.cpu_tb.uut.ir[6] top.cpu_tb.uut.ir[5] top.cpu_tb.uut.ir[4] top.cpu_tb.uut.ir[3] top.cpu_tb.uut.ir[2] top.cpu_tb.uut.ir[1] top.cpu_tb.uut.ir[0]
+@22
 #{top.cpu_tb.uut.pc[11:0]} top.cpu_tb.uut.pc[11] top.cpu_tb.uut.pc[10] top.cpu_tb.uut.pc[9] top.cpu_tb.uut.pc[8] top.cpu_tb.uut.pc[7] top.cpu_tb.uut.pc[6] top.cpu_tb.uut.pc[5] top.cpu_tb.uut.pc[4] top.cpu_tb.uut.pc[3] top.cpu_tb.uut.pc[2] top.cpu_tb.uut.pc[1] top.cpu_tb.uut.pc[0]
 #{top.cpu_tb.uut.pm[23:0]} top.cpu_tb.uut.pm[23] top.cpu_tb.uut.pm[22] top.cpu_tb.uut.pm[21] top.cpu_tb.uut.pm[20] top.cpu_tb.uut.pm[19] top.cpu_tb.uut.pm[18] top.cpu_tb.uut.pm[17] top.cpu_tb.uut.pm[16] top.cpu_tb.uut.pm[15] top.cpu_tb.uut.pm[14] top.cpu_tb.uut.pm[13] top.cpu_tb.uut.pm[12] top.cpu_tb.uut.pm[11] top.cpu_tb.uut.pm[10] top.cpu_tb.uut.pm[9] top.cpu_tb.uut.pm[8] top.cpu_tb.uut.pm[7] top.cpu_tb.uut.pm[6] top.cpu_tb.uut.pm[5] top.cpu_tb.uut.pm[4] top.cpu_tb.uut.pm[3] top.cpu_tb.uut.pm[2] top.cpu_tb.uut.pm[1] top.cpu_tb.uut.pm[0]
-#{top.cpu_tb.uut.pmem.adress[11:0]} top.cpu_tb.uut.pmem.adress[11] top.cpu_tb.uut.pmem.adress[10] top.cpu_tb.uut.pmem.adress[9] top.cpu_tb.uut.pmem.adress[8] top.cpu_tb.uut.pmem.adress[7] top.cpu_tb.uut.pmem.adress[6] top.cpu_tb.uut.pmem.adress[5] top.cpu_tb.uut.pmem.adress[4] top.cpu_tb.uut.pmem.adress[3] top.cpu_tb.uut.pmem.adress[2] top.cpu_tb.uut.pmem.adress[1] top.cpu_tb.uut.pmem.adress[0]
-#{top.cpu_tb.uut.pmem.data[23:0]} top.cpu_tb.uut.pmem.data[23] top.cpu_tb.uut.pmem.data[22] top.cpu_tb.uut.pmem.data[21] top.cpu_tb.uut.pmem.data[20] top.cpu_tb.uut.pmem.data[19] top.cpu_tb.uut.pmem.data[18] top.cpu_tb.uut.pmem.data[17] top.cpu_tb.uut.pmem.data[16] top.cpu_tb.uut.pmem.data[15] top.cpu_tb.uut.pmem.data[14] top.cpu_tb.uut.pmem.data[13] top.cpu_tb.uut.pmem.data[12] top.cpu_tb.uut.pmem.data[11] top.cpu_tb.uut.pmem.data[10] top.cpu_tb.uut.pmem.data[9] top.cpu_tb.uut.pmem.data[8] top.cpu_tb.uut.pmem.data[7] top.cpu_tb.uut.pmem.data[6] top.cpu_tb.uut.pmem.data[5] top.cpu_tb.uut.pmem.data[4] top.cpu_tb.uut.pmem.data[3] top.cpu_tb.uut.pmem.data[2] top.cpu_tb.uut.pmem.data[1] top.cpu_tb.uut.pmem.data[0]
 @28
 top.cpu_tb.uut.rst
 @22
 #{top.cpu_tb.uut.upc[7:0]} top.cpu_tb.uut.upc[7] top.cpu_tb.uut.upc[6] top.cpu_tb.uut.upc[5] top.cpu_tb.uut.upc[4] top.cpu_tb.uut.upc[3] top.cpu_tb.uut.upc[2] top.cpu_tb.uut.upc[1] top.cpu_tb.uut.upc[0]
 #{top.cpu_tb.uut.upm[22:0]} top.cpu_tb.uut.upm[22] top.cpu_tb.uut.upm[21] top.cpu_tb.uut.upm[20] top.cpu_tb.uut.upm[19] top.cpu_tb.uut.upm[18] top.cpu_tb.uut.upm[17] top.cpu_tb.uut.upm[16] top.cpu_tb.uut.upm[15] top.cpu_tb.uut.upm[14] top.cpu_tb.uut.upm[13] top.cpu_tb.uut.upm[12] top.cpu_tb.uut.upm[11] top.cpu_tb.uut.upm[10] top.cpu_tb.uut.upm[9] top.cpu_tb.uut.upm[8] top.cpu_tb.uut.upm[7] top.cpu_tb.uut.upm[6] top.cpu_tb.uut.upm[5] top.cpu_tb.uut.upm[4] top.cpu_tb.uut.upm[3] top.cpu_tb.uut.upm[2] top.cpu_tb.uut.upm[1] top.cpu_tb.uut.upm[0]
+#{top.cpu_tb.uut.k2[7:0]} top.cpu_tb.uut.k2[7] top.cpu_tb.uut.k2[6] top.cpu_tb.uut.k2[5] top.cpu_tb.uut.k2[4] top.cpu_tb.uut.k2[3] top.cpu_tb.uut.k2[2] top.cpu_tb.uut.k2[1] top.cpu_tb.uut.k2[0]
+#{top.cpu_tb.uut.asr[23:0]} top.cpu_tb.uut.asr[11] top.cpu_tb.uut.asr[10] top.cpu_tb.uut.asr[9] top.cpu_tb.uut.asr[8] top.cpu_tb.uut.asr[7] top.cpu_tb.uut.asr[6] top.cpu_tb.uut.asr[5] top.cpu_tb.uut.asr[4] top.cpu_tb.uut.asr[3] top.cpu_tb.uut.asr[2] top.cpu_tb.uut.asr[1] top.cpu_tb.uut.asr[0]
 [pattern_trace] 1
 [pattern_trace] 0
