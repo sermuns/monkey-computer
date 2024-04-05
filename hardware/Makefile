@@ -1,6 +1,5 @@
 .PHONY: clean alu_wave cpu_wave
 
-FILES = src/*.vhd
 WORKDIR = work
 WAVEDIR = wave
 SAVEDIR = save
@@ -8,25 +7,32 @@ FLAGS = --std=08 --workdir=$(WORKDIR)
 
 # try to compile all files
 all:
-	@mkdir -p $(WORKDIR)
-	@ghdl -a $(FLAGS) $(FILES)
+	@echo "Usage: make [target]"
+	@echo "Targets:"
+	@echo "  cpu"
+	@echo "  cpu_tb"
+	@echo "  cpu_wave"
+	@echo "  alu_test"
+	@echo "  alu_wave"
 
 # remove work
 clean:
-	@rm -rf $(WORKDIR)
+	@rm -rf $(WORKDIR) $(WAVEDIR)
 
 cpu:
 	@mkdir -p $(WORKDIR)
 	@ghdl -a $(FLAGS) src/alu.vhd src/uMem.vhd src/pMem.vhd src/cpu.vhd 
 
 cpu_tb: cpu
-	ghdl -a $(FLAGS) src/cpu_tb.vhd
-	ghdl -e $(FLAGS) cpu_tb
-	ghdl -r $(FLAGS) cpu_tb --wave=$(WAVEDIR)/cpu_tb.ghw
+	@ghdl -a $(FLAGS) src/cpu_tb.vhd
+	@ghdl -e $(FLAGS) cpu_tb
+	@mkdir -p $(WAVEDIR)
+	@ghdl -r $(FLAGS) cpu_tb --wave=$(WAVEDIR)/cpu_tb.ghw
 
 cpu_wave: cpu_tb
-	@gtkwave -a $(SAVEDIR)/cpu_test_save.gtkw $(WAVEDIR)/cpu_tb.ghw
-
+	@if ! pgrep -x "gtkwave" > /dev/null; then \
+		gtkwave -a $(SAVEDIR)/cpu_tb_save.gtkw $(WAVEDIR)/cpu_tb.ghw & \
+	fi
 
 # ALU
 alu_test:
