@@ -17,10 +17,10 @@ ARCHITECTURE func OF cpu IS
     -- Instruction register
     SIGNAL IR : STD_LOGIC_VECTOR (23 DOWNTO 0) := (OTHERS => '0');
     -- Field of the assembly instruction
-    ALIAS OP : STD_LOGIC_VECTOR(4 DOWNTO 0) IS IR(23 DOWNTO 19);
-    ALIAS GRx_num : STD_LOGIC_VECTOR(2 DOWNTO 0) IS IR(18 DOWNTO 16);
-    ALIAS M : STD_LOGIC_VECTOR(1 DOWNTO 0) IS IR(15 DOWNTO 14);
-    ALIAS ADR : STD_LOGIC_VECTOR(11 DOWNTO 0) IS IR(11 DOWNTO 0);
+    ALIAS OP IS IR(23 DOWNTO 19);
+    ALIAS GRx_num IS IR(18 DOWNTO 16);
+    ALIAS M IS IR(15 DOWNTO 14);
+    ALIAS ADR IS IR(11 DOWNTO 0);
 
     -- MICRO
     SIGNAL uPC : unsigned(7 DOWNTO 0) := (OTHERS => '0');
@@ -54,7 +54,7 @@ ARCHITECTURE func OF cpu IS
     ALIAS C IS flags(2);
     ALIAS V IS flags(3);
 BEGIN
-    
+
     -- PROGRAM MEMORY
     pMem : ENTITY work.pMem
         PORT MAP(
@@ -160,7 +160,7 @@ BEGIN
 
     -- GENERAL REGISTERS (GRx) 
     GRx <= GR(TO_INTEGER(unsigned(GRx_num)));
-    GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus when (FB = "101") ;
+    GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus WHEN (FB = "101");
 
     -- ASR
     PROCESS (clk, rst)
@@ -174,25 +174,23 @@ BEGIN
         END IF;
     END PROCESS;
 
+    K1 <=
+        -- LOAD
+        "00001010" WHEN (OP = "00000");
+
     K2 <=
         "00000011" WHEN (M = "00") ELSE -- Direkt
         "00000100" WHEN (M = "01") ELSE -- Omedelbar
         "00000110" WHEN (M = "10") ELSE
-        "00000111" WHEN (M = "11") ELSE
-        (OTHERS => '0');
-
-    K1 <= "00001010" WHEN (OP = "00000")
-        ELSE
-        (OTHERS => '0'); -- LDA
+        "00000111" WHEN (M = "11");
 
     -- DATA BUS (TO-BUS)
     data_bus <=
-        (data_bus'RANGE => '0') + ASR WHEN (TB = "000") ELSE
+        (data_bus'RANGE => '0') + ASR WHEN (TB = "000") ELSE -- Padding + ASR
         unsigned(PM) WHEN (TB = "001") ELSE
-        (data_bus'RANGE => '0') + PC WHEN (TB = "010") ELSE -- Padding + Pc
+        (data_bus'RANGE => '0') + PC WHEN (TB = "010") ELSE -- Padding + PC
         ALU WHEN (TB = "011") ELSE
         unsigned(IR) WHEN (TB = "100") ELSE
-        GRx WHEN (TB = "101") ELSE
-        (OTHERS => '0');
+        GRx WHEN (TB = "101");
 
 END ARCHITECTURE;
