@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Fri Apr  5 12:45:11 2024
+[*] Sat Apr  6 10:33:34 2024
 [*]
 [dumpfile] "/home/sermuns/Git/code/hardware/wave/cpu_tb.ghw"
-[dumpfile_mtime] "Fri Apr  5 12:44:52 2024"
-[dumpfile_size] 2751
+[dumpfile_mtime] "Sat Apr  6 10:33:16 2024"
+[dumpfile_size] 2740
 [savefile] "/home/sermuns/Git/code/hardware/save/cpu_tb_save.gtkw"
 [timestart] 0
-[size] 3072 1600
+[size] 1920 1016
 [pos] -1 -1
-*-22.988565 16140000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-23.988565 12150000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.cpu_tb.
 [treeopen] top.cpu_tb.uut.
@@ -60,6 +60,9 @@ top.cpu_tb.uut.rst
 @22
 #{top.cpu_tb.uut.upc[7:0]} top.cpu_tb.uut.upc[7] top.cpu_tb.uut.upc[6] top.cpu_tb.uut.upc[5] top.cpu_tb.uut.upc[4] top.cpu_tb.uut.upc[3] top.cpu_tb.uut.upc[2] top.cpu_tb.uut.upc[1] top.cpu_tb.uut.upc[0]
 #{top.cpu_tb.uut.upm[22:0]} top.cpu_tb.uut.upm[22] top.cpu_tb.uut.upm[21] top.cpu_tb.uut.upm[20] top.cpu_tb.uut.upm[19] top.cpu_tb.uut.upm[18] top.cpu_tb.uut.upm[17] top.cpu_tb.uut.upm[16] top.cpu_tb.uut.upm[15] top.cpu_tb.uut.upm[14] top.cpu_tb.uut.upm[13] top.cpu_tb.uut.upm[12] top.cpu_tb.uut.upm[11] top.cpu_tb.uut.upm[10] top.cpu_tb.uut.upm[9] top.cpu_tb.uut.upm[8] top.cpu_tb.uut.upm[7] top.cpu_tb.uut.upm[6] top.cpu_tb.uut.upm[5] top.cpu_tb.uut.upm[4] top.cpu_tb.uut.upm[3] top.cpu_tb.uut.upm[2] top.cpu_tb.uut.upm[1] top.cpu_tb.uut.upm[0]
+@23
+#{top.cpu_tb.uut.k1[7:0]} top.cpu_tb.uut.k1[7] top.cpu_tb.uut.k1[6] top.cpu_tb.uut.k1[5] top.cpu_tb.uut.k1[4] top.cpu_tb.uut.k1[3] top.cpu_tb.uut.k1[2] top.cpu_tb.uut.k1[1] top.cpu_tb.uut.k1[0]
+@22
 #{top.cpu_tb.uut.k2[7:0]} top.cpu_tb.uut.k2[7] top.cpu_tb.uut.k2[6] top.cpu_tb.uut.k2[5] top.cpu_tb.uut.k2[4] top.cpu_tb.uut.k2[3] top.cpu_tb.uut.k2[2] top.cpu_tb.uut.k2[1] top.cpu_tb.uut.k2[0]
 #{top.cpu_tb.uut.asr[23:0]} top.cpu_tb.uut.asr[11] top.cpu_tb.uut.asr[10] top.cpu_tb.uut.asr[9] top.cpu_tb.uut.asr[8] top.cpu_tb.uut.asr[7] top.cpu_tb.uut.asr[6] top.cpu_tb.uut.asr[5] top.cpu_tb.uut.asr[4] top.cpu_tb.uut.asr[3] top.cpu_tb.uut.asr[2] top.cpu_tb.uut.asr[1] top.cpu_tb.uut.asr[0]
 [pattern_trace] 1
