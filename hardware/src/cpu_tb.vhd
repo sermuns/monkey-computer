@@ -26,12 +26,10 @@ BEGIN
   -- Clock process
   clk_process : PROCESS
   BEGIN
-    WHILE now < CLK_PERIOD * 20 LOOP
-      clk_tb <= '0';
-      WAIT FOR CLK_PERIOD / 2;
-      clk_tb <= '1';
-      WAIT FOR CLK_PERIOD / 2;
-    END LOOP;
+    clk_tb <= '0';
+    WAIT FOR CLK_PERIOD / 2;
+    clk_tb <= '1';
+    WAIT FOR CLK_PERIOD / 2;
   END PROCESS;
 
   clk_counter : PROCESS

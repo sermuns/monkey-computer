@@ -15,7 +15,7 @@ ARCHITECTURE func OF cpu IS
     SIGNAL PM_out : STD_LOGIC_VECTOR(23 DOWNTO 0);
 
     -- Instruction register
-    SIGNAL IR : STD_LOGIC_VECTOR (23 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL IR : STD_LOGIC_VECTOR (23 DOWNTO 0);
     -- Field of the assembly instruction
     ALIAS OP IS IR(23 DOWNTO 19);
     ALIAS GRx_num IS IR(18 DOWNTO 16);
@@ -36,19 +36,18 @@ ARCHITECTURE func OF cpu IS
 
     SIGNAL K1, K2 : unsigned(7 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL data_bus : unsigned(PM_out'length - 1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL data_bus : unsigned(23 DOWNTO 0) := (OTHERS => '0');
 
     -- GENERAL REGISTERS
-    TYPE GR_t IS ARRAY(0 TO 7) OF unsigned(data_bus'LENGTH - 1 DOWNTO 0);
+    TYPE GR_t IS ARRAY(0 TO 7) OF unsigned(23 DOWNTO 0);
     SIGNAL GR : GR_t := (OTHERS => (OTHERS => '0'));
 
-    SIGNAL GRx : unsigned(data_bus'LENGTH - 1 DOWNTO 0);
+    SIGNAL GRx : unsigned(23 DOWNTO 0);
 
     SIGNAL ASR : unsigned(11 DOWNTO 0) := (OTHERS => '0');
 
     -- ALU
-    SIGNAL AR : unsigned(data_bus'LENGTH - 1 DOWNTO 0) := (OTHERS => '0');
-    --SIGNAL ALU : unsigned(data_bus'LENGTH - 1 DOWNTO 0);  !!!!MAYBE NOT NEEDED!!!!!
+    SIGNAL AR : unsigned(23 DOWNTO 0) := (OTHERS => '0');
 
     SIGNAL flags : STD_LOGIC_VECTOR(3 DOWNTO 0);
     ALIAS Z IS flags(0);
@@ -62,18 +61,13 @@ BEGIN
         PORT MAP(
             adress => ASR,
             out_data => PM_out,
-            in_data => PM_in
+            in_data => data_bus,
+            op => OP -- LOAD or STORE ?
         );
-    PROCESS (clk, rst)
-    BEGIN
-        IF rising_edge(clk) THEN
-            IF rst = '1' THEN
-                PM_in <= (OTHERS => '0');
-            ELSIF (FB = "001") THEN
-                PM_in <= IR;
-            END IF;
-        END IF;
-    END PROCESS;
+
+    PM_in <=
+        STD_LOGIC_VECTOR(data_bus) WHEN (FB = "001") ELSE
+        (OTHERS => '-');
 
     -- MICRO MEMORY
     uMem : ENTITY work.uMem
@@ -196,13 +190,17 @@ BEGIN
         "00001100" WHEN (OP = "00010") ELSE
         -- SUB
         "00001111" WHEN (OP = "00011") ELSE
-        "00011000" WHEN (OP = "01111");
+        -- MUL
+        "00011000" WHEN (OP = "01111") ELSE
+
+        (OTHERS => 'U'); -- something wrong
 
     K2 <=
-        "00000011" WHEN (M = "00") ELSE -- Direkt
+        "00000011" WHEN (M = "00") ELSE -- Absolut
         "00000100" WHEN (M = "01") ELSE -- Omedelbar
-        "00000110" WHEN (M = "10") ELSE
-        "00000111" WHEN (M = "11");
+        "00000110" WHEN (M = "10") ELSE -- Indirekt
+        "00000111" WHEN (M = "11") ELSE -- Indexerad
+        (OTHERS => 'U');
 
     -- DATA BUS (TO-BUS)
     data_bus <=
@@ -211,6 +209,7 @@ BEGIN
         (data_bus'RANGE => '0') + PC WHEN (TB = "010") ELSE -- Padding + PC
         AR WHEN (TB = "011") ELSE
         unsigned(IR) WHEN (TB = "100") ELSE
-        GRx WHEN (TB = "101");
+        GRx WHEN (TB = "101") ELSE
+        (OTHERS => 'U');
 
 END ARCHITECTURE;
