@@ -12,7 +12,7 @@ END ENTITY;
 ARCHITECTURE func OF cpu IS
     -- ASSEMBLY / MACRO
     SIGNAL PC : unsigned(11 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL PM : STD_LOGIC_VECTOR(23 DOWNTO 0);
+    SIGNAL PM_out : STD_LOGIC_VECTOR(23 DOWNTO 0);
 
     -- Instruction register
     SIGNAL IR : STD_LOGIC_VECTOR (23 DOWNTO 0) := (OTHERS => '0');
@@ -32,9 +32,11 @@ ARCHITECTURE func OF cpu IS
     ALIAS SEQ IS uPM(11 DOWNTO 8);
     ALIAS uADR IS uPM(7 DOWNTO 0);
 
+    SIGNAL PM_in : STD_LOGIC_VECTOR(23 DOWNTO 0);
+
     SIGNAL K1, K2 : unsigned(7 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL data_bus : unsigned(PM'length - 1 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL data_bus : unsigned(PM_out'length - 1 DOWNTO 0) := (OTHERS => '0');
 
     -- GENERAL REGISTERS
     TYPE GR_t IS ARRAY(0 TO 7) OF unsigned(data_bus'LENGTH - 1 DOWNTO 0);
@@ -46,7 +48,7 @@ ARCHITECTURE func OF cpu IS
 
     -- ALU
     SIGNAL AR : unsigned(data_bus'LENGTH - 1 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL ALU : unsigned(data_bus'LENGTH - 1 DOWNTO 0);
+    --SIGNAL ALU : unsigned(data_bus'LENGTH - 1 DOWNTO 0);  !!!!MAYBE NOT NEEDED!!!!!
 
     SIGNAL flags : STD_LOGIC_VECTOR(3 DOWNTO 0);
     ALIAS Z IS flags(0);
@@ -59,8 +61,20 @@ BEGIN
     pMem : ENTITY work.pMem
         PORT MAP(
             adress => ASR,
-            data => PM
+            out_data => PM_out,
+            in_data => PM_in
         );
+    PROCESS (clk, rst)
+    BEGIN
+        IF rising_edge(clk) THEN
+            IF rst = '1' THEN
+                PM_in <= (OTHERS => '0');
+            ELSIF (FB = "001") THEN
+                PM_in <= IR;
+            END IF;
+        END IF;
+    END PROCESS;
+
     -- MICRO MEMORY
     uMem : ENTITY work.uMem
         PORT MAP(
@@ -137,10 +151,9 @@ BEGIN
     -- ALU
     ALU_inst : ENTITY work.ALU_ent
         PORT MAP(
-            A => data_bus,
-            B => AR,
+            data_bus => data_bus,
+            AR => AR,
             op => unsigned(ALU_op),
-            result => ALU,
             clk => clk,
             rst => rst,
             flags => flags
@@ -176,7 +189,14 @@ BEGIN
 
     K1 <=
         -- LOAD
-        "00001010" WHEN (OP = "00000");
+        "00001010" WHEN (OP = "00000") ELSE
+        -- STORE 
+        "00001011" WHEN (OP = "00001") ELSE
+        -- ADD
+        "00001100" WHEN (OP = "00010") ELSE
+        -- SUB
+        "00001111" WHEN (OP = "00011") ELSE
+        "00011000" WHEN (OP = "01111");
 
     K2 <=
         "00000011" WHEN (M = "00") ELSE -- Direkt
@@ -187,9 +207,9 @@ BEGIN
     -- DATA BUS (TO-BUS)
     data_bus <=
         (data_bus'RANGE => '0') + ASR WHEN (TB = "000") ELSE -- Padding + ASR
-        unsigned(PM) WHEN (TB = "001") ELSE
+        unsigned(PM_out) WHEN (TB = "001") ELSE
         (data_bus'RANGE => '0') + PC WHEN (TB = "010") ELSE -- Padding + PC
-        ALU WHEN (TB = "011") ELSE
+        AR WHEN (TB = "011") ELSE
         unsigned(IR) WHEN (TB = "100") ELSE
         GRx WHEN (TB = "101");
 

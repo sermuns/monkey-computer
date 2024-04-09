@@ -22,8 +22,8 @@ BEGIN
   -- Instantiate ALU entity
   DUT : ENTITY work.ALU_ent
     PORT MAP(
-      A => A_tb,
-      B => B_tb,
+      data_bus => A_tb,
+      AR => B_tb,
       op => ALU_op_tb,
       result => result_tb,
       clk => clk_tb,

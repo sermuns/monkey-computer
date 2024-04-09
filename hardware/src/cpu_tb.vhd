@@ -26,13 +26,12 @@ BEGIN
   -- Clock process
   clk_process : PROCESS
   BEGIN
-    WHILE now < CLK_PERIOD * 10 LOOP -- run for 100 clock cycles
+    WHILE now < CLK_PERIOD * 20 LOOP
       clk_tb <= '0';
       WAIT FOR CLK_PERIOD / 2;
       clk_tb <= '1';
       WAIT FOR CLK_PERIOD / 2;
     END LOOP;
-    stop;
   END PROCESS;
 
   clk_counter : PROCESS

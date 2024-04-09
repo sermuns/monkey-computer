@@ -3,7 +3,7 @@
 000  ASR  
 001  PM   
 010  PC   
-011  ALU  
+011  AR (ALU)
 100  IR   
 101  GRx  
 ## ALU
@@ -25,13 +25,21 @@
 1001  IF C=0 uPC := uADR
 
 # K1 Values
-00000 -> 1010 (Load)
-
+00000 -> 01010 (LOAD)
+00001 -> 01011 (STORE)
+00010 -> 01100 (ADD)
+00011 -> 01111 (SUB)
+00100 -> 10010 (CMP)
+00101 -> 10101 (AND)
+01111 -> 11000 (MUL)
+ 
 
 # Assembly 
 ## OP-koder
 00000 LOAD  
 00001 STORE  
+00010 ADD
+00011 SUB
 ...
 
 ## Moder (M)
