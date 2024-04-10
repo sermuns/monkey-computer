@@ -32,6 +32,7 @@ ARCHITECTURE func OF cpu IS
     ALIAS SEQ IS uPM(11 DOWNTO 8);
     ALIAS uADR IS uPM(7 DOWNTO 0);
 
+    SIGNAL PM_should_store : STD_LOGIC;
     SIGNAL PM_in : unsigned(23 DOWNTO 0);
 
     SIGNAL K1, K2 : unsigned(7 DOWNTO 0) := (OTHERS => '0');
@@ -54,19 +55,22 @@ ARCHITECTURE func OF cpu IS
     ALIAS N IS flags(1);
     ALIAS C IS flags(2);
     ALIAS V IS flags(3);
-    
+
     SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"000000000000";
-    BEGIN
+BEGIN
 
     -- PROGRAM MEMORY
+    PM_should_store <=
+        '1' WHEN FB = "001" AND OP = "00001"
+        ELSE
+        '0';
     pMem : ENTITY work.pMem
         PORT MAP(
-            clk => clk,
             rst => rst,
             adress => ASR,
             out_data => PM_out,
             in_data => PM_in,
-            op => OP -- LOAD or STORE ?
+            should_store => PM_should_store
         );
 
     PM_in <=
@@ -127,7 +131,7 @@ ARCHITECTURE func OF cpu IS
                     uPC <= UNSIGNED(uADR);
                 END IF;
             ELSIF (SEQ = "1111") THEN
-                null;
+                NULL;
             ELSE
                 REPORT "Unknown SEQ in uMem adress " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
             END IF;
