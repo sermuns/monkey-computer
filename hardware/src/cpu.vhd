@@ -32,7 +32,7 @@ ARCHITECTURE func OF cpu IS
     ALIAS SEQ IS uPM(11 DOWNTO 8);
     ALIAS uADR IS uPM(7 DOWNTO 0);
 
-    SIGNAL PM_in : STD_LOGIC_VECTOR(23 DOWNTO 0);
+    SIGNAL PM_in : unsigned(23 DOWNTO 0);
 
     SIGNAL K1, K2 : unsigned(7 DOWNTO 0) := (OTHERS => '0');
 
@@ -54,19 +54,23 @@ ARCHITECTURE func OF cpu IS
     ALIAS N IS flags(1);
     ALIAS C IS flags(2);
     ALIAS V IS flags(3);
-BEGIN
+    
+    SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"000000000000";
+    BEGIN
 
     -- PROGRAM MEMORY
     pMem : ENTITY work.pMem
         PORT MAP(
+            clk => clk,
+            rst => rst,
             adress => ASR,
             out_data => PM_out,
-            in_data => data_bus,
+            in_data => PM_in,
             op => OP -- LOAD or STORE ?
         );
 
     PM_in <=
-        STD_LOGIC_VECTOR(data_bus) WHEN (FB = "001") ELSE
+        data_bus WHEN (FB = "001") ELSE
         (OTHERS => '-');
 
     -- MICRO MEMORY
@@ -122,6 +126,8 @@ BEGIN
                 IF (C = '0') THEN
                     uPC <= UNSIGNED(uADR);
                 END IF;
+            ELSIF (SEQ = "1111") THEN
+                null;
             ELSE
                 REPORT "Unknown SEQ in uMem adress " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
             END IF;
@@ -192,6 +198,8 @@ BEGIN
         "00001111" WHEN (OP = "00011") ELSE
         -- MUL
         "00011000" WHEN (OP = "01111") ELSE
+        -- HALT
+        "00010011" WHEN (OP = "11111") ELSE
 
         (OTHERS => 'U'); -- something wrong
 

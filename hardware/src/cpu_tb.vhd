@@ -30,6 +30,10 @@ BEGIN
     WAIT FOR CLK_PERIOD / 2;
     clk_tb <= '1';
     WAIT FOR CLK_PERIOD / 2;
+
+    IF now > CLK_PERIOD * 100 THEN
+      stop;
+    END IF;
   END PROCESS;
 
   clk_counter : PROCESS
