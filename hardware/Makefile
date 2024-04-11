@@ -34,6 +34,12 @@ cpu_wave: cpu_tb
 		gtkwave -a $(SAVEDIR)/cpu_tb_save.gtkw $(WAVEDIR)/cpu_tb.ghw & \
 	fi
 
+parse_umem:
+	@python parse_mem.py src/uMem.vhd
+ 
+parse_pmem:
+	@python parse_mem.py src/pMem.vhd
+
 # ALU
 alu_test:
 	@mkdir -p $(WORKDIR)
