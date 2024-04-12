@@ -20,9 +20,11 @@ def prepend_index(file):
     # Find array elements
     element_index = 0
     for i in range(array_start_index, len(lines)):
-        if re.match(r'.*".\s*--.*', lines[i]):
-            lines[i] = prepend_index_in_comment(lines[i], element_index)
-            element_index += 1
+        if not re.match(r'.*b".*--.*', lines[i]):
+            continue # not an array element WITH comment
+
+        lines[i] = prepend_index_in_comment(lines[i], element_index)
+        element_index += 1
 
     return lines
 
@@ -63,11 +65,11 @@ def main():
 
     filename = sys.argv[1]
 
-    with open(filename, 'r+') as file:
+    with open(filename, 'r') as file:
         new_file_lines = prepend_index(file)
-        file.seek(0)  # move file pointer to the beginning
+
+    with open(filename, 'w') as file:
         file.writelines(new_file_lines)
-        file.truncate()  # remove any remaining original content
 
 
 if __name__ == '__main__':
