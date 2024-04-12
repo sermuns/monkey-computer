@@ -19,7 +19,7 @@ all:
 clean:
 	@rm -rf $(WORKDIR) $(WAVEDIR)
 
-cpu: parse_umem parse_pmem
+cpu: parse_umem preprocess
 	@mkdir -p $(WORKDIR)
 	@ghdl -a $(FLAGS) src/alu.vhd src/uMem.vhd src/pMem.vhd src/cpu.vhd 
 
@@ -37,8 +37,8 @@ cpu_wave: cpu_tb
 parse_umem:
 	@python parse_mem.py src/uMem.vhd
  
-parse_pmem:
-	@python parse_mem.py src/pMem.vhd
+preprocess:
+	@python preprocess.py
 
 # ALU
 alu_test:

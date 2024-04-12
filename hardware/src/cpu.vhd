@@ -85,51 +85,52 @@ BEGIN
         IF rst = '1' THEN
             uPC <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
-            IF (SEQ = "0000") THEN
-                -- uPC++
-                uPC <= uPC + 1;
-            ELSIF (SEQ = "0001") THEN
-                -- K1
-                uPC <= K1;
-            ELSIF (SEQ = "0010") THEN
-                -- K2
-                uPC <= K2;
-            ELSIF (SEQ = "0011") THEN
-                -- uPC := 0
-                uPC <= (OTHERS => '0');
-            ELSIF (SEQ = "0100") THEN
-                -- IF Z = 0 => uPC := uADR
-                IF (Z = '0') THEN
+            CASE SEQ IS
+                WHEN "0000" =>
+                    -- uPC++
+                    uPC <= uPC + 1;
+                WHEN "0001" =>
+                    -- K1
+                    uPC <= K1;
+                WHEN "0010" =>
+                    -- K2
+                    uPC <= K2;
+                WHEN "0011" =>
+                    -- uPC := 0
+                    uPC <= (OTHERS => '0');
+                WHEN "0100" =>
+                    -- IF Z = 0 => uPC := uADR
+                    IF (Z = '0') THEN
+                        uPC <= UNSIGNED(uADR);
+                    END IF;
+                WHEN "0101" =>
+                    -- uPC := uADR (BRA)
                     uPC <= UNSIGNED(uADR);
-                END IF;
-            ELSIF (SEQ = "0101") THEN
-                -- uPC := uADR (BRA)
-                uPC <= UNSIGNED(uADR);
-            ELSIF (SEQ = "0110") THEN
-                -- IF Z = 1 => uPC := uADR
-                IF (Z = '1') THEN
-                    uPC <= UNSIGNED(uADR);
-                END IF;
-            ELSIF (SEQ = "0111") THEN
-                -- IF N = 1 => uPC := uADR
-                IF (N = '1') THEN
-                    uPC <= UNSIGNED(uADR);
-                END IF;
-            ELSIF (SEQ = "1000") THEN
-                -- IF C = 1 => uPC := uADR
-                IF (C = '1') THEN
-                    uPC <= UNSIGNED(uADR);
-                END IF;
-            ELSIF (SEQ = "1001") THEN
-                -- IF C = 0 => uPC := uADR
-                IF (C = '0') THEN
-                    uPC <= UNSIGNED(uADR);
-                END IF;
-            ELSIF (SEQ = "1111") THEN
-                NULL;
-            ELSE
-                REPORT "Unknown SEQ in uMem adress " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
-            END IF;
+                WHEN "0110" =>
+                    -- IF Z = 1 => uPC := uADR
+                    IF (Z = '1') THEN
+                        uPC <= UNSIGNED(uADR);
+                    END IF;
+                WHEN "0111" =>
+                    -- IF N = 1 => uPC := uADR
+                    IF (N = '1') THEN
+                        uPC <= UNSIGNED(uADR);
+                    END IF;
+                WHEN "1000" =>
+                    -- IF C = 1 => uPC := uADR
+                    IF (C = '1') THEN
+                        uPC <= UNSIGNED(uADR);
+                    END IF;
+                WHEN "1001" =>
+                    -- IF C = 0 => uPC := uADR
+                    IF (C = '0') THEN
+                        uPC <= UNSIGNED(uADR);
+                    END IF;
+                WHEN "1111" =>
+                    NULL;
+                WHEN OTHERS =>
+                    REPORT "Unknown SEQ in uMem address " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
+            END CASE;
         END IF;
     END PROCESS;
 
@@ -187,19 +188,19 @@ BEGIN
     END PROCESS;
 
     K1 <=
-        "00001010"/*LOAD*/ WHEN (OP = "00000") ELSE
-        "00001011"/*STORE*/ WHEN (OP = "00001") ELSE
-        "00001100"/*ADD*/ WHEN (OP = "00010") ELSE
-        "00001111"/*SUB*/ WHEN (OP = "00011") ELSE
-        "00011000"/*MUL*/ WHEN (OP = "01111") ELSE
-        "00100101"/*HALT*/ WHEN (OP = "11111") ELSE
+        b"00001010"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
+        b"00001011"/*STORE.b8*/ WHEN (OP = "00001") ELSE
+        b"00001100"/*ADD.b8*/ WHEN (OP = "00010") ELSE
+        b"00001111"/*SUB.b8*/ WHEN (OP = "00011") ELSE
+        b"00011000"/*MUL.b8*/ WHEN (OP = "01111") ELSE
+        b"00100101"/*HALT.b8*/ WHEN (OP = "11111") ELSE
         (OTHERS => 'U'); -- something wrong
 
     K2 <=
-        "00000011"/*ABSOLUT*/ WHEN (M = "00") ELSE
-        "00000100"/*OMEDELBAR*/ WHEN (M = "01") ELSE
-        "00000110"/*INDIREKT*/ WHEN (M = "10") ELSE
-        "00000111"/*INDEXERAD*/ WHEN (M = "11");
+        b"00000011"/*DIREKT.b8*/ WHEN (M = "00") ELSE
+        b"00000100"/*OMEDELBAR.b8*/ WHEN (M = "01") ELSE
+        b"00000110"/*INDIREKT.b8*/ WHEN (M = "10") ELSE
+        b"00000111"/*INDEXERAD.b8*/ WHEN (M = "11");
 
     -- DATA BUS (TO-BUS)
     data_bus <=
