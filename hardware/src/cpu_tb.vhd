@@ -12,7 +12,7 @@ ARCHITECTURE testbench OF cpu_tb IS
 
   -- Signals
   SIGNAL clk_tb : STD_LOGIC := '0';
-  SIGNAL rst_tb : STD_LOGIC := '0';
+  SIGNAL rst_tb : STD_LOGIC := '1';
 
   SIGNAL clock_count_tb : NATURAL := 0;
 
@@ -26,10 +26,8 @@ BEGIN
   -- Clock process
   clk_process : PROCESS
   BEGIN
-    clk_tb <= '0';
     WAIT FOR CLK_PERIOD / 2;
-    clk_tb <= '1';
-    WAIT FOR CLK_PERIOD / 2;
+    clk_tb <= NOT clk_tb;
 
     IF now > CLK_PERIOD * 100 THEN
       stop;
@@ -46,10 +44,8 @@ BEGIN
   stimulus_process : PROCESS
   BEGIN
     -- reset
-    rst_tb <= '1';
-    WAIT FOR CLK_PERIOD;
+    WAIT FOR CLK_PERIOD * 1.25;
     rst_tb <= '0';
-    WAIT FOR CLK_PERIOD;
 
     WAIT;
 
