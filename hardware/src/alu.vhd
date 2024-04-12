@@ -26,7 +26,7 @@ ARCHITECTURE ALU_arch OF ALU_ent IS
   SIGNAL Zc, Nc, Cc, Vc : STD_LOGIC;
 
 BEGIN
-  ALU_proc : PROCESS (clk)
+  ALU_proc : PROCESS (clk, rst)
   BEGIN
     IF rst = '1' THEN
       AR <= (OTHERS => '0');
@@ -49,15 +49,18 @@ BEGIN
     ELSE
     '0';
 
-  -- -- negative bit set
-  -- Nc <=
-  --   result(result'high);
+  -- negative bit set
+  Nc <=
+    '0';
 
-  -- -- carry out?
-  -- Cc <=
-  --   result(result'high);
+  -- carry out?
+  Cc <=
+    '0';
 
-  status_flags_proc : PROCESS (clk)
+  Vc <=
+    '0';
+
+  status_flags_proc : PROCESS (clk, rst)
   BEGIN
     IF (rst = '1') THEN
       flags <= (OTHERS => '0');

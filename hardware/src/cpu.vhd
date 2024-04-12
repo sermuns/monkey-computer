@@ -82,10 +82,10 @@ BEGIN
     -- MICRO TICKING
     PROCESS (clk, rst)
     BEGIN
-        IF rising_edge(clk) THEN
-            IF rst = '1' THEN
-                uPC <= (OTHERS => '0');
-            ELSIF (SEQ = "0000") THEN
+        IF rst = '1' THEN
+            uPC <= (OTHERS => '0');
+        ELSIF rising_edge(clk) THEN
+            IF (SEQ = "0000") THEN
                 -- uPC++
                 uPC <= uPC + 1;
             ELSIF (SEQ = "0001") THEN
@@ -136,10 +136,10 @@ BEGIN
     -- ASSEMBLY / MACRO
     PROCESS (clk, rst)
     BEGIN
-        IF rising_edge(clk) THEN
-            IF rst = '1' THEN
-                PC <= (OTHERS => '0');
-            ELSIF (FB = "010") THEN
+        IF rst = '1' THEN
+            PC <= (OTHERS => '0');
+        ELSIF rising_edge(clk) THEN
+            IF (FB = "010") THEN
                 PC <= unsigned(data_bus);
             ELSIF (P = '1') THEN
                 PC <= PC + 1;
@@ -161,10 +161,10 @@ BEGIN
     -- INSTRUCTION REGISTER
     PROCESS (clk, rst)
     BEGIN
-        IF rising_edge(clk) THEN
-            IF rst = '1' THEN
-                IR <= (OTHERS => '0');
-            ELSIF (FB = "100") THEN
+        IF rst = '1' THEN
+            IR <= (OTHERS => '0');
+        ELSIF rising_edge(clk) THEN
+            IF (FB = "100") THEN
                 IR <= STD_LOGIC_VECTOR(data_bus);
             END IF;
         END IF;
@@ -177,10 +177,10 @@ BEGIN
     -- ASR
     PROCESS (clk, rst)
     BEGIN
-        IF rising_edge(clk) THEN
-            IF rst = '1' THEN
-                ASR <= (OTHERS => '0');
-            ELSIF (FB = "000") THEN
+        IF rst = '1' THEN
+            ASR <= (OTHERS => '0');
+        ELSIF rising_edge(clk) THEN
+            IF (FB = "000") THEN
                 ASR <= data_bus(11 DOWNTO 0);
             END IF;
         END IF;
