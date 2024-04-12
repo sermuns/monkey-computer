@@ -3,7 +3,7 @@
 Preprocess VHDL files by resolving macro-symbols in SOURCE_FILES from comments in MEM_FILES
 """
 
-import re
+import re, sys
 
 SOURCE_DIR = "src"
 SOURCE_FILES = ["cpu.vhd", "uMem.vhd"]
@@ -57,13 +57,12 @@ def get_appropiate_num(base, width, number):
         print(f"Error: Invalid base {base}")
         exit(1)
 
-def use_macro_symbols(file_path, symbols):
+def use_macro_symbols(file_path, symbols, macros_used):
     """
     Given a file path and dictionary of macro-symbols,
     find occurences of macro-symbols (key of SYMBOLS) in file and prepend them with 
     their corresponding array index (value of SYMBOLS)
     """
-    macros_used = 0
     lines = []
 
     with open(file_path, "r") as file:
@@ -99,6 +98,8 @@ def use_macro_symbols(file_path, symbols):
 
 def main():
     symbols = {}
+    macros_used = 0
+    quiet = len(sys.argv) > 1 and sys.argv[1] == "-q"
 
     # Extract macro-symbols from MEM_FILES
     mem_paths = [f"{SOURCE_DIR}/{file}" for file in MEM_FILES]
@@ -110,7 +111,10 @@ def main():
     # Use macro-symbols in SOURCE_FILES
     file_paths = [f"{SOURCE_DIR}/{file}" for file in SOURCE_FILES]
     for file_path in file_paths:
-        use_macro_symbols(file_path, symbols)
+        use_macro_symbols(file_path, symbols, macros_used)
+        if not quiet and macros_used > 0:
+            print(f"Used {macros_used} macro-symbols in {file_path}")
+
     
 if __name__ == "__main__":
     main()
