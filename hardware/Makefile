@@ -3,6 +3,7 @@
 WORKDIR = work
 WAVEDIR = wave
 SAVEDIR = save
+SCRIPTDIR = scripts
 GHDL_FLAGS = --std=08 --workdir=$(WORKDIR)
 
 # try to compile all files
@@ -16,10 +17,10 @@ all:
 	@echo "  alu_wave"
 
 parse_umem:
-	@python parse_mem.py src/uMem.vhd
+	@python $(SCRIPTDIR)/parse_mem.py src/uMem.vhd
  
 preprocess:
-	@python preprocess.py -q
+	@python $(SCRIPTDIR)/preprocess.py -q
 
 clean:
 	@rm -rf $(WORKDIR) $(WAVEDIR)
@@ -41,7 +42,7 @@ cpu_wave: cpu_tb
 
 # assemble the argument `file` and input into pMem.vhd
 assemble:
-	@python3 assembler.py src/masm/$(prog).masm
+	@python3 $(SCRIPTDIR)/assembler.py src/masm/$(prog).masm
 
 #ALU
 alu_test:
