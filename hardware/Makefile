@@ -19,7 +19,7 @@ parse_umem:
 	@python parse_mem.py src/uMem.vhd
  
 preprocess:
-	@python preprocess.py $(PREPROCESS_FLAGS)
+	@python preprocess.py -q
 
 clean:
 	@rm -rf $(WORKDIR) $(WAVEDIR)

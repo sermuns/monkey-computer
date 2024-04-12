@@ -57,13 +57,16 @@ def get_appropiate_num(base, width, number):
         print(f"Error: Invalid base {base}")
         exit(1)
 
-def use_macro_symbols(file_path, symbols, macros_used):
+def use_macro_symbols(file_path, symbols):
     """
     Given a file path and dictionary of macro-symbols,
     find occurences of macro-symbols (key of SYMBOLS) in file and prepend them with 
     their corresponding array index (value of SYMBOLS)
+
+    Return number of macro-symbols used
     """
     lines = []
+    macros_used = 0
 
     with open(file_path, "r") as file:
         lines = file.readlines()
@@ -94,11 +97,10 @@ def use_macro_symbols(file_path, symbols, macros_used):
     with open(file_path, "w") as file:
         file.writelines(lines)
     
-    print(f"Used {macros_used} macro-symbols in {file_path}")
+    return macros_used
 
 def main():
     symbols = {}
-    macros_used = 0
     quiet = len(sys.argv) > 1 and sys.argv[1] == "-q"
 
     # Extract macro-symbols from MEM_FILES
@@ -111,7 +113,7 @@ def main():
     # Use macro-symbols in SOURCE_FILES
     file_paths = [f"{SOURCE_DIR}/{file}" for file in SOURCE_FILES]
     for file_path in file_paths:
-        use_macro_symbols(file_path, symbols, macros_used)
+        macros_used = use_macro_symbols(file_path, symbols)
         if not quiet and macros_used > 0:
             print(f"Used {macros_used} macro-symbols in {file_path}")
 
