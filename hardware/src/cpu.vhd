@@ -187,26 +187,19 @@ BEGIN
     END PROCESS;
 
     K1 <=
-        -- LOAD
-        "00001010" WHEN (OP = "00000") ELSE
-        -- STORE 
-        "00001011" WHEN (OP = "00001") ELSE
-        -- ADD
-        "00001100" WHEN (OP = "00010") ELSE
-        -- SUB
-        "00001111" WHEN (OP = "00011") ELSE
-        -- MUL
-        "00011000" WHEN (OP = "01111") ELSE
-        -- HALT
-        to_unsigned(40, 8) WHEN (OP = "11111") ELSE
-
+        "00001010"/*LOAD*/ WHEN (OP = "00000") ELSE
+        "00001011"/*STORE*/ WHEN (OP = "00001") ELSE
+        "00001100"/*ADD*/ WHEN (OP = "00010") ELSE
+        "00001111"/*SUB*/ WHEN (OP = "00011") ELSE
+        "00011000"/*MUL*/ WHEN (OP = "01111") ELSE
+        "00100101"/*HALT*/ WHEN (OP = "11111") ELSE
         (OTHERS => 'U'); -- something wrong
 
     K2 <=
-        "00000011" WHEN (M = "00") ELSE -- Absolut
-        "00000100" WHEN (M = "01") ELSE -- Omedelbar
-        "00000110" WHEN (M = "10") ELSE -- Indirekt
-        "00000111" WHEN (M = "11"); -- Indexerad
+        "00000011"/*ABSOLUT*/ WHEN (M = "00") ELSE
+        "00000100"/*OMEDELBAR*/ WHEN (M = "01") ELSE
+        "00000110"/*INDIREKT*/ WHEN (M = "10") ELSE
+        "00000111"/*INDEXERAD*/ WHEN (M = "11");
 
     -- DATA BUS (TO-BUS)
     data_bus <=

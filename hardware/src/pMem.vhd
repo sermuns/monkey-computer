@@ -16,14 +16,14 @@ ARCHITECTURE func OF pMem IS
     TYPE p_mem_type IS ARRAY(0 TO 1023) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
 
     CONSTANT p_mem_init : p_mem_type := (
-    -- 00000_000_00_00_000000000000
-    -- OP    GRx M  *  ADR 
-    -- 5     3   2  2  12  
-    b"00000_111_01_00_000000000000", --[ 0 | 00000000] Load GR7
-    b"00000_000_00_00_111111111111", --[ 1 | 00000001] immediate value
-    b"00001_111_00_00_000000000111", --[ 2 | 00000010] STORE GR7 in PM(7)
-    b"11111_000_00_00_000000000000", --[ 3 | 00000011] HALT
-    OTHERS => (OTHERS => 'U') -- fill with undefined
+        -- 00000_000_00_00_000000000000
+        -- OP    GRx M  *  ADR 
+        -- 5     3   2  2  12  
+        b"00000_111_01_00_000000000000", --Load GR7
+        b"00000_000_00_00_111111111111", --immediate value
+        b"00001_111_00_00_000000000111", --STORE GR7 in PM(7)
+        b"11111_000_00_00_000000000000", --HALT
+        OTHERS => (OTHERS => 'U')
     );
 
     SIGNAL p_mem : p_mem_type;
@@ -36,7 +36,7 @@ BEGIN
     BEGIN
         IF (rst = '1') THEN
             p_mem <= p_mem_init;
-        ELSIF(should_store = '1') THEN
+        ELSIF (should_store = '1') THEN
             IF (adress >= p_mem'LENGTH) THEN
                 REPORT "pMem address " & INTEGER'image(to_integer(unsigned(adress))) & " out of range" SEVERITY FAILURE;
             ELSIF (should_store = '1') THEN
