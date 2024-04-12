@@ -19,7 +19,7 @@ all:
 clean:
 	@rm -rf $(WORKDIR) $(WAVEDIR)
 
-cpu:
+cpu: parse_umem parse_pmem
 	@mkdir -p $(WORKDIR)
 	@ghdl -a $(FLAGS) src/alu.vhd src/uMem.vhd src/pMem.vhd src/cpu.vhd 
 

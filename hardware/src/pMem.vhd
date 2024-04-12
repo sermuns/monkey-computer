@@ -21,14 +21,12 @@ ARCHITECTURE func OF pMem IS
     -- 5     3   2  2  12  
     b"00000_111_01_00_000000000000", --[ 0 | 00000000] Load GR7
     b"00000_000_00_00_111111111111", --[ 1 | 00000001] immediate value
-    b"00001_111_00_00_000000000101", --[ 2 | 00000010] STORE GR7 in PM(5)
+    b"00001_111_00_00_000000000111", --[ 2 | 00000010] STORE GR7 in PM(7)
     b"11111_000_00_00_000000000000", --[ 3 | 00000011] HALT
     OTHERS => (OTHERS => 'U') -- fill with undefined
     );
 
     SIGNAL p_mem : p_mem_type;
-
-    CONSTANT store_op : STD_LOGIC_VECTOR(4 DOWNTO 0) := "00001";
 BEGIN
     -- LOAD
     out_data <= p_mem(TO_INTEGER(adress));

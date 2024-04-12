@@ -6,7 +6,6 @@ ENTITY ALU_ent IS
     data_bus : IN unsigned(23 DOWNTO 0);
     AR : BUFFER unsigned(23 DOWNTO 0);
     op : IN unsigned(3 DOWNTO 0);
-    -- result : BUFFER unsigned(23 DOWNTO 0) := (OTHERS => '0');
 
     -- Z, N, C, V
     flags : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);

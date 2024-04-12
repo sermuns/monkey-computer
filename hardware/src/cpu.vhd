@@ -33,7 +33,6 @@ ARCHITECTURE func OF cpu IS
     ALIAS uADR IS uPM(7 DOWNTO 0);
 
     SIGNAL PM_should_store : STD_LOGIC;
-    SIGNAL PM_in : unsigned(23 DOWNTO 0);
 
     SIGNAL K1, K2 : unsigned(7 DOWNTO 0) := (OTHERS => '0');
 
@@ -69,13 +68,9 @@ BEGIN
             rst => rst,
             adress => ASR,
             out_data => PM_out,
-            in_data => PM_in,
+            in_data => data_bus,
             should_store => PM_should_store
         );
-
-    PM_in <=
-        data_bus WHEN (FB = "001") ELSE
-        (OTHERS => '-');
 
     -- MICRO MEMORY
     uMem : ENTITY work.uMem
@@ -203,7 +198,7 @@ BEGIN
         -- MUL
         "00011000" WHEN (OP = "01111") ELSE
         -- HALT
-        "00010011" WHEN (OP = "11111") ELSE
+        to_unsigned(40, 8) WHEN (OP = "11111") ELSE
 
         (OTHERS => 'U'); -- something wrong
 
@@ -211,8 +206,7 @@ BEGIN
         "00000011" WHEN (M = "00") ELSE -- Absolut
         "00000100" WHEN (M = "01") ELSE -- Omedelbar
         "00000110" WHEN (M = "10") ELSE -- Indirekt
-        "00000111" WHEN (M = "11") ELSE -- Indexerad
-        (OTHERS => 'U');
+        "00000111" WHEN (M = "11"); -- Indexerad
 
     -- DATA BUS (TO-BUS)
     data_bus <=
@@ -222,6 +216,7 @@ BEGIN
         AR WHEN (TB = "011") ELSE
         unsigned(IR) WHEN (TB = "100") ELSE
         GRx WHEN (TB = "101") ELSE
-        (OTHERS => 'U');
+        (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
+        (OTHERS => 'U'); -- something wrong
 
 END ARCHITECTURE;
