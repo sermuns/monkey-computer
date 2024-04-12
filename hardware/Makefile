@@ -15,7 +15,12 @@ all:
 	@echo "  alu_test"
 	@echo "  alu_wave"
 
-# remove work
+parse_umem:
+	@python parse_mem.py src/uMem.vhd
+ 
+preprocess:
+	@python preprocess.py
+
 clean:
 	@rm -rf $(WORKDIR) $(WAVEDIR)
 
@@ -34,13 +39,11 @@ cpu_wave: cpu_tb
 		gtkwave -a $(SAVEDIR)/cpu_tb_save.gtkw $(WAVEDIR)/cpu_tb.ghw & \
 	fi
 
-parse_umem:
-	@python parse_mem.py src/uMem.vhd
- 
-preprocess:
-	@python preprocess.py
+# assemble the argument `file` and input into pMem.vhd
+assemble:
+	@python3 assembler.py src/masm/$(prog).masm
 
-# ALU
+#ALU
 alu_test:
 	@mkdir -p $(WORKDIR)
 	@ghdl -a $(FLAGS) src/alu.vhd src/alu_tb.vhd 

@@ -39,17 +39,17 @@ OP    -> u-adress
 
 # Assembly 
 ## OP-koder
-00000 LOAD  
-00001 STORE  
+00000 LD
+00001 ST  
 00010 ADD
 00011 SUB
 11111 HALT
 ...
 
 ## Moder (M)
-00 Omedelbar (Immediate)
-01 Direkt (Direct)
-10 indirekt (????)
-11 Indexerad (Indexed)
+00 Direkt
+01 Omedelbar (Immediate)
+10 Indirekt
+11 Indexerad
 ...
 

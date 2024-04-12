@@ -1,0 +1,180 @@
+#!/usr/bin/env python3
+"""
+Parse the given argument file from monkey-assembly to binary code
+"""
+
+import re, sys
+
+PMEM_FILE = "src/pMem.vhd"
+ADR_WIDTH = 12
+
+def get_opcodes():
+    """
+    Get the opcodes from the `fax.md` file
+    """
+    fax_file = "fax.md"
+
+    with open(fax_file, "r") as f:
+        lines = f.readlines()
+    if not lines:
+        print(f"Error: Could not find/read {fax_file}")
+        sys.exit(1)
+    opcodes = {}    
+    # find the opcodes header
+    opcodes_start_line = None
+    for i, line in enumerate(lines):
+        if line.startswith("## OP-koder"):
+            opcodes_start_line = i
+            break
+    
+    # no opcodes header found?
+    if opcodes_start_line is None:
+        print(f"Error: Could not find opcodes header in {fax_file}")
+        sys.exit(1)
+
+    # loop through opcodes
+    for i in range(opcodes_start_line + 1, len(lines)):
+        line = lines[i]
+        if not line: # skip empty lines
+            continue
+        if not re.match(r"\d+", line): # stop if not numerical
+            break
+        parts = line.split()
+        if len(parts) != 2:
+            print(f"Error: Could not parse opcode line {i + 1} in {fax_file}")
+            sys.exit(1)
+        opcode, name = parts
+        opcodes[name] = opcode
+
+    return opcodes
+
+def assemble_binary(line, known_opcodes):
+    """
+    Return binary line(s) from the given assembly line
+    """ 
+    binary_lines = []
+
+    # split into parts by comma and whitespace
+    parts = re.split(r",\s*|\s+", line)
+    op_fullname = parts[0]
+
+    op_basename = None
+    op_address_mode = None
+    # get base opname
+    for known_op_name in known_opcodes:
+        if op_fullname.startswith(known_op_name):
+            # found the opcode
+            op_basename = known_op_name
+            op_address_mode = op_fullname[len(op_basename):]
+            break
+
+    # unknown opcode?
+    if not op_basename:
+        print(f"Error: Unknown opcode {op_fullname}")
+        sys.exit(1) 
+    
+
+    # get register and address
+    op_adr = 0
+    immediate_value = None
+    if op_basename in {"LD"}:
+        grx_name, op_adr = parts[1], parts[2]
+    elif op_basename in {"ST"}:
+        op_adr, grx_name = parts[1], parts[2]
+
+    # parse the address-mode
+    op_address_mode_code = None
+    if op_address_mode == "":
+        op_address_mode_code = "00"
+        op_adr_bin = f'{int(op_adr):0{ADR_WIDTH}b}'
+    elif op_address_mode == "I":
+        op_address_mode_code = "01"
+        op_adr_bin = '-' * ADR_WIDTH # dont care
+        immediate_value = f'{int(op_adr):024b}'
+    else:
+        print(f"Error: Unknown address mode {op_address_mode}")
+        sys.exit(1)
+
+    # parse the register
+    grx_bin = re.search(r'GR(\d+)', grx_name).group(1)
+    grx_bin = f'{int(grx_bin):02b}'
+
+    # create binary code
+    binary_lines += [f'{known_opcodes[op_basename]}_{grx_bin}_{op_address_mode_code}_00_{op_adr_bin}']
+
+    # possible immediate value
+    if immediate_value:
+        binary_lines += [immediate_value]
+    
+    return binary_lines
+
+
+def main():
+    # check for filename argument    
+    if len(sys.argv) != 2:
+        print("Usage: python3 assemblyparser.py <filename>")
+        sys.exit(1)
+    filename = sys.argv[1]
+
+    # read the program memory file
+    pmem_lines = []
+    with open(PMEM_FILE, "r") as f:
+        pmem_lines = f.readlines()
+    if not pmem_lines:
+        print(f"Error: Could not read {PMEM_FILE}")
+        sys.exit(1)
+
+    KNOWN_OPCODES = get_opcodes()
+    binary_lines = []
+
+    # read the lines
+    with open(filename, "r") as f:
+        asm_lines = f.readlines()
+    # remove empty lines
+    asm_lines = [line for line in asm_lines if line]
+    # remove comments
+    asm_lines = [re.sub(r"--.*", "", line).strip() for line in asm_lines]
+
+    # assemble the binary code
+    for line in asm_lines:
+        binary_lines += assemble_binary(line, KNOWN_OPCODES)
+    
+    # assume that HALT needs to be added
+    binary_lines += ["111110000000000000000000"] # HALT
+
+    # find start of program memory array
+    array_start_linenum = None
+    for i, line in enumerate(pmem_lines):
+        if re.match(r"\s*CONSTANT p_mem_init.*", line):
+            array_start_linenum = i +1
+            break
+    
+    # no program memory array found?
+    if array_start_linenum is None:
+        print(f"Error: Could not find program memory array in {PMEM_FILE}")
+        sys.exit(1)
+
+    # remove old content
+    for i, line in enumerate(pmem_lines[array_start_linenum:], start=array_start_linenum):
+        if not re.match(r'\s*b".*".*', line): 
+            continue # not an array element
+        if re.match(r'\s*\);\s*', line):
+            break # end of array
+
+        pmem_lines[i] = "garbage"
+
+    # remove garbage
+    pmem_lines = [line for line in pmem_lines if line != "garbage"]
+
+    # insert the new content
+    for binary_line in reversed(binary_lines):
+        pmem_lines.insert(array_start_linenum, f'        b"{binary_line}",\n')
+
+
+    # write the new program memory file
+    with open(PMEM_FILE, "w") as f:
+        f.writelines(pmem_lines)
+
+
+if __name__ == "__main__":
+    main()
