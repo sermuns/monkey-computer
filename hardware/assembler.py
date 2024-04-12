@@ -97,7 +97,7 @@ def assemble_binary(line, known_opcodes):
 
     # parse the register
     grx_bin = re.search(r'GR(\d+)', grx_name).group(1)
-    grx_bin = f'{int(grx_bin):02b}'
+    grx_bin = f'{int(grx_bin):03b}'
 
     # create binary code
     binary_lines += [f'{known_opcodes[op_basename]}_{grx_bin}_{op_address_mode_code}_00_{op_adr_bin}']
