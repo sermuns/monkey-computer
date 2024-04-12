@@ -41,7 +41,6 @@ BEGIN
                 REPORT "pMem address " & INTEGER'image(to_integer(unsigned(adress))) & " out of range" SEVERITY FAILURE;
             ELSIF (should_store = '1') THEN
                 p_mem(TO_INTEGER(adress)) <= STD_LOGIC_VECTOR(in_data);
-                REPORT "pMem address " & INTEGER'image(to_integer(unsigned(adress))) & " stored" SEVERITY note;
             END IF;
         END IF;
     END PROCESS;
