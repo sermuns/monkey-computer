@@ -6,7 +6,7 @@ Preprocess VHDL files by resolving macro-symbols in SOURCE_FILES from comments i
 import re
 
 SOURCE_DIR = "src"
-SOURCE_FILES = ["cpu.vhd"]
+SOURCE_FILES = ["cpu.vhd", "uMem.vhd"]
 MEM_FILES = ["uMem.vhd"]
 
 def extract_macro_symbols(mem_lines):

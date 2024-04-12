@@ -60,9 +60,9 @@ BEGIN
 
     -- PROGRAM MEMORY
     PM_should_store <=
-        '1' WHEN FB = "001" AND OP = "00001"
-        ELSE
+        '1' WHEN FB = "001" ELSE
         '0';
+
     pMem : ENTITY work.pMem
         PORT MAP(
             rst => rst,
