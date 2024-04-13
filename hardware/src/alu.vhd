@@ -21,6 +21,11 @@ ARCHITECTURE ALU_arch OF ALU_ent IS
   CONSTANT sub_op : unsigned(3 DOWNTO 0) := "0010";
   CONSTANT mul_op : unsigned(3 DOWNTO 0) := "0011";
   CONSTANT load_op : unsigned(3 DOWNTO 0) := "0100";
+  CONSTANT and_op : unsigned(3 DOWNTO 0) := "0101";
+  CONSTANT or_op : unsigned(3 DOWNTO 0) := "0110";
+  CONSTANT lsr_op : unsigned(3 DOWNTO 0) := "0111";
+  CONSTANT lsl_op : unsigned(3 DOWNTO 0) := "1000";
+  CONSTANT cmp_op : unsigned(3 DOWNTO 0) := "1001";
 
   -- candidate flags
   SIGNAL Zc, Nc, Cc, Vc : STD_LOGIC;
@@ -32,15 +37,19 @@ BEGIN
       AR <= (OTHERS => '0');
     ELSIF rising_edge(clk) THEN
       CASE op IS
-        WHEN add_op => AR <= AR + data_bus; -- addition
-        WHEN sub_op => AR <= AR - data_bus; -- subtraction
+        WHEN noop_op => NULL;
+        WHEN add_op => AR <= AR + data_bus;
+        WHEN sub_op => AR <= AR - data_bus;
         WHEN mul_op => AR <= resize(data_bus * AR, AR'length);
-        WHEN load_op => AR <= data_bus; -- load, R := B
-        WHEN OTHERS => NULL;
+        WHEN load_op => AR <= data_bus;
+        WHEN and_op => AR <= AR AND data_bus;
+        WHEN or_op => AR <= AR OR data_bus;
+        WHEN lsr_op => AR <= shift_right(AR, to_integer(data_bus));
+        WHEN lsl_op => AR <= shift_left(AR, to_integer(data_bus));
+        WHEN cmp_op => NULL; -- what should this do??
+        WHEN OTHERS => REPORT "Unknown ALU operation!" & INTEGER'image(to_integer(op)) SEVERITY FAILURE;
       END CASE;
     END IF;
-    -- AND and other bit manipp
-    -- ska den en biljard ggr i nanosekunden??
   END PROCESS;
 
   -- all zeroes?

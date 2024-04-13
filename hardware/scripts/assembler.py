@@ -9,7 +9,7 @@ PMEM_FILE = "src/pMem.vhd"
 FAX_FILE = "fax.md"
 ADR_WIDTH = 12
 
-IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN", "MUL"}
+IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN", "MUL", "LSR", "LSL"}
 OUT_OPERATIONS = {"ST", "OUT"}
 REG_OPERATIONS = {"MOV", "ADDREG"}
 

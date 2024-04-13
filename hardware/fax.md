@@ -7,12 +7,18 @@
 100  IR   
 101  GRx  
 111  nop do nothing!!
-## ALU
+## ALU_op
 0000  NOP 
 0001  ADD   GRx += bus
 0010  SUB   GRx -= bus
 0011  MUL   GRx *= bus
 0100  LOAD  GRx := bus
+0101  AND   GRx &= bus
+0110  OR    GRx |= bus
+0111  LSR   GRx := (GRx >> bus)
+1000  LSL   GRx := (GRx << bus)
+1001  CMP   GRx - bus (only set flags)
+
 ## SEQ
 0000  uPC++
 0001  uPC := K1
@@ -43,6 +49,11 @@ OP    -> u-adress
 00001 ST  
 00010 ADD
 00011 SUB
+00100 CMP
+00101 AND
+00110 OR
+00111 LSR
+01000 LSL
 01111 MUL
 11111 HALT
 

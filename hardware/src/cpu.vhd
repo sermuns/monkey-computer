@@ -92,6 +92,9 @@ BEGIN
                     uPC <= uPC + 1;
                 WHEN "0001" =>
                     -- K1
+                    IF (K1(0) = 'U') THEN
+                        REPORT "K1 is undefined" SEVERITY FAILURE;
+                    END IF;
                     uPC <= K1;
                 WHEN "0010" =>
                     -- K2
@@ -194,8 +197,13 @@ BEGIN
         b"00001011"/*STORE.b8*/ WHEN (OP = "00001") ELSE
         b"00001100"/*ADD.b8*/ WHEN (OP = "00010") ELSE
         b"00001111"/*SUB.b8*/ WHEN (OP = "00011") ELSE
-        b"00011000"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-        b"00100101"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+        b"00010010"/*CMP.b8*/ WHEN (OP = "00100") ELSE
+        b"00010101"/*AND.b8*/ WHEN (OP = "00101") ELSE
+        b"00011101"/*OR.b8*/ WHEN (OP = "00110") ELSE
+        b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
+        -- /*LSL.b8*/ WHEN (OP = "01000") ELSE
+        b"00011010"/*MUL.b8*/ WHEN (OP = "01111") ELSE
+        b"00100111"/*HALT.b8*/ WHEN (OP = "11111") ELSE
         (OTHERS => 'U'); -- something wrong
 
     K2 <=
