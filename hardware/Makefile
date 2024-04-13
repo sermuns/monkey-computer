@@ -25,9 +25,11 @@ preprocess:
 clean:
 	@rm -rf $(WORKDIR) $(WAVEDIR)
 
-cpu: parse_umem preprocess
+cpu_compile:
 	@mkdir -p $(WORKDIR)
 	@ghdl -a $(GHDL_FLAGS) src/alu.vhd src/uMem.vhd src/pMem.vhd src/cpu.vhd 
+
+cpu: parse_umem preprocess cpu_compile
 
 cpu_tb: cpu
 	@ghdl -a $(GHDL_FLAGS) src/cpu_tb.vhd
