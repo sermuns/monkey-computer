@@ -1,6 +1,7 @@
 {
     "recommendations": [
         "hbohlin.vhdl-ls",
-        "vinrobot.vhdl-formatter"
+        "vinrobot.vhdl-formatter",
+        "dan-c-underwood.arm"
     ]
 }
