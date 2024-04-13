@@ -9,10 +9,10 @@
 111  nop do nothing!!
 ## ALU
 0000  NOP 
-0001  ADD   R := A + B
-0010  SUB   R := A - B
-0011  MUL   R := A * B
-0100  LOAD  R := B
+0001  ADD   GRx += bus
+0010  SUB   GRx -= bus
+0011  MUL   GRx *= bus
+0100  LOAD  GRx := bus
 ## SEQ
 0000  uPC++
 0001  uPC := K1
@@ -26,7 +26,7 @@
 1001  IF C=0 uPC := uADR
 1111  uADR := uADR
 
-## K1 Values
+<!-- ## K1 Values
 OP    -> u-adress
 00000 -> 01010 (LOAD)
 00001 -> 01011 (STORE)
@@ -35,7 +35,7 @@ OP    -> u-adress
 00100 -> 10010 (CMP)
 00101 -> 10101 (AND)
 01111 -> 11000 (MUL)
-11111 -> 10011 (HALT)  TODO change halt value
+11111 -> 10011 (HALT)  TODO change halt value -->
 
 # Assembly 
 ## OP-koder
@@ -43,6 +43,7 @@ OP    -> u-adress
 00001 ST  
 00010 ADD
 00011 SUB
+01111 MUL
 11111 HALT
 
 ## Moder (M)

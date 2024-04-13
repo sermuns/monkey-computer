@@ -30,7 +30,7 @@ BEGIN
     clk_tb <= NOT clk_tb;
 
     IF now > CLK_PERIOD * 100 THEN
-      stop;
+      REPORT "No HALT instruction within 100 clock cycles, stopping simulation" SEVERITY failure;
     END IF;
   END PROCESS;
 

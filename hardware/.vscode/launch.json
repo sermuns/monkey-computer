@@ -10,7 +10,7 @@
             "request": "launch",
             "program": "${file}",
             "console": "integratedTerminal",
-            "args": "src/masm/cascade_reg.s"
+            "args": "src/masm/arithmetics.s"
         }
     ]
 }
