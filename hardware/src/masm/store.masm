@@ -1,2 +1,0 @@
-LDI GR7, 20 --load the immediate value 20 into GR7
-ST 8, GR7 --store the result in memory location 8
