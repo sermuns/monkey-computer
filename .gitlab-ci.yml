@@ -1,5 +1,8 @@
 image: ghdl/ghdl:buster-mcode
 
+variables:
+  GIT_DEPTH: 1
+
 stages:
   - build
 
