@@ -6,18 +6,18 @@ Parse the given argument file from monkey-assembly to binary code
 import re, sys
 
 PMEM_FILE = "src/pMem.vhd"
+FAX_FILE = "fax.md"
 ADR_WIDTH = 12
 
 def get_opcodes():
     """
     Get the opcodes from the `fax.md` file
     """
-    fax_file = "fax.md"
 
-    with open(fax_file, "r") as f:
+    with open(FAX_FILE, "r") as f:
         lines = f.readlines()
     if not lines:
-        print(f"Error: Could not find/read {fax_file}")
+        print(f"Error: Could not find/read {FAX_FILE}")
         sys.exit(1)
     opcodes = {}    
     # find the opcodes header
@@ -29,7 +29,7 @@ def get_opcodes():
     
     # no opcodes header found?
     if opcodes_start_line is None:
-        print(f"Error: Could not find opcodes header in {fax_file}")
+        print(f"Error: Could not find opcodes header in {FAX_FILE}")
         sys.exit(1)
 
     # loop through opcodes
@@ -41,7 +41,7 @@ def get_opcodes():
             break
         parts = line.split()
         if len(parts) != 2:
-            print(f"Error: Could not parse opcode line {i + 1} in {fax_file}")
+            print(f"Error: Could not parse opcode line {i + 1} in {FAX_FILE}")
             sys.exit(1)
         opcode, name = parts
         opcodes[name] = opcode
@@ -63,14 +63,13 @@ def assemble_binary(line, known_opcodes):
     # get base opname
     for known_op_name in known_opcodes:
         if op_fullname.startswith(known_op_name):
-            # found the opcode
             op_basename = known_op_name
             op_address_mode = op_fullname[len(op_basename):]
             break
 
-    # unknown opcode?
+    # unknown op?
     if not op_basename:
-        print(f"Error: Unknown opcode {op_fullname}")
+        print(f"Error: Unknown op:{op_fullname}")
         sys.exit(1) 
     
 
@@ -81,14 +80,28 @@ def assemble_binary(line, known_opcodes):
         grx_name, op_adr = parts[1], parts[2]
     elif op_basename in {"ST"}:
         op_adr, grx_name = parts[1], parts[2]
+        
+    # figure out number base (hex, decimal, binary)
+    base = re.search(r'0([bdx])?', op_adr)
+    if base:
+        base = base.group(1)
+        if base == 'b':
+            op_adr = int(op_adr, 2)
+        elif base == 'd':
+            op_adr = int(op_adr, 10)
+        elif base == 'x':
+            op_adr = int(op_adr, 16)
+    else:
+        op_adr = int(op_adr)
 
     # parse the address-mode
     op_address_mode_code = None
-    if op_address_mode == "":
+    if op_address_mode == "":       # direct
         op_address_mode_code = "00"
         op_adr_bin = f'{int(op_adr):0{ADR_WIDTH}b}'
-    elif op_address_mode == "I":
+    elif op_address_mode == "I":    # immediate
         op_address_mode_code = "01"
+        
         op_adr_bin = '-' * ADR_WIDTH # dont care
         immediate_value = f'{int(op_adr):024b}'
     else:
@@ -133,7 +146,7 @@ def main():
     # remove empty lines
     asm_lines = [line for line in asm_lines if line]
     # remove comments
-    asm_lines = [re.sub(r"--.*", "", line).strip() for line in asm_lines]
+    asm_lines = [re.sub(r"(--|//).*", "", line).strip() for line in asm_lines]
 
     # assemble the binary code
     for line in asm_lines:

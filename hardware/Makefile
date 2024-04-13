@@ -42,7 +42,11 @@ cpu_wave: cpu_tb
 
 # assemble the argument `file` and input into pMem.vhd
 assemble:
-	@python3 $(SCRIPTDIR)/assembler.py src/masm/$(prog).masm
+	@if [ -z $(prog) ]; then \
+		echo "ERROR: No program given. Usage: make assemble prog=<name of program (without extension .masm) in src/masm>"; \
+		exit 1; \
+	fi
+	@python3 $(SCRIPTDIR)/assembler.py src/masm/$(prog)
 
 #ALU
 alu_test:
