@@ -8,3 +8,6 @@ build-job:
   script:
     - cd hardware
     - make cpu_compile
+  only:
+    changes:
+      - hardware/src/**/*.vhd
