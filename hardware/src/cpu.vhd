@@ -1,6 +1,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.NUMERIC_STD.ALL;
+USE std.env.stop;
 
 ENTITY cpu IS
     PORT (
@@ -127,7 +128,8 @@ BEGIN
                         uPC <= UNSIGNED(uADR);
                     END IF;
                 WHEN "1111" =>
-                    NULL;
+                    REPORT "CPU halting" SEVERITY note;
+                    STOP;
                 WHEN OTHERS =>
                     REPORT "Unknown SEQ in uMem address " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
             END CASE;

@@ -9,6 +9,10 @@ PMEM_FILE = "src/pMem.vhd"
 FAX_FILE = "fax.md"
 ADR_WIDTH = 12
 
+IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN"}
+OUT_OPERATIONS = {"ST", "OUT"}
+REG_OPERATIONS = {"MOV", "ADDREG"}
+
 def get_opcodes():
     """
     Get the opcodes from the `fax.md` file
@@ -76,15 +80,20 @@ def assemble_binary(line, known_opcodes):
     # get register and address
     op_adr = 0
     immediate_value = None
-    if op_basename in {"LD"}:
+    if op_basename in IN_OPERATIONS:
         grx_name, op_adr = parts[1], parts[2]
-    elif op_basename in {"ST"}:
+    elif op_basename in OUT_OPERATIONS:
         op_adr, grx_name = parts[1], parts[2]
         
     # figure out number base (hex, decimal, binary)
-    base = re.search(r'0([bdx])?', op_adr)
+    base = re.search(r'(0([bdx])|\$)', op_adr)
     if base:
-        base = base.group(1)
+        op_adr = op_adr[len(base.group(0)):] # slice away the base
+        if base.group(1) == '$':
+            base = 'x'
+        else:
+            base = base.group(2)
+
         if base == 'b':
             op_adr = int(op_adr, 2)
         elif base == 'd':
@@ -109,8 +118,11 @@ def assemble_binary(line, known_opcodes):
         sys.exit(1)
 
     # parse the register
-    grx_bin = re.search(r'GR(\d+)', grx_name).group(1)
-    grx_bin = f'{int(grx_bin):03b}'
+    grx_num = re.search(r'GR([0-7])', grx_name)
+    if not grx_num:
+        print(f"Error: Unknown register {grx_name} in {line}")
+        sys.exit(1)
+    grx_bin = f'{int(grx_num.group(1)):03b}'
 
     # create binary code
     binary_lines += [f'{known_opcodes[op_basename]}_{grx_bin}_{op_address_mode_code}_00_{op_adr_bin}']
@@ -143,17 +155,18 @@ def main():
     # read the lines
     with open(filename, "r") as f:
         asm_lines = f.readlines()
+    # remove comments
+    asm_lines = [re.sub(r"(--|//|@).*", "", line).strip() for line in asm_lines]
+
     # remove empty lines
     asm_lines = [line for line in asm_lines if line]
-    # remove comments
-    asm_lines = [re.sub(r"(--|//).*", "", line).strip() for line in asm_lines]
 
     # assemble the binary code
     for line in asm_lines:
         binary_lines += assemble_binary(line, KNOWN_OPCODES)
     
     # assume that HALT needs to be added
-    binary_lines += ["111110000000000000000000"] # HALT
+    binary_lines += ["11111_000_00_00_000000000000"]
 
     # find start of program memory array
     array_start_linenum = None

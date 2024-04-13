@@ -44,7 +44,6 @@ OP    -> u-adress
 00010 ADD
 00011 SUB
 11111 HALT
-...
 
 ## Moder (M)
 00 Direkt
