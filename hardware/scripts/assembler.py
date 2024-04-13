@@ -9,7 +9,7 @@ PMEM_FILE = "src/pMem.vhd"
 FAX_FILE = "fax.md"
 ADR_WIDTH = 12
 
-IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN"}
+IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN", "MUL"}
 OUT_OPERATIONS = {"ST", "OUT"}
 REG_OPERATIONS = {"MOV", "ADDREG"}
 
@@ -73,8 +73,7 @@ def assemble_binary(line, known_opcodes):
 
     # unknown op?
     if not op_basename:
-        print(f"Error: Unknown op:{op_fullname}")
-        sys.exit(1) 
+        raise ValueError(f"Error: Unknown op: {op_fullname} in {line}")
     
 
     # get register and address
@@ -162,8 +161,13 @@ def main():
     asm_lines = [line for line in asm_lines if line]
 
     # assemble the binary code
-    for line in asm_lines:
-        binary_lines += assemble_binary(line, KNOWN_OPCODES)
+    for i, line in enumerate(asm_lines):
+        try:
+            binary_lines += assemble_binary(line, KNOWN_OPCODES)
+        except ValueError as e:
+            print(f"Unable to parse line {i} in {filename}:\n{e}")
+            sys.exit(1)
+
     
     # assume that HALT needs to be added
     binary_lines += ["11111_000_00_00_000000000000"]
