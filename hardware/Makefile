@@ -27,7 +27,7 @@ clean:
 
 cpu_compile:
 	@mkdir -p $(WORKDIR)
-	@ghdl -a $(GHDL_FLAGS) src/alu.vhd src/uMem.vhd src/pMem.vhd src/cpu.vhd 
+	@ghdl -a $(GHDL_FLAGS) src/alu.vhd src/uMem.vhd src/pMem.vhd src/cpu.vhd src/main.vhd
 
 cpu: parse_umem preprocess cpu_compile
 

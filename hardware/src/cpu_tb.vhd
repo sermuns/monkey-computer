@@ -18,7 +18,7 @@ ARCHITECTURE testbench OF cpu_tb IS
 
 BEGIN
   -- Instantiate the Unit Under Test (UUT)
-  UUT : ENTITY work.cpu PORT MAP(
+  UUT : ENTITY work.main PORT MAP(
     clk => clk_tb,
     rst => rst_tb
     );

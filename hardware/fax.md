@@ -5,19 +5,20 @@
 010  PC   
 011  AR (ALU)
 100  IR   
-101  GRx  
+101  GRx 
+110  SP 
 111  nop do nothing!!
 ## ALU_op
 0000  NOP 
-0001  ADD   GRx += bus
-0010  SUB   GRx -= bus
-0011  MUL   GRx *= bus
-0100  LOAD  GRx := bus
-0101  AND   GRx &= bus
-0110  OR    GRx |= bus
-0111  LSR   GRx := (GRx >> bus)
-1000  LSL   GRx := (GRx << bus)
-1001  CMP   GRx - bus (only set flags)
+0001  ADD   AR += bus
+0010  SUB   AR -= bus
+0011  MUL   AR *= bus
+0100  LOAD  AR := bus
+0101  AND   AR &= bus
+0110  OR    AR |= bus
+0111  LSR   AR := (AR >> bus)
+1000  LSL   AR := (AR << bus)
+1001  CMP   AR - bus (only set flags)
 
 ## SEQ
 0000  uPC++

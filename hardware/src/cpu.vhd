@@ -6,7 +6,9 @@ USE std.env.stop;
 ENTITY cpu IS
     PORT (
         clk : IN STD_LOGIC;
-        rst : IN STD_LOGIC
+        rst : IN STD_LOGIC;
+        v_addr: OUT unsigned(11 DOWNTO 0);
+        v_data: OUT unsigned(23 DOWNTO 0)
     );
 END ENTITY;
 
@@ -25,11 +27,12 @@ ARCHITECTURE func OF cpu IS
 
     -- MICRO
     SIGNAL uPC : unsigned(7 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL uPM : STD_LOGIC_VECTOR(22 DOWNTO 0);
-    ALIAS TB IS uPM(22 DOWNTO 20);
-    ALIAS FB IS uPM(19 DOWNTO 17);
-    ALIAS ALU_op IS uPM(16 DOWNTO 13);
-    ALIAS P IS uPM(12);
+    SIGNAL uPM : STD_LOGIC_VECTOR(24 DOWNTO 0);
+    ALIAS TB IS uPM(24 DOWNTO 22);
+    ALIAS FB IS uPM(21 DOWNTO 19);
+    ALIAS ALU_op IS uPM(18 DOWNTO 15);
+    ALIAS P IS uPM(14);
+    alias SP_op is uPM(13 downto 12);
     ALIAS SEQ IS uPM(11 DOWNTO 8);
     ALIAS uADR IS uPM(7 DOWNTO 0);
 
@@ -56,7 +59,7 @@ ARCHITECTURE func OF cpu IS
     ALIAS C IS flags(2);
     ALIAS V IS flags(3);
 
-    SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"000000000000";
+    SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"111111111111"; -- Bottom of the PM
 BEGIN
 
     -- PROGRAM MEMORY
@@ -191,6 +194,20 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+
+    -- SP
+    process (clk, rst) 
+    begin
+        IF rst = '1' THEN
+            SP <= b"111111111111";
+        ELSIF rising_edge(clk) THEN
+            IF SP_op = "01" THEN
+                SP <= SP - 1;
+            ELSIF SP_op = "10" and (SP /= b"111111111111") THEN
+                SP <= SP + 1;
+            END IF;
+        END IF;
+    end process;
 
     K1 <=
         b"00001010"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
