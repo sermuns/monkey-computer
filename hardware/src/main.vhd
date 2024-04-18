@@ -29,15 +29,8 @@ end main;
 -- architecture
 architecture Behavioral of main is
 	
-	
-	-- intermediate signals between CPU and VIDEO_RAM
-	signal data_s : unsigned(23 downto 0); -- data
-	signal addr_s : unsigned(11 downto 0);        -- address
-	signal we_s   : std_logic;                    -- write enable
-	
-	-- intermediate signals between VIDEO_RAM and VGA_MOTOR
-	signal data_out2_s : unsigned(7 downto 0); -- data
-	signal addr2_s     : unsigned(10 downto 0);        -- address
+	signal video_data : std_logic_vector(23 downto 0); -- data
+	signal video_address : unsigned(7 downto 0);        -- address
 	
 begin
 	
@@ -47,9 +40,15 @@ begin
 	U1 : ENTITY work.cpu port map (
         clk => clk,
         rst => rst,
-        v_addr => addr_s,
-        v_data => data_s
+        v_addr => video_address,
+        v_data => video_data
     );
-    
-end Behavioral;
 
+	U2 : entity  work.VGA_MOTOR port map (
+		clk => clk,
+		rst => rst,
+		vga_addr => video_address,
+		vga_data => video_data
+		);
+
+end architecture;

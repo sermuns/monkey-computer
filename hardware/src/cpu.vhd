@@ -7,8 +7,8 @@ ENTITY cpu IS
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
-        v_addr: OUT unsigned(11 DOWNTO 0);
-        v_data: OUT unsigned(23 DOWNTO 0)
+        v_addr: IN unsigned(7 DOWNTO 0);
+        v_data: OUT std_logic_vector(23 DOWNTO 0)
     );
 END ENTITY;
 
@@ -70,10 +70,12 @@ BEGIN
     pMem : ENTITY work.pMem
         PORT MAP(
             rst => rst,
-            adress => ASR,
-            out_data => PM_out,
-            in_data => data_bus,
-            should_store => PM_should_store
+            cpu_address => ASR,
+            cpu_data_out => PM_out,
+            cpu_data_in => data_bus,
+            cpu_we => PM_should_store,
+            video_address => v_addr,
+            video_data => v_data
         );
 
     -- MICRO MEMORY
@@ -162,7 +164,6 @@ BEGIN
             data_bus => data_bus,
             AR => AR,
             op => unsigned(ALU_op),
-            clk => clk,
             rst => rst,
             flags => flags
         );
@@ -220,7 +221,7 @@ BEGIN
         b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
         -- /*LSL.b8*/ WHEN (OP = "01000") ELSE
         b"00011010"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-        b"00101010"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+        b"00101000"/*HALT.b8*/ WHEN (OP = "11111") ELSE
         (OTHERS => 'U'); -- something wrong
 
     K2 <=
