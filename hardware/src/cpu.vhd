@@ -220,7 +220,7 @@ BEGIN
         b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
         -- /*LSL.b8*/ WHEN (OP = "01000") ELSE
         b"00011010"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-        b"00100111"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+        b"00101010"/*HALT.b8*/ WHEN (OP = "11111") ELSE
         (OTHERS => 'U'); -- something wrong
 
     K2 <=
