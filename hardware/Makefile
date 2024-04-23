@@ -1,4 +1,4 @@
-.PHONY: clean alu_wave cpu_wave
+.PHONY: clean
 
 WORKDIR = work
 WAVEDIR = wave
@@ -6,15 +6,18 @@ SAVEDIR = save
 SCRIPTDIR = scripts
 GHDL_FLAGS = --std=08 --workdir=$(WORKDIR)
 
+# bigger modules rely on these standalone modules
+PREREQUISITE_MODULES = alu.vhd uMem.vhd pMem.vhd tile_rom.vhd
+
+# these modules rely on the above modules
+DEPENDENT_MODULES = vga_motor.vhd cpu.vhd main.vhd
+
+ALL_MODULES = $(PREREQUISITE_MODULES) $(DEPENDENT_MODULES)
+SOURCE_FILES = $(addprefix src/,$(ALL_MODULES))
+
 # try to compile all files
-all:
-	@echo "Usage: make [target]"
-	@echo "Targets:"
-	@echo "  cpu"
-	@echo "  cpu_tb"
-	@echo "  cpu_wave"
-	@echo "  alu_test"
-	@echo "  alu_wave"
+help:
+	@echo "No make target specified, look in the Makefile for possible targets."
 
 parse_umem:
 	@python $(SCRIPTDIR)/parse_mem.py src/uMem.vhd
@@ -25,38 +28,28 @@ preprocess:
 clean:
 	@rm -rf $(WORKDIR) $(WAVEDIR)
 
-cpu_compile:
+compile:
 	@mkdir -p $(WORKDIR)
-	@ghdl -a $(GHDL_FLAGS) src/alu.vhd src/uMem.vhd src/pMem.vhd src/cpu.vhd src/main.vhd
+	@ghdl -a $(GHDL_FLAGS) $(SOURCE_FILES)
 
-cpu: parse_umem preprocess cpu_compile
+all: parse_umem preprocess compile
 
-cpu_tb: cpu
+test: all
 	@ghdl -a $(GHDL_FLAGS) src/cpu_tb.vhd
 	@ghdl -e $(GHDL_FLAGS) cpu_tb
 	@mkdir -p $(WAVEDIR)
-	@ghdl -r $(GHDL_FLAGS) cpu_tb --wave=$(WAVEDIR)/cpu_tb.ghw
+	@ghdl -r $(GHDL_FLAGS) cpu_tb --wave=$(WAVEDIR)/wave.ghw
 
-cpu_wave: cpu_tb
+# only launch gtkwave if it is not already running
+wave: test
 	@if ! pgrep -x "gtkwave" > /dev/null; then \
-		gtkwave -a $(SAVEDIR)/cpu_tb_save.gtkw $(WAVEDIR)/cpu_tb.ghw & \
+		gtkwave -a $(SAVEDIR)/cpu_tb_save.gtkw $(WAVEDIR)/wave.ghw & \
 	fi
 
-# assemble the argument `file` and input into pMem.vhd
+# assemble the argument `prog` and input into pMem.vhd
 assemble:
 	@if [ -z $(prog) ]; then \
 		echo "ERROR: No program given. Usage: make assemble prog=<name of program (without extension .masm) in src/masm>"; \
 		exit 1; \
 	fi
 	@python3 $(SCRIPTDIR)/assembler.py src/masm/$(prog)
-
-#ALU
-alu_test:
-	@mkdir -p $(WORKDIR)
-	@ghdl -a $(GHDL_FLAGS) src/alu.vhd src/alu_tb.vhd 
-	@ghdl -e $(GHDL_FLAGS) ALU_ent_tb
-	@mkdir -p $(WAVEDIR)
-	@ghdl -r $(GHDL_FLAGS) ALU_ent_tb --wave=$(WAVEDIR)/alu_tb.ghw
-
-alu_wave: alu_test
-	@gtkwave -a $(SAVEDIR)/alu_test_save.gtkw $(WAVEDIR)/alu_tb.ghw

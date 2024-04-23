@@ -10,7 +10,7 @@ build-job:
   stage: build
   script:
     - cd hardware
-    - make cpu_compile
+    - make compile
   only:
     changes:
       - hardware/src/**/*.vhd
