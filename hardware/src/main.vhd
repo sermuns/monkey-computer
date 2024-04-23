@@ -44,11 +44,11 @@ begin
         v_data => video_data
     );
 
-	U2 : entity  work.VGA_MOTOR port map (
-		clk => clk,
-		rst => rst,
-		vga_addr => video_address,
-		vga_data => video_data
-		);
+	-- U2 : entity  work.VGA_MOTOR port map (
+	-- 	clk => clk,
+	-- 	rst => rst,
+	-- 	vga_addr => video_address,
+	-- 	vga_data => video_data
+	-- 	);
 
 end architecture;
