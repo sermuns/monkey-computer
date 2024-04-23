@@ -172,12 +172,15 @@ def main():
     # assume that HALT needs to be added
     binary_lines += ["11111_000_00_00_000000000000"]
 
-    # find start of program memory array
+    # find start and end of the program memory part of array
     array_start_linenum = None
+    program_memory_end_linenum = None 
     for i, line in enumerate(pmem_lines):
-        if re.match(r"\s*CONSTANT p_mem_init.*", line):
-            array_start_linenum = i +1
-            break
+        if array_start_linenum is None and re.match(r"\s*CONSTANT p_mem_init.*", line):
+            array_start_linenum = i+1 # found the start
+        elif re.match(r"\s*.*to.*OTHERS.*", line):
+            program_memory_end_linenum = i
+            break # found the end
     
     # no program memory array found?
     if array_start_linenum is None:
@@ -186,20 +189,32 @@ def main():
 
     # remove old content
     for i, line in enumerate(pmem_lines[array_start_linenum:], start=array_start_linenum):
-        if not re.match(r'\s*b".*".*', line): 
+        if re.match(r'.*to.*OTHERS.*', line):
+            break # end of program memory part
+        elif not re.match(r'.*b".*",.*', line): 
             continue # not an array element
-        if re.match(r'\s*\);\s*', line):
-            break # end of array
-
+        
+        # mark for removal
         pmem_lines[i] = "garbage"
 
     # remove garbage
     pmem_lines = [line for line in pmem_lines if line != "garbage"]
 
     # insert the new content
+    array_index = len(binary_lines) - 1
     for binary_line in reversed(binary_lines):
-        pmem_lines.insert(array_start_linenum, f'        b"{binary_line}",\n')
+        new_line = f'        {array_index} => b"{binary_line}",\n'
+        pmem_lines.insert(array_start_linenum, new_line)
+        array_index -= 1
 
+    # adjust the "* TO VMEM_START => (OTHERS => 'U')"
+    for i, line in enumerate(pmem_lines):
+        if re.match(r'\s*.*to.*VMEM_START.*', line):
+            pmem_lines[i] = f"        {len(binary_lines)} to VMEM_START => (OTHERS => 'U'),\n"
+            break
+    else:
+        print(f"Error: Could not find VMEM_START in {PMEM_FILE}")
+        sys.exit(1)
 
     # write the new program memory file
     with open(PMEM_FILE, "w") as f:
