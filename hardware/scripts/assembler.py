@@ -52,10 +52,13 @@ def get_opcodes():
 
     return opcodes
 
-def assemble_binary(line, known_opcodes):
+def assemble_binary_line(line, known_opcodes):
     """
-    Return binary line(s) from the given assembly line
+    Return binary line from the given assembly line
+    If the instruction is an immediate instruction, the immediate value is 
+    also returned as a separate line.
     """ 
+
     binary_lines = []
 
     # split into parts by comma and whitespace
@@ -133,84 +136,106 @@ def assemble_binary(line, known_opcodes):
     return binary_lines
 
 
-def main():
-    # check for filename argument    
+def read_lines(filename):
+    """
+    Return the lines from the given file
+    """
+
+    lines = []
+    with open(filename, "r") as f:
+        lines = f.readlines()
+
+    if not lines:
+        print(f"Error: Could not read {filename}")
+        sys.exit(1)
+
+    return lines
+
+
+def remove_comments_and_empty_lines(lines):
+    """
+    Remove comments and empty lines from the given list of lines
+    """
+    return [line for line in lines if not re.match(r"(--|//|@).*", line) and line.strip()]
+
+
+def get_filename_arg():
+    """
+    Get the filename argument
+    """
     if len(sys.argv) != 2:
         print("Usage: python3 assemblyparser.py <filename>")
         sys.exit(1)
-    filename = sys.argv[1]
+    return sys.argv[1]
+
+
+def main():
+    asm_file_name = get_filename_arg()
 
     # read the program memory file
-    pmem_lines = []
-    with open(PMEM_FILE, "r") as f:
-        pmem_lines = f.readlines()
-    if not pmem_lines:
-        print(f"Error: Could not read {PMEM_FILE}")
-        sys.exit(1)
+    mem_lines = read_lines(PMEM_FILE)
 
     KNOWN_OPCODES = get_opcodes()
     binary_lines = []
 
-    # read the lines
-    with open(filename, "r") as f:
-        asm_lines = f.readlines()
-    # remove comments
-    asm_lines = [re.sub(r"(--|//|@).*", "", line).strip() for line in asm_lines]
+    # read the assembly file
+    asm_lines = read_lines(asm_file_name)
 
-    # remove empty lines
-    asm_lines = [line for line in asm_lines if line]
+    # remove comments and empty lines
+    asm_lines = remove_comments_and_empty_lines(asm_lines)
 
     # assemble the binary code
     for i, line in enumerate(asm_lines):
         try:
-            binary_lines += assemble_binary(line, KNOWN_OPCODES)
+            binary_lines += assemble_binary_line(line, KNOWN_OPCODES)
         except ValueError as e:
-            print(f"Unable to parse line {i} in {filename}:\n{e}")
+            print(f"Unable to parse line {i} in {asm_file_name}:\n{e}")
             sys.exit(1)
-
     
     # assume that HALT needs to be added
     binary_lines += ["11111_000_00_00_000000000000"]
 
     # find start and end of the program memory part of array
-    array_start_linenum = None
-    program_memory_end_linenum = None 
-    for i, line in enumerate(pmem_lines):
-        if array_start_linenum is None and re.match(r"\s*CONSTANT p_mem_init.*", line):
-            array_start_linenum = i+1 # found the start
-        elif re.match(r"\s*.*to.*OTHERS.*", line):
-            program_memory_end_linenum = i
+    mem_start_linenum = None
+    program_end_linenum = None 
+    for i, line in enumerate(mem_lines):
+        if mem_start_linenum is None and re.match(r"\s*CONSTANT p_mem_init.*", line):
+            while re.match(r"\s*--.*", mem_lines[i+1]):
+                i += 1 # skip comments
+            mem_start_linenum = i+1 # found the start
+        elif re.match(r"\s*.*TO.*OTHERS.*", line):
+            program_end_linenum = i
             break # found the end
     
     # no program memory array found?
-    if array_start_linenum is None:
+    if mem_start_linenum is None:
         print(f"Error: Could not find program memory array in {PMEM_FILE}")
         sys.exit(1)
 
     # remove old content
-    for i, line in enumerate(pmem_lines[array_start_linenum:], start=array_start_linenum):
-        if re.match(r'.*to.*OTHERS.*', line):
+    for i, line in enumerate(mem_lines[mem_start_linenum:], start=mem_start_linenum):
+        if i == program_end_linenum:
             break # end of program memory part
         elif not re.match(r'.*b".*",.*', line): 
             continue # not an array element
         
         # mark for removal
-        pmem_lines[i] = "garbage"
+        mem_lines[i] = None
 
     # remove garbage
-    pmem_lines = [line for line in pmem_lines if line != "garbage"]
+    mem_lines = [line for line in mem_lines if line is not None]
 
     # insert the new content
     array_index = len(binary_lines) - 1
     for binary_line in reversed(binary_lines):
         new_line = f'        {array_index} => b"{binary_line}",\n'
-        pmem_lines.insert(array_start_linenum, new_line)
+        mem_lines.insert(mem_start_linenum, new_line)
         array_index -= 1
 
     # adjust the "* TO VMEM_START => (OTHERS => 'U')"
-    for i, line in enumerate(pmem_lines):
-        if re.match(r'\s*.*to.*VMEM_START.*', line):
-            pmem_lines[i] = f"        {len(binary_lines)} to VMEM_START => (OTHERS => 'U'),\n"
+    for i, line in enumerate(mem_lines):
+        if re.match(r'.*TO.*VMEM_STAR.*', line):
+            mem_lines[i] = f"        {len(binary_lines)} TO VMEM_START - 1 => (OTHERS => 'U'),\n"
             break
     else:
         print(f"Error: Could not find VMEM_START in {PMEM_FILE}")
@@ -218,7 +243,7 @@ def main():
 
     # write the new program memory file
     with open(PMEM_FILE, "w") as f:
-        f.writelines(pmem_lines)
+        f.writelines(mem_lines)
 
 
 if __name__ == "__main__":
