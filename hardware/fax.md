@@ -65,3 +65,30 @@ OP    -> u-adress
 11 Indexerad
 ...
 
+
+# Video
+VGA-display
+Resolution: 640x480
+25MHz klocka
+
+Skärmen delas upp i:
+10x10 kvadratiska tiles, 
+
+12x12 logiska pixlar per tile
+eller
+48x48 subpixlar per tile
+
+**Tiles:** totalt 64 st
+0: gräs
+1-4: apa 1 frame 1-4
+5-8: apa 2 frame 1-4
+9-12: apa 3 frame 1-4
+13-16: apa 4 frame 1-4
+17-20: apa 5 frame 1-4
+21-24: apa 6 frame 1-4
+25: väg
+26-29: ballon 1 frame 1-4 BLÅ
+30-33: ballon 2 frame 1-4 TURKÅS tuqoiseeeeeeeeeeeeeee
+34-37: ballon 3 frame 1-4 ORANGE
+
+
