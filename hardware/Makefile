@@ -1,4 +1,4 @@
-.PHONY: help clean wave %.ghw
+.PHONY: help clean %.ghw
 
 WORKDIR = work
 WAVEDIR = wave
@@ -37,7 +37,7 @@ $(WORKDIR):
 
 all: parse_umem preprocess compile ## Should be used to compile all files
 
-%_tb.vhd: all ## Compile a testbench
+%_tb.vhd: all
 	@ghdl -a $(GHDL_FLAGS) src/$@
 	@ghdl -e $(GHDL_FLAGS) $*_tb
 	@mkdir -p $(WAVEDIR)
@@ -49,13 +49,7 @@ all: parse_umem preprocess compile ## Should be used to compile all files
 		gtkwave -a $(SAVEDIR)/$*.gtkw $(WAVEDIR)/$*.ghw & \
 	fi
 
-wave: ## Launch GTKWave with the last saved wave configuration
-# Only launch if GTKWave is not already running
-	@if ! pgrep -x "gtkwave" > /dev/null; then \
-		gtkwave -a $(SAVEDIR)/cpu_tb_save.gtkw $(WAVEDIR)/wave.ghw & \
-	fi
-
-sim: all cpu_tb.vhd wave ## Simulate, then launch wave
+sim: all cpu_tb.vhd cpu_tb.ghw ## Simulate, then launch wave
 
 assemble: ## Assemble a program from src/masm into pMem.vhd
 	@if [ -z $(prog) ]; then \
