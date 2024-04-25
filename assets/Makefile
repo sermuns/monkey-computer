@@ -1,5 +1,7 @@
 .PHONY: clean
+
 BUILD_DIR = $(CURDIR)/build
+P_MEM_FILE = ../hardware/src/pMem.vhd
 
 
 all: frames sprites
@@ -21,3 +23,9 @@ sprites:
 
 hex:
 	@python png_to_hex.py $(BUILD_DIR)/sprite1_frame1.png
+
+tileset: frames
+	@python generate_tileset.py
+
+vmem: ## Import a Tiled map into video memory
+	@python map_to_vmem.py map.tmx $(P_MEM_FILE)

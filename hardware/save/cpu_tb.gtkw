@@ -1,15 +1,15 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Thu Apr 25 11:41:17 2024
+[*] Thu Apr 25 21:34:44 2024
 [*]
-[dumpfile] "/home/sermuns/Git/code/hardware/wave/wave.ghw"
-[dumpfile_mtime] "Thu Apr 25 11:40:20 2024"
-[dumpfile_size] 1130460
-[savefile] "/home/sermuns/Git/code/hardware/save/cpu_tb_save.gtkw"
+[dumpfile] "/home/sermuns/Git/code/hardware/wave/cpu_tb.ghw"
+[dumpfile_mtime] "Thu Apr 25 21:34:40 2024"
+[dumpfile_size] 390555
+[savefile] "/home/sermuns/Git/code/hardware/save/cpu_tb.gtkw"
 [timestart] 0
 [size] 1920 1016
 [pos] -1 -1
-*-33.956245 10750000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-27.312391 1000000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
 [treeopen] top.cpu_tb.
 [treeopen] top.cpu_tb.uut.
