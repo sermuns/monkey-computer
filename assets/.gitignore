@@ -1,4 +1,4 @@
 build/
-*.tiled-session
+*.tiled*
 *.gif
 *.png

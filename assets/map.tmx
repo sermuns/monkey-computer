@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="12" tileheight="12" infinite="0" nextlayerid="6" nextobjectid="2">
  <tileset firstgid="1" source="tileset.tsx"/>
- <layer id="1" name="grass" width="10" height="10" opacity="0.9">
+ <layer id="1" name="grass" width="10" height="10">
   <data encoding="csv">
 1,1,1,1,1,1,1,1,1,1,
 1,1,1,1,1,1,1,1,1,1,
@@ -19,7 +19,7 @@
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,
 0,26,26,26,26,26,26,26,26,0,
-0,26,0,0,0,0,26,0,26,0,
+0,26,0,0,0,0,0,0,26,0,
 0,26,0,26,26,26,26,26,26,0,
 26,26,0,26,0,0,0,0,0,0,
 0,0,0,26,0,26,26,26,0,0,
@@ -29,7 +29,7 @@
 0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="3" name="entities" width="10" height="10">
+ <layer id="3" name="entities" width="10" height="10" opacity="0.59">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,
