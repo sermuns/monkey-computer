@@ -41,7 +41,8 @@ BEGIN
         clk_tb <= NOT clk_tb;
 
         IF now > CLK_PERIOD * MAX_CLK_COUNT THEN
-            REPORT "Simulation has continued for longer than MAX_CLK_COUNT, stopping" SEVERITY FAILURE;
+            REPORT "Simulation has continued for longer than MAX_CLK_COUNT, stopping";
+            STOP;
         END IF;
     END PROCESS;
 

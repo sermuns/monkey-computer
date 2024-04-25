@@ -26,8 +26,8 @@ ARCHITECTURE behavioral OF vga_motor IS
     SIGNAL y_subpixel : unsigned(9 DOWNTO 0);
 
     -- Logical pixels which the Tile ROM uses (4 subpixels = 1 pixel)
-    ALIAS X_macropixel IS x_subpixel(9 DOWNTO 2);
-    ALIAS Y_macropixel IS y_subpixel(9 DOWNTO 2);
+    ALIAS x_macropixel IS x_subpixel(9 DOWNTO 2);
+    ALIAS y_macropixel IS y_subpixel(9 DOWNTO 2);
 
     SIGNAL ClkDiv : unsigned(1 DOWNTO 0); -- Clock divisor, to generate 25 MHz signal
     SIGNAL Clk25 : STD_LOGIC; -- One pulse width 25 MHz signal
@@ -50,6 +50,8 @@ ARCHITECTURE behavioral OF vga_motor IS
     SIGNAL tile_rom_address : unsigned(13 DOWNTO 0); -- Address for tile ROM
     SIGNAL tile_rom_data_out : STD_LOGIC_VECTOR(11 DOWNTO 0); -- Data from tile ROM
 
+    CONSTANT TILE_SUBPIXEL_SIZE : INTEGER := 48; -- 48 subpixels per tile
+
 BEGIN
     -- Clock divisor
     -- Divide system clock (100 MHz) by 4
@@ -63,7 +65,8 @@ BEGIN
     END PROCESS;
 
     -- 25 MHz clock (one system clock pulse width)
-    Clk25 <= '1' WHEN (ClkDiv = 3) ELSE
+    Clk25 <=
+        '1' WHEN (ClkDiv = 0) ELSE
         '0';
 
     -- Implement your VGA motor controller logic here
@@ -86,10 +89,10 @@ BEGIN
     y_counter : PROCESS (clk)
     BEGIN
         IF rst = '1' THEN
-            y_subpixel <= to_unsigned(470, y_subpixel'LENGTH);
+            y_subpixel <= to_unsigned(0, y_subpixel'LENGTH);
         ELSIF rising_edge(clk) THEN
             IF (x_subpixel = 800 AND Clk25 = '1') THEN
-                IF (y_subpixel < 520) THEN
+                IF (y_subpixel ?< 520) THEN
                     y_subpixel <= y_subpixel + 1;
                 ELSE
                     y_subpixel <= (OTHERS => '0');
@@ -98,14 +101,16 @@ BEGIN
         END IF;
     END PROCESS;
 
-    Hsync1 <= '0' WHEN (x_subpixel > 656) AND (x_subpixel < 752) ELSE
+    Hsync1 <=
+        '0' WHEN (x_subpixel > 656) AND (x_subpixel < 752) ELSE
         '1';
 
-    Vsync1 <= '0' WHEN (y_subpixel > 490) AND (y_subpixel < 492) ELSE
+    Vsync1 <=
+        '0' WHEN (y_subpixel > 490) AND (y_subpixel < 492) ELSE
         '1';
 
-    Blank1 <= '1' WHEN (x_subpixel > 640)
-        OR (y_subpixel > 480) ELSE
+    Blank1 <= -- outside of visible area
+        '1' WHEN (x_subpixel > 640) OR (y_subpixel > 480) ELSE
         '0';
 
     x_within_tile_counter : PROCESS (clk)
@@ -113,23 +118,14 @@ BEGIN
         IF rst = '1' THEN
             x_within_tile <= (OTHERS => '0');
         ELSIF rising_edge(clk) AND clk25 = '1' THEN
-            IF (x_within_tile < 47) THEN
-                x_within_tile <= x_within_tile + 1;
+            IF (x_subpixel < 479) THEN
+                IF (x_within_tile < TILE_SUBPIXEL_SIZE - 1) THEN
+                    x_within_tile <= x_within_tile + 1;
+                ELSE
+                    x_within_tile <= (OTHERS => '0'); -- right edge of tile
+                END IF;
             ELSE
-                x_within_tile <= (OTHERS => '0'); -- right edge of tile
-            END IF;
-        END IF;
-    END PROCESS;
-
-    tile_col_counter : PROCESS (clk)
-    BEGIN
-        IF rst = '1' THEN
-            tile_col <= (OTHERS => '0');
-        ELSIF rising_edge(clk) AND Clk25 = '1' THEN
-            IF (tile_col < 9) THEN
-                tile_col <= tile_col + 1;
-            ELSE
-                tile_col <= (OTHERS => '0'); -- right edge of map
+                x_within_tile <= (OTHERS => '-'); -- outside of map
             END IF;
         END IF;
     END PROCESS;
@@ -138,11 +134,36 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             y_within_tile <= (OTHERS => '0');
-        ELSIF rising_edge(clk) AND clk25 = '1' AND x_within_tile = 47 THEN
-            IF (y_within_tile < 47) THEN
-                y_within_tile <= y_within_tile + 1;
+        ELSIF rising_edge(clk) AND clk25 = '1' AND x_subpixel = 799 THEN
+            IF (y_subpixel < 479) THEN
+                IF (y_within_tile < TILE_SUBPIXEL_SIZE - 1) THEN
+                    y_within_tile <= y_within_tile + 1;
+                ELSE
+                    y_within_tile <= (OTHERS => '0'); -- bottom edge of tile
+                END IF;
             ELSE
-                y_within_tile <= (OTHERS => '0'); -- bottom of tile
+                y_within_tile <= (OTHERS => '-'); -- outside of map
+            END IF;
+        END IF;
+    END PROCESS;
+
+    tile_col_counter : PROCESS (clk)
+    BEGIN
+        IF rst = '1' THEN
+            tile_col <= (OTHERS => '0');
+        ELSIF rising_edge(clk)
+            AND Clk25 = '1'
+            THEN
+            IF (x_within_tile = 47) THEN
+                IF (tile_col < 9) THEN
+                    IF (x_subpixel < 479) THEN
+                        tile_col <= tile_col + 1;
+                    ELSE
+                        tile_col <= (OTHERS => '-'); -- right edge of screen
+                    END IF;
+                ELSE
+                    tile_col <= (OTHERS => '0'); -- right edge of screen
+                END IF;
             END IF;
         END IF;
     END PROCESS;
@@ -151,9 +172,14 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             tile_row <= (OTHERS => '0');
-        ELSIF rising_edge(clk) AND Clk25 = '1' AND y_within_tile = 47 THEN
-            tile_row <= tile_row + 1;
-            IF (tile_row = 10) THEN
+        ELSIF rising_edge(clk)
+            AND Clk25 = '1'
+            AND tile_col = 9
+            AND y_within_tile = 47
+            THEN
+            IF (tile_row < 8) THEN
+                tile_row <= tile_row + 1;
+            ELSE
                 tile_row <= (OTHERS => '0'); -- bottom of map
             END IF;
         END IF;
