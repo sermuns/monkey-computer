@@ -68,7 +68,7 @@ def create_vmem_line(index: int, tiles: list) -> str:
     for tile in tiles:
         if tile > 2**6 - 1:
             raise ValueError(f"Tile {tile} is too big")
-        line += f"{tile:06b}_"
+        line += f"{tile-1:06b}_" # subtract 1 because Tiled uses 1-based indexing
 
     line = line.removesuffix("_")
     line += "\",\n"
@@ -87,7 +87,7 @@ def write_to_vmem(map, vmem_file):
     # find the line where the map starts
     start_line = 0
     for i, line in enumerate(vmem_lines):
-        if re.match(r'\s*VMEM_START\s*=>\s*b.*', line):
+        if re.match(r'\s*VMEM_START.*=>\s*b.*', line):
             start_line = i
             break
 
