@@ -7,8 +7,8 @@ ENTITY cpu IS
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
-        v_addr: IN unsigned(7 DOWNTO 0);
-        v_data: OUT std_logic_vector(23 DOWNTO 0)
+        v_addr : IN unsigned(7 DOWNTO 0);
+        v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
 END ENTITY;
 
@@ -32,7 +32,7 @@ ARCHITECTURE func OF cpu IS
     ALIAS FB IS uPM(21 DOWNTO 19);
     ALIAS ALU_op IS uPM(18 DOWNTO 15);
     ALIAS P IS uPM(14);
-    alias SP_op is uPM(13 downto 12);
+    ALIAS SP_op IS uPM(13 DOWNTO 12);
     ALIAS SEQ IS uPM(11 DOWNTO 8);
     ALIAS uADR IS uPM(7 DOWNTO 0);
 
@@ -197,18 +197,18 @@ BEGIN
     END PROCESS;
 
     -- SP
-    process (clk, rst) 
-    begin
+    PROCESS (clk, rst)
+    BEGIN
         IF rst = '1' THEN
             SP <= b"111111111111";
         ELSIF rising_edge(clk) THEN
             IF SP_op = "01" THEN
                 SP <= SP - 1;
-            ELSIF SP_op = "10" and (SP /= b"111111111111") THEN
+            ELSIF SP_op = "10" AND (SP /= b"111111111111111") THEN
                 SP <= SP + 1;
             END IF;
         END IF;
-    end process;
+    END PROCESS;
 
     K1 <=
         b"00001010"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
@@ -220,8 +220,15 @@ BEGIN
         b"00011101"/*OR.b8*/ WHEN (OP = "00110") ELSE
         b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
         -- /*LSL.b8*/ WHEN (OP = "01000") ELSE
+        b"00100111"/*JSR.b8*/ WHEN (OP = "01001") ELSE
+        b"00100000"/*BRA.b8*/ WHEN (OP = "01010") ELSE
+        b"00100011"/*BNE.b8*/ WHEN (OP = "01011") ELSE
+        b"00100101"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
+        b"00101010"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
+        b"00101100"/*POP.b8*/ WHEN (OP = "01110") ELSE
         b"00011010"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-        b"00101000"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+        b"00101111"/*RET.b8*/ WHEN (OP = "10000") ELSE
+        b"00110001"/*HALT.b8*/ WHEN (OP = "11111") ELSE
         (OTHERS => 'U'); -- something wrong
 
     K2 <=
@@ -237,6 +244,7 @@ BEGIN
         (data_bus'RANGE => '0') + PC WHEN (TB = "010") ELSE -- Padding + PC
         AR WHEN (TB = "011") ELSE
         unsigned(IR) WHEN (TB = "100") ELSE
+        (data_bus'RANGE => '0') + SP WHEN (TB = "110") ELSE
         GRx WHEN (TB = "101") ELSE
         (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
         (OTHERS => 'U'); -- something wrong

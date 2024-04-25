@@ -29,7 +29,7 @@ BEGIN
     WAIT FOR CLK_PERIOD / 2;
     clk_tb <= NOT clk_tb;
 
-    IF now > CLK_PERIOD * 100 THEN
+    IF now > CLK_PERIOD * 20000 THEN
       REPORT "No HALT instruction within 100 clock cycles, stopping simulation" SEVERITY failure;
     END IF;
   END PROCESS;

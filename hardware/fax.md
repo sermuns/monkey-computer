@@ -19,6 +19,9 @@
 0111  LSR   AR := (AR >> bus)
 1000  LSL   AR := (AR << bus)
 1001  CMP   AR - bus (only set flags)
+## P
+0 ...
+1 = PC++
 
 ## SEQ
 0000  uPC++
@@ -32,6 +35,12 @@
 1000  IF C=1 uPC := uADR
 1001  IF C=0 uPC := uADR
 1111  uADR := uADR
+
+## Stack pekare
+
+00 SP = SP
+01 SP++
+10 SP--
 
 <!-- ## K1 Values
 OP    -> u-adress
@@ -55,7 +64,14 @@ OP    -> u-adress
 00110 OR
 00111 LSR
 01000 LSL
+01001 JSR
+01010 BRA
+01011 BNE
+01100 BEQ
+01101 PUSH
+01110 POP
 01111 MUL
+10000 RE
 11111 HALT
 
 ## Moder (M)

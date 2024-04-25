@@ -12,6 +12,8 @@ ADR_WIDTH = 12
 IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN", "MUL", "LSR", "LSL"}
 OUT_OPERATIONS = {"ST", "OUT"}
 REG_OPERATIONS = {"MOV", "ADDREG"}
+SIMPLE_OPERATIONS = {"POP", "PUSH", "JSR"}
+NO_ARGS_OPERATIONS = {"RET"}
 
 def get_opcodes():
     """
@@ -86,24 +88,29 @@ def assemble_binary_line(line, known_opcodes):
         grx_name, op_adr = parts[1], parts[2]
     elif op_basename in OUT_OPERATIONS:
         op_adr, grx_name = parts[1], parts[2]
+    elif op_basename in SIMPLE_OPERATIONS:
+        grx_name = parts[1]
+    elif op_basename in NO_ARGS_OPERATIONS:
+        pass
         
     # figure out number base (hex, decimal, binary)
-    base = re.search(r'(0([bdx])|\$)', op_adr)
-    if base:
-        op_adr = op_adr[len(base.group(0)):] # slice away the base
-        if base.group(1) == '$':
-            base = 'x'
-        else:
-            base = base.group(2)
+    if op_adr:
+        base = re.search(r'(0([bdx])|\$)', op_adr)
+        if base:
+            op_adr = op_adr[len(base.group(0)):] # slice away the base
+            if base.group(1) == '$':
+                base = 'x'
+            else:
+                base = base.group(2)
 
-        if base == 'b':
-            op_adr = int(op_adr, 2)
-        elif base == 'd':
-            op_adr = int(op_adr, 10)
-        elif base == 'x':
-            op_adr = int(op_adr, 16)
-    else:
-        op_adr = int(op_adr)
+            if base == 'b':
+                op_adr = int(op_adr, 2)
+            elif base == 'd':
+                op_adr = int(op_adr, 10)
+            elif base == 'x':
+                op_adr = int(op_adr, 16)
+        else:
+            op_adr = int(op_adr)
 
     # parse the address-mode
     op_address_mode_code = None

@@ -20,6 +20,18 @@ END ENTITY vga_motor;
 
 ARCHITECTURE behavioral OF vga_motor IS
     -- Define your signals and variables here
+
+    --"Actual" pixels
+    SIGNAL X_subpixel : unsigned(9 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Y_subpixel : unsigned(9 DOWNTO 0) := (OTHERS => '0'); -- Vertical pixel counter
+
+    --"logical" pixels used in tilerom
+    SIGNAL X_macropixel : unsigned(9 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL Y_macropixel : unsigned(9 DOWNTO 0) := (OTHERS => '0');
+
+    SIGNAL X_subpixels_since_macro : unsigned(1 DOWNTO 0);
+    SIGNAL Y_subpixels_since_macro : unsigned(1 DOWNTO 0);
+
     SIGNAL Xpixel1, Xpixel2 : unsigned(9 DOWNTO 0) := (OTHERS => '0'); --Horizontal pixel counter, AND its pipelined version
     SIGNAL Ypixel1, Ypixel2 : unsigned(9 DOWNTO 0) := (OTHERS => '0'); -- Vertical pixel counter
     SIGNAL ClkDiv : unsigned(1 DOWNTO 0); -- Clock divisor, to generate 25 MHz signal
@@ -54,9 +66,18 @@ BEGIN
         IF rising_edge(clk) THEN
             IF rst = '1' THEN
                 Xpixel1 <= (OTHERS => '0');
+                X_subpixels_since_macro <= (OTHERS => '0');
             ELSIF (Clk25 = '1') THEN
                 IF (Xpixel1 < 800) THEN
                     Xpixel1 <= Xpixel1 + 1;
+                    IF (X_subpixels_since_macro = "00") THEN
+                        IF (X_macropixel = to_unsigned(12, X_macropixel'length)) THEN
+                            X_macropixel <= (OTHERS => '0');
+                        ELSE
+                            X_macropixel <= X_macropixel + 1;
+                        END IF;
+                    END IF;
+                    X_subpixels_since_macro <= X_subpixels_since_macro + 1;
                 ELSE
                     Xpixel1 <= (OTHERS => '0');
                 END IF;
@@ -74,16 +95,24 @@ BEGIN
         IF rising_edge(clk) THEN
             IF rst = '1' THEN
                 Ypixel1 <= (OTHERS => '0');
+                Y_subpixels_since_macro <= (OTHERS => '0');
             ELSIF (Xpixel1 = 800 AND Clk25 = '1') THEN
                 IF (Ypixel1 >= 521) THEN
                     Ypixel1 <= (OTHERS => '0');
                 ELSE
-                    Ypixel1 <= Ypixel1 + 1;
+                    Y_subpixel <= Y_subpixel + 1;
+                    IF (X_macropixel = to_unsigned(12, X_macropixel'length) AND Y_subpixels_since_macro = "00") THEN
+                        IF (Y_macropixel = to_unsigned(12, Y_macropixel'length)) THEN
+                            Y_macropixel <= (OTHERS => '0') ;
+                        ELSE
+                            Y_macropixel <= Y_macropixel + 1;
+                        END IF;
+                    END IF;
+                    Y_subpixels_since_macro <= Y_subpixels_since_macro + 1;
                 END IF;
             END IF;
         END IF;
     END PROCESS;
-
     -- Vertical Sync
     Vsync1 <= '0' WHEN (Ypixel1 > 490) AND (Ypixel1 < 492) ELSE
         '1';
@@ -117,8 +146,8 @@ BEGIN
             blank <= blank2;
         END IF;
     END PROCESS;
-    -- port to tile ROM
 
+    -- port to tile ROM
     U0b : ENTITY work.tile_rom
         PORT MAP(
             address => tile_ROM_address,
