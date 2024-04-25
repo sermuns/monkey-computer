@@ -51,7 +51,14 @@ def create_flat_tileset(frames) -> list:
     # road
     tiles += [get_tile(x=2, y=7, image=frames[0])]
 
-    # balloon
+    # balloon yellow
+    tiles += get_frames_for_tile(x=0, y=0, frames=frames)
+
+    # balloon green
+    tiles += get_frames_for_tile(x=0, y=1, frames=frames)
+
+    # balloon pink
+    tiles += get_frames_for_tile(x=0, y=2, frames=frames)
     
 
     return tiles
@@ -61,7 +68,6 @@ def main():
     frames = [Image.open(f"build/frame{i+1}.png") for i in range(4)]
 
     tiles = create_flat_tileset(frames)
-
 
     # write flat_tileset to a 10x10 grid image
     final_tileset = Image.new("RGBA", (TILE_SIZE * 10, TILE_SIZE * 10))
