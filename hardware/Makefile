@@ -1,4 +1,4 @@
-.PHONY: help clean wave %_tb.vhd all sim compile preprocess parse_umem assemble video_sim
+.PHONY: help clean wave %.ghw
 
 WORKDIR = work
 WAVEDIR = wave
