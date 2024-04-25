@@ -1,5 +1,6 @@
 from PIL import Image
 
+
 def generate_possible_colors(bits):
     """
     Return list of all possible hex colors with the given amount of bits per
@@ -105,9 +106,9 @@ def move_black_and_white_to_front(palette):
     palette.insert(0, 'ffffff')
 
     return palette
-    
 
-def get_list_of_colors(image_name : str) -> list:
+
+def get_list_of_colors(image_name: str) -> list:
     """
     Given an image, return a list of all present colors in hex format.
     """
@@ -132,27 +133,29 @@ def get_list_of_colors(image_name : str) -> list:
             r_hex = hex(pixel[0])[2:].zfill(2)
             g_hex = hex(pixel[1])[2:].zfill(2)
             b_hex = hex(pixel[2])[2:].zfill(2)
-            
+
             colors.add(f'{r_hex}{g_hex}{b_hex}')
 
     return list(colors)
 
 
-def main():
-    possible_colors = generate_possible_colors(2)
-    sorted_colors = sort_by_hue(possible_colors, 100)
-    palette = move_black_and_white_to_front(sorted_colors)
-    save_to_image(palette, 'palette.gif')
+def print_vhdl_formatted(palette):
+    """
+    Given a list of hex colors, print them in a VHDL formatted list.
+    """
+
+    for i, color in enumerate(palette):
+        if i == len(palette) - 1:
+            print(f'        {i} => X"{color}"')
+            return
+
+        print(f'        {i} => X"{color}",')
 
 
 if __name__ == '__main__':
     # save_to_image(get_list_of_colors('build/frame1.png'), 'palette.gif')
-    colors_in_frame = get_list_of_colors('build/frame3.png')
-    print(colors_in_frame)
+    colors_in_frame = get_list_of_colors('build/frame1.png')
+    colors_in_frame = sort_by_hue(colors_in_frame)
+    colors_in_frame = move_black_and_white_to_front(colors_in_frame)
+    print_vhdl_formatted(colors_in_frame)
     save_to_image(colors_in_frame, 'palette.gif')
-    
-
-
-    
-
-    
