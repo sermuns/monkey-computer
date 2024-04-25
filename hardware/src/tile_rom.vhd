@@ -5,30 +5,49 @@ USE IEEE.NUMERIC_STD.ALL;
 ENTITY tile_rom IS
     PORT (
         address : IN UNSIGNED(13 DOWNTO 0); -- 14 bit address
-        data : OUT STD_LOGIC_VECTOR(11 DOWNTO 0)
+        data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
 END tile_rom;
 
 ARCHITECTURE func OF tile_rom IS
-    TYPE palette_rom_type IS ARRAY(0 TO 10) OF STD_LOGIC_VECTOR(11 DOWNTO 0);
+    TYPE palette_rom_type IS ARRAY(0 TO 31) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
     CONSTANT palette_rom : palette_rom_type := (
-        0 => X"000", --black
-        1 => X"FFF", --white
-        2 => X"F00", --red
-        3 => X"0F0", --green
-        4 => X"FA0", --orange, replace with appropriate value
-        5 => X"F0A", --pink, replace with appropriate value
-        6 => X"00F", --blue
-        7 => X"0FF", --cyan, replace with appropriate value
-        8 => X"FD0", --yellow
-        9 => X"A50", --brown, replace with appropriate value
-        10 => X"A52" --light brown, replace with appropriate value
+        0 => X"ffffff",
+        1 => X"000000",
+        2 => X"332222",
+        3 => X"404040",
+        4 => X"6c6c6c",
+        5 => X"909090",
+        6 => X"f5a097",
+        7 => X"774433",
+        8 => X"993311",
+        9 => X"cc8855",
+        10 => X"c89870",
+        11 => X"dcac84",
+        12 => X"b48458",
+        13 => X"dd7711",
+        14 => X"a08662",
+        15 => X"ecd09c",
+        16 => X"ffdd55",
+        17 => X"2f6e1e",
+        18 => X"1c6e09",
+        19 => X"176b04",
+        20 => X"114c04",
+        21 => X"3eff30",
+        22 => X"2bff44",
+        23 => X"44eebb",
+        24 => X"3388dd",
+        25 => X"555577",
+        26 => X"5544aa",
+        27 => X"422433",
+        28 => X"73172d",
+        29 => X"e86a73",
+
+        OTHERS => (OTHERS => 'U')
     );
 
     TYPE tile_rom_type IS ARRAY(0 TO 2 ** 13 - 1) OF unsigned(4 DOWNTO 0);
     CONSTANT tile_rom_data : tile_rom_type := (
-        --12x12
-
         -- 0: grass
         "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011",
         "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011",
@@ -43,41 +62,6 @@ ARCHITECTURE func OF tile_rom IS
         "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011",
         "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011", "00011",
         OTHERS => (OTHERS => 'U')
-
-        -- 1: apa 1 frame 1
-        -- 2: apa 1 frame 2
-        -- 3: apa 1 frame 3
-        -- 4: apa 1 frame 4
-
-        --apa 2 frame 1
-        --apa 2 frame 2
-        --apa 2 frame 3
-        --apa 2 frame 4
-
-        --apa 3 frame 1
-        --apa 3 frame 2
-        --apa 3 frame 3
-        --apa 3 frame 4
-
-        --apa 4 frame 1
-        --apa 4 frame 2
-        --apa 4 frame 3
-        --apa 4 frame 4
-
-        --apa 5 frame 1
-        --apa 5 frame 2
-        --apa 5 frame 3
-        --apa 5 frame 4
-
-        --apa 6 frame 1
-        --apa 6 frame 2
-        --apa 6 frame 3
-        --apa 6 frame 4
-
-        --25:
-        --26-29: ballon 1 frame 1-4 
-        --30-33: ballon 2 frame 1-4 
-        --34-37: ballon 3 frame 1-4 ORANGE
     );
 
     SIGNAL palette_index : unsigned(4 DOWNTO 0); -- max 32 colors
@@ -86,6 +70,6 @@ BEGIN
     BEGIN
         -- get palette index from memory
         palette_index <= tile_rom_data(to_integer(address));
-        data <= palette_rom(to_integer(palette_index));
+        data_out <= palette_rom(to_integer(palette_index));
     END PROCESS;
 END ARCHITECTURE;

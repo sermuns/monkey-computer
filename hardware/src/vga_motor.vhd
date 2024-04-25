@@ -48,7 +48,7 @@ ARCHITECTURE behavioral OF vga_motor IS
     SIGNAL y_within_tile : unsigned(5 DOWNTO 0); -- max value 48px
 
     SIGNAL tile_rom_address : unsigned(13 DOWNTO 0); -- Address for tile ROM
-    SIGNAL tile_rom_data_out : STD_LOGIC_VECTOR(11 DOWNTO 0); -- Data from tile ROM
+    SIGNAL tile_rom_data_out : STD_LOGIC_VECTOR(23 DOWNTO 0); -- Data from tile ROM
 
     CONSTANT TILE_SUBPIXEL_SIZE : INTEGER := 48; -- 48 subpixels per tile
 
@@ -188,7 +188,7 @@ BEGIN
     tile_rom_inst : ENTITY work.tile_rom
         PORT MAP(
             address => tile_rom_address,
-            data => tile_rom_data_out
+            data_out => tile_rom_data_out
         );
 
 END ARCHITECTURE behavioral;
