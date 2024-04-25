@@ -20,7 +20,7 @@ ARCHITECTURE testbench OF ALU_ent_tb IS
 
 BEGIN
   -- Instantiate ALU entity
-  DUT : ENTITY work.ALU_ent
+  DUT : ENTITY work.alu
     PORT MAP(
       data_bus => A_tb,
       AR => B_tb,

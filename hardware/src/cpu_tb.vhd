@@ -15,6 +15,7 @@ ARCHITECTURE testbench OF cpu_tb IS
   SIGNAL rst_tb : STD_LOGIC := '1';
 
   SIGNAL clock_count_tb : NATURAL := 0;
+  CONSTANT MAX_CLK_COUNT : NATURAL := 10000;
 
 BEGIN
   -- Instantiate the Unit Under Test (UUT)
@@ -29,8 +30,8 @@ BEGIN
     WAIT FOR CLK_PERIOD / 2;
     clk_tb <= NOT clk_tb;
 
-    IF now > CLK_PERIOD * 20000 THEN
-      REPORT "No HALT instruction within 100 clock cycles, stopping simulation" SEVERITY failure;
+    IF now > CLK_PERIOD * MAX_CLK_COUNT THEN
+      REPORT "Simulation has continued for longer than MAX_CLK_COUNT, stopping" SEVERITY FAILURE;
     END IF;
   END PROCESS;
 

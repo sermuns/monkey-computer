@@ -9,11 +9,20 @@ PMEM_FILE = "src/pMem.vhd"
 FAX_FILE = "fax.md"
 ADR_WIDTH = 12
 
+DEBUG_ARG = "busywait.s"
+
+# OP GRx, ADR
 IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN", "MUL", "LSR", "LSL"}
+# OP ADR, GRx
 OUT_OPERATIONS = {"ST", "OUT"}
-REG_OPERATIONS = {"MOV", "ADDREG"}
-SIMPLE_OPERATIONS = {"POP", "PUSH", "JSR"}
+# OP GRx, GRx
+TWO_REG_OPERATIONS = {"MOV", "ADDREG"}
+# OP GRx
+ONE_REG_OPERATIONS = {"POP", "PUSH", "JSR"}
+# OP
 NO_ARGS_OPERATIONS = {"RET"}
+# OP ADR
+ONE_ADDR_OPERATIONS = {"BRA"}
 
 def get_opcodes():
     """
@@ -80,40 +89,44 @@ def assemble_binary_line(line, known_opcodes):
     if not op_basename:
         raise ValueError(f"Error: Unknown op: {op_fullname} in {line}")
     
+    # initialize variables
+    op_adr = "-"
+    grx_name = "-"
+    immediate_value = ""
 
     # get register and address
-    op_adr = 0
-    immediate_value = None
     if op_basename in IN_OPERATIONS:
         grx_name, op_adr = parts[1], parts[2]
     elif op_basename in OUT_OPERATIONS:
         op_adr, grx_name = parts[1], parts[2]
-    elif op_basename in SIMPLE_OPERATIONS:
+    elif op_basename in ONE_REG_OPERATIONS:
         grx_name = parts[1]
     elif op_basename in NO_ARGS_OPERATIONS:
         pass
+    elif op_basename in ONE_ADDR_OPERATIONS:
+        op_adr = parts[1]
         
     # figure out number base (hex, decimal, binary)
-    if op_adr:
+    if op_adr != "-":
         base = re.search(r'(0([bdx])|\$)', op_adr)
-        if base:
+
+        if base is None:
+            base = 'd' 
+        else:
             op_adr = op_adr[len(base.group(0)):] # slice away the base
             if base.group(1) == '$':
                 base = 'x'
             else:
                 base = base.group(2)
 
-            if base == 'b':
-                op_adr = int(op_adr, 2)
-            elif base == 'd':
-                op_adr = int(op_adr, 10)
-            elif base == 'x':
-                op_adr = int(op_adr, 16)
-        else:
-            op_adr = int(op_adr)
+        if base == 'b':
+            op_adr = int(op_adr, 2)
+        elif base == 'd':
+            op_adr = int(op_adr, 10)
+        elif base == 'x':
+            op_adr = int(op_adr, 16)
 
     # parse the address-mode
-    op_address_mode_code = None
     if op_address_mode == "":       # direct
         op_address_mode_code = "00"
         op_adr_bin = f'{int(op_adr):0{ADR_WIDTH}b}'
@@ -126,12 +139,15 @@ def assemble_binary_line(line, known_opcodes):
         print(f"Error: Unknown address mode {op_address_mode}")
         sys.exit(1)
 
-    # parse the register
-    grx_num = re.search(r'GR([0-7])', grx_name)
-    if not grx_num:
-        print(f"Error: Unknown register {grx_name} in {line}")
-        sys.exit(1)
-    grx_bin = f'{int(grx_num.group(1)):03b}'
+    if grx_name != "-":
+        # parse the register
+        grx_num = re.search(r'GR([0-7])', grx_name)
+        if not grx_num:
+            print(f"Error: Unknown register {grx_name} in {line}")
+            sys.exit(1)
+        grx_bin = f'{int(grx_num.group(1)):03b}'
+    else:
+        grx_bin = "000"
 
     # create binary code
     binary_lines += [f'{known_opcodes[op_basename]}_{grx_bin}_{op_address_mode_code}_00_{op_adr_bin}']
@@ -166,18 +182,25 @@ def remove_comments_and_empty_lines(lines):
     return [line for line in lines if not re.match(r"(--|//|@).*", line) and line.strip()]
 
 
-def get_filename_arg():
+def get_arg():
     """
     Get the filename argument
     """
     if len(sys.argv) != 2:
         print("Usage: python3 assemblyparser.py <filename>")
         sys.exit(1)
+
+    arg = sys.argv[1]
+
+    if arg == "--debug":
+        return DEBUG_ARG # hardcoded, can be changed for debugging
+
     return sys.argv[1]
 
 
 def main():
-    asm_file_name = get_filename_arg()
+    asm_file_name = get_arg()
+    asm_file_path = f"src/masm/{asm_file_name}"
 
     # read the program memory file
     mem_lines = read_lines(PMEM_FILE)
@@ -186,7 +209,7 @@ def main():
     binary_lines = []
 
     # read the assembly file
-    asm_lines = read_lines(asm_file_name)
+    asm_lines = read_lines(asm_file_path)
 
     # remove comments and empty lines
     asm_lines = remove_comments_and_empty_lines(asm_lines)
@@ -196,7 +219,7 @@ def main():
         try:
             binary_lines += assemble_binary_line(line, KNOWN_OPCODES)
         except ValueError as e:
-            print(f"Unable to parse line {i} in {asm_file_name}:\n{e}")
+            print(f"Unable to parse line {i} in {asm_file_path}:\n{e}")
             sys.exit(1)
     
     # assume that HALT needs to be added
@@ -227,10 +250,10 @@ def main():
             continue # not an array element
         
         # mark for removal
-        mem_lines[i] = None
+        mem_lines[i] = ""
 
     # remove garbage
-    mem_lines = [line for line in mem_lines if line is not None]
+    mem_lines = [line for line in mem_lines if line != ""]
 
     # insert the new content
     array_index = len(binary_lines) - 1

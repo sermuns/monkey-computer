@@ -1,10 +1,10 @@
-.PHONY: help clean wave
+.PHONY: help clean wave %_tb.vhd all sim compile preprocess parse_umem assemble video_sim
 
 WORKDIR = work
 WAVEDIR = wave
 SAVEDIR = save
 SCRIPTDIR = scripts
-GHDL_FLAGS = --std=08 --workdir=$(WORKDIR)
+GHDL_FLAGS = --std=08 --workdir=$(WORKDIR) 
 
 # can be compiled in any order
 STANDALONE_MODULES = alu.vhd uMem.vhd pMem.vhd tile_rom.vhd
@@ -37,22 +37,31 @@ $(WORKDIR):
 
 all: parse_umem preprocess compile ## Should be used to compile all files
 
-test: all
-	@ghdl -a $(GHDL_FLAGS) src/cpu_tb.vhd
-	@ghdl -e $(GHDL_FLAGS) cpu_tb
+%_tb.vhd: all ## Compile a testbench
+	@ghdl -a $(GHDL_FLAGS) src/$@
+	@ghdl -e $(GHDL_FLAGS) $*_tb
 	@mkdir -p $(WAVEDIR)
-	@ghdl -r $(GHDL_FLAGS) cpu_tb --wave=$(WAVEDIR)/wave.ghw
+# Allow for simulation to fail
+	-@ghdl -r $(GHDL_FLAGS) $*_tb --wave=$(WAVEDIR)/$*_tb.ghw --ieee-asserts=disable-at-0
 
-wave: ## Launch gtkwave with the last saved wave configuration
+%.ghw: ## Launch wave in GTKWave, if not already running
+	@if ! pgrep -x "gtkwave" > /dev/null; then \
+		gtkwave -a $(SAVEDIR)/$*.gtkw $(WAVEDIR)/$*.ghw & \
+	fi
+
+wave: ## Launch GTKWave with the last saved wave configuration
+# Only launch if GTKWave is not already running
 	@if ! pgrep -x "gtkwave" > /dev/null; then \
 		gtkwave -a $(SAVEDIR)/cpu_tb_save.gtkw $(WAVEDIR)/wave.ghw & \
 	fi
 
-sim: test wave ## Simulate, then launch wave
+sim: all cpu_tb.vhd wave ## Simulate, then launch wave
 
 assemble: ## Assemble a program from src/masm into pMem.vhd
 	@if [ -z $(prog) ]; then \
 		echo "ERROR: No program given. Usage: make assemble prog=<name of program (without extension .masm) in src/masm>"; \
 		exit 1; \
 	fi
-	@python3 $(SCRIPTDIR)/assembler.py src/masm/$(prog)
+	@python3 $(SCRIPTDIR)/assembler.py $(prog)
+
+sim_video: video_tb.vhd video_tb.ghw ## Simulate the video module

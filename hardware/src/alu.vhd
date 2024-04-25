@@ -1,7 +1,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.NUMERIC_STD.ALL;
-ENTITY ALU_ent IS
+ENTITY alu IS
   PORT (
     data_bus : IN unsigned(23 DOWNTO 0);
     AR : OUT unsigned(23 DOWNTO 0);
@@ -13,7 +13,7 @@ ENTITY ALU_ent IS
   );
 END ENTITY;
 
-ARCHITECTURE ALU_arch OF ALU_ent IS
+ARCHITECTURE func OF alu IS
   CONSTANT noop_op : unsigned(3 DOWNTO 0) := "0000";
   CONSTANT add_op : unsigned(3 DOWNTO 0) := "0001";
   CONSTANT sub_op : unsigned(3 DOWNTO 0) := "0010";
@@ -30,7 +30,7 @@ ARCHITECTURE ALU_arch OF ALU_ent IS
 
   SIGNAL AR_internal : unsigned(24 DOWNTO 0);
 BEGIN
-  ALU_proc : PROCESS (OP, data_bus, rst)
+  ALU_proc : PROCESS (op, data_bus, rst)
   BEGIN
     IF rst = '1' THEN
       AR_internal <= (OTHERS => '0');
@@ -45,7 +45,7 @@ BEGIN
         WHEN or_op => AR_internal <= AR_internal OR ('0' & data_bus);
         WHEN lsr_op => AR_internal <= shift_right(AR, to_integer('0' & data_bus));
         WHEN lsl_op => AR_internal <= shift_left(AR, to_integer('0' & data_bus));
-        WHEN cmp_op => NULL; -- what should this do??
+        WHEN cmp_op => NULL; -- only set flags
         WHEN OTHERS => REPORT "Unknown ALU operation!" & INTEGER'image(to_integer(op)) SEVERITY FAILURE;
       END CASE;
     END IF;
@@ -83,4 +83,4 @@ BEGIN
       END CASE;
     END IF;
   END PROCESS;
-END ARCHITECTURE ALU_arch;
+END ARCHITECTURE;

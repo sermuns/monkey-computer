@@ -151,15 +151,16 @@ BEGIN
             PC <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
             IF (FB = "010") THEN
-                PC <= unsigned(data_bus);
-            ELSIF (P = '1') THEN
+                PC <= data_bus(11 DOWNTO 0);
+            END IF;
+            IF (P = '1') THEN
                 PC <= PC + 1;
             END IF;
         END IF;
     END PROCESS;
 
     -- ALU
-    ALU_inst : ENTITY work.ALU_ent
+    ALU_inst : ENTITY work.alu
         PORT MAP(
             data_bus => data_bus,
             AR => AR,
@@ -219,7 +220,6 @@ BEGIN
         b"00010101"/*AND.b8*/ WHEN (OP = "00101") ELSE
         b"00011101"/*OR.b8*/ WHEN (OP = "00110") ELSE
         b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
-        -- /*LSL.b8*/ WHEN (OP = "01000") ELSE
         b"00100111"/*JSR.b8*/ WHEN (OP = "01001") ELSE
         b"00100000"/*BRA.b8*/ WHEN (OP = "01010") ELSE
         b"00100011"/*BNE.b8*/ WHEN (OP = "01011") ELSE
@@ -243,7 +243,7 @@ BEGIN
         unsigned(PM_out) WHEN (TB = "001") ELSE
         (data_bus'RANGE => '0') + PC WHEN (TB = "010") ELSE -- Padding + PC
         AR WHEN (TB = "011") ELSE
-        unsigned(IR) WHEN (TB = "100") ELSE
+        (data_bus'RANGE => '0') + unsigned(IR(11 DOWNTO 0)) WHEN (TB = "100") ELSE
         (data_bus'RANGE => '0') + SP WHEN (TB = "110") ELSE
         GRx WHEN (TB = "101") ELSE
         (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP

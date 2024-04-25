@@ -3,7 +3,7 @@
 000  ASR  
 001  PM   
 010  PC   
-011  AR (ALU)
+011  AR/ALU
 100  IR   
 101  GRx 
 110  SP 
@@ -22,7 +22,6 @@
 ## P
 0 ...
 1 = PC++
-
 ## SEQ
 0000  uPC++
 0001  uPC := K1
@@ -35,23 +34,11 @@
 1000  IF C=1 uPC := uADR
 1001  IF C=0 uPC := uADR
 1111  uADR := uADR
-
 ## Stack pekare
-
 00 SP = SP
 01 SP++
 10 SP--
 
-<!-- ## K1 Values
-OP    -> u-adress
-00000 -> 01010 (LOAD)
-00001 -> 01011 (STORE)
-00010 -> 01100 (ADD)
-00011 -> 01111 (SUB)
-00100 -> 10010 (CMP)
-00101 -> 10101 (AND)
-01111 -> 11000 (MUL)
-11111 -> 10011 (HALT)  TODO change halt value -->
 
 # Assembly 
 ## OP-koder

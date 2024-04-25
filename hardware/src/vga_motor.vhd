@@ -21,19 +21,14 @@ END ENTITY vga_motor;
 ARCHITECTURE behavioral OF vga_motor IS
     -- Define your signals and variables here
 
-    --"Actual" pixels
-    SIGNAL X_subpixel : unsigned(9 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL Y_subpixel : unsigned(9 DOWNTO 0) := (OTHERS => '0'); -- Vertical pixel counter
+    -- Actual pixels which are displayed on the screen
+    SIGNAL x_subpixel : unsigned(9 DOWNTO 0);
+    SIGNAL y_subpixel : unsigned(9 DOWNTO 0);
 
-    --"logical" pixels used in tilerom
-    SIGNAL X_macropixel : unsigned(9 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL Y_macropixel : unsigned(9 DOWNTO 0) := (OTHERS => '0');
+    -- Logical pixels which the Tile ROM uses (4 subpixels = 1 pixel)
+    ALIAS X_macropixel IS x_subpixel(9 DOWNTO 2);
+    ALIAS Y_macropixel IS y_subpixel(9 DOWNTO 2);
 
-    SIGNAL X_subpixels_since_macro : unsigned(1 DOWNTO 0);
-    SIGNAL Y_subpixels_since_macro : unsigned(1 DOWNTO 0);
-
-    SIGNAL Xpixel1, Xpixel2 : unsigned(9 DOWNTO 0) := (OTHERS => '0'); --Horizontal pixel counter, AND its pipelined version
-    SIGNAL Ypixel1, Ypixel2 : unsigned(9 DOWNTO 0) := (OTHERS => '0'); -- Vertical pixel counter
     SIGNAL ClkDiv : unsigned(1 DOWNTO 0); -- Clock divisor, to generate 25 MHz signal
     SIGNAL Clk25 : STD_LOGIC; -- One pulse width 25 MHz signal
 
@@ -41,7 +36,18 @@ ARCHITECTURE behavioral OF vga_motor IS
     SIGNAL Hsync1, Hsync2 : STD_LOGIC;
     SIGNAL Vsync1, Vsync2 : STD_LOGIC;
 
-    SIGNAL tile_ROM_address : unsigned(13 DOWNTO 0); -- Address for tile ROM
+    -- 100 tiles
+    SIGNAL tile_index : unsigned(7 DOWNTO 0);
+    SIGNAL tile_col : unsigned(3 DOWNTO 0); -- max value 10: 10 tiles in row
+    SIGNAL tile_row : unsigned(3 DOWNTO 0); -- max value 10: 10 rows
+
+    SIGNAL vmem_address : unsigned(6 DOWNTO 0); -- 
+    SIGNAL vmem_field : unsigned(1 DOWNTO 0); -- 4 fields
+
+    SIGNAL x_within_tile : unsigned(5 DOWNTO 0); -- max value 48px
+    SIGNAL y_within_tile : unsigned(5 DOWNTO 0); -- max value 48px
+
+    SIGNAL tile_rom_address : unsigned(13 DOWNTO 0); -- Address for tile ROM
     SIGNAL tile_rom_data_out : STD_LOGIC_VECTOR(11 DOWNTO 0); -- Data from tile ROM
 
 BEGIN
@@ -61,98 +67,102 @@ BEGIN
         '0';
 
     -- Implement your VGA motor controller logic here
-    PROCESS (clk)
+    x_counter : PROCESS (rst, clk)
     BEGIN
-        IF rising_edge(clk) THEN
-            IF rst = '1' THEN
-                Xpixel1 <= (OTHERS => '0');
-                X_subpixels_since_macro <= (OTHERS => '0');
-            ELSIF (Clk25 = '1') THEN
-                IF (Xpixel1 < 800) THEN
-                    Xpixel1 <= Xpixel1 + 1;
-                    IF (X_subpixels_since_macro = "00") THEN
-                        IF (X_macropixel = to_unsigned(12, X_macropixel'length)) THEN
-                            X_macropixel <= (OTHERS => '0');
-                        ELSE
-                            X_macropixel <= X_macropixel + 1;
-                        END IF;
-                    END IF;
-                    X_subpixels_since_macro <= X_subpixels_since_macro + 1;
+        IF rst = '1' THEN
+            x_subpixel <= to_unsigned(0, x_subpixel'LENGTH);
+        ELSIF rising_edge(clk) THEN
+            IF (Clk25 = '1') THEN
+                IF (x_subpixel < 800) THEN
+                    x_subpixel <= x_subpixel + 1;
                 ELSE
-                    Xpixel1 <= (OTHERS => '0');
+                    x_subpixel <= (OTHERS => '0');
                 END IF;
             END IF;
         END IF;
     END PROCESS;
-
-    -- Horizontal sync
-    Hsync1 <= '0' WHEN (Xpixel1 > 656) AND (Xpixel1 < 752) ELSE
-        '1';
 
     -- Vertical pixel counter
-    PROCESS (clk)
+    y_counter : PROCESS (clk)
     BEGIN
-        IF rising_edge(clk) THEN
-            IF rst = '1' THEN
-                Ypixel1 <= (OTHERS => '0');
-                Y_subpixels_since_macro <= (OTHERS => '0');
-            ELSIF (Xpixel1 = 800 AND Clk25 = '1') THEN
-                IF (Ypixel1 >= 521) THEN
-                    Ypixel1 <= (OTHERS => '0');
+        IF rst = '1' THEN
+            y_subpixel <= to_unsigned(470, y_subpixel'LENGTH);
+        ELSIF rising_edge(clk) THEN
+            IF (x_subpixel = 800 AND Clk25 = '1') THEN
+                IF (y_subpixel < 520) THEN
+                    y_subpixel <= y_subpixel + 1;
                 ELSE
-                    Y_subpixel <= Y_subpixel + 1;
-                    IF (X_macropixel = to_unsigned(12, X_macropixel'length) AND Y_subpixels_since_macro = "00") THEN
-                        IF (Y_macropixel = to_unsigned(12, Y_macropixel'length)) THEN
-                            Y_macropixel <= (OTHERS => '0') ;
-                        ELSE
-                            Y_macropixel <= Y_macropixel + 1;
-                        END IF;
-                    END IF;
-                    Y_subpixels_since_macro <= Y_subpixels_since_macro + 1;
+                    y_subpixel <= (OTHERS => '0');
                 END IF;
             END IF;
         END IF;
     END PROCESS;
-    -- Vertical Sync
-    Vsync1 <= '0' WHEN (Ypixel1 > 490) AND (Ypixel1 < 492) ELSE
+
+    Hsync1 <= '0' WHEN (x_subpixel > 656) AND (x_subpixel < 752) ELSE
         '1';
 
-    Blank1 <= '1' WHEN (Xpixel1 > 640)
-        OR (Ypixel1 > 480) ELSE
+    Vsync1 <= '0' WHEN (y_subpixel > 490) AND (y_subpixel < 492) ELSE
+        '1';
+
+    Blank1 <= '1' WHEN (x_subpixel > 640)
+        OR (y_subpixel > 480) ELSE
         '0';
 
-    -- Video ram address composite
-    -- VR_addr <= to_unsigned(20, 7) * Ypixel1(8 DOWNTO 5) + Xpixel1(9 DOWNTO 5);
-
-    -- VIDEO_RAM:
-    -- data <= mem(addr), with one clock cycle delay
-
-    PROCESS (clk)
+    x_within_tile_counter : PROCESS (clk)
     BEGIN
-        IF rising_edge(clk) THEN
-            blank2 <= blank1;
-            Hsync2 <= Hsync1;
-            Vsync2 <= Vsync1;
-            Xpixel2 <= Xpixel1;
-            Ypixel2 <= Ypixel1;
+        IF rst = '1' THEN
+            x_within_tile <= (OTHERS => '0');
+        ELSIF rising_edge(clk) AND clk25 = '1' THEN
+            IF (x_within_tile < 47) THEN
+                x_within_tile <= x_within_tile + 1;
+            ELSE
+                x_within_tile <= (OTHERS => '0'); -- right edge of tile
+            END IF;
         END IF;
     END PROCESS;
 
-    PROCESS (clk)
+    tile_col_counter : PROCESS (clk)
     BEGIN
-        IF rising_edge(clk) THEN
-            Hsync <= Hsync2;
-            Vsync <= Vsync2;
-            blank <= blank2;
+        IF rst = '1' THEN
+            tile_col <= (OTHERS => '0');
+        ELSIF rising_edge(clk) AND Clk25 = '1' THEN
+            IF (tile_col < 9) THEN
+                tile_col <= tile_col + 1;
+            ELSE
+                tile_col <= (OTHERS => '0'); -- right edge of map
+            END IF;
         END IF;
     END PROCESS;
 
-    -- port to tile ROM
-    U0b : ENTITY work.tile_rom
+    y_within_tile_counter : PROCESS (clk)
+    BEGIN
+        IF rst = '1' THEN
+            y_within_tile <= (OTHERS => '0');
+        ELSIF rising_edge(clk) AND clk25 = '1' AND x_within_tile = 47 THEN
+            IF (y_within_tile < 47) THEN
+                y_within_tile <= y_within_tile + 1;
+            ELSE
+                y_within_tile <= (OTHERS => '0'); -- bottom of tile
+            END IF;
+        END IF;
+    END PROCESS;
+
+    tile_row_counter : PROCESS (clk)
+    BEGIN
+        IF rst = '1' THEN
+            tile_row <= (OTHERS => '0');
+        ELSIF rising_edge(clk) AND Clk25 = '1' AND y_within_tile = 47 THEN
+            tile_row <= tile_row + 1;
+            IF (tile_row = 10) THEN
+                tile_row <= (OTHERS => '0'); -- bottom of map
+            END IF;
+        END IF;
+    END PROCESS;
+
+    tile_rom_inst : ENTITY work.tile_rom
         PORT MAP(
-            address => tile_ROM_address,
+            address => tile_rom_address,
             data => tile_rom_data_out
         );
-    -- VGA output signals
 
 END ARCHITECTURE behavioral;
