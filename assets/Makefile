@@ -21,11 +21,11 @@ sprites:
 	@python slice_grid.py $(BUILD_DIR)/frame3.png $(BUILD_DIR)
 	@python slice_grid.py $(BUILD_DIR)/frame4.png $(BUILD_DIR)
 
-hex:
+hex: 
 	@python png_to_hex.py $(BUILD_DIR)/sprite1_frame1.png
 
-tileset: frames
+tileset: frames ## Generate a tileset for Tiled (.tsx)
 	@python generate_tileset.py
 
-vmem: ## Import a Tiled map into video memory
+vmem: ## Import `Tiled` map to vmem
 	@python map_to_vmem.py map.tmx $(P_MEM_FILE)
