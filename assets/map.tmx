@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="12" tileheight="12" infinite="0" nextlayerid="5" nextobjectid="1">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="10" height="10" tilewidth="12" tileheight="12" infinite="0" nextlayerid="6" nextobjectid="2">
  <tileset firstgid="1" source="frame1.tsx"/>
- <layer id="1" name="grass" width="10" height="10">
+ <layer id="1" name="grass" width="10" height="10" opacity="0.9">
   <data encoding="csv">
 45,45,45,45,45,45,45,45,45,45,
 45,45,45,45,45,45,45,45,45,45,
@@ -19,7 +19,7 @@
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,
 0,73,73,73,73,73,73,73,73,0,
-0,73,0,0,0,0,0,0,73,0,
+0,73,0,0,0,0,73,0,73,0,
 0,73,0,73,73,73,73,73,73,0,
 73,73,0,73,0,0,0,0,0,0,
 0,0,0,73,0,73,73,73,0,0,
@@ -29,30 +29,16 @@
 0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
- <layer id="3" name="monkeys" width="10" height="10">
+ <layer id="3" name="entities" width="10" height="10">
   <data encoding="csv">
 0,0,3,0,16,0,0,0,0,0,
+0,11,73,0,11,0,0,11,73,0,
+0,0,0,2,0,2,0,7,0,0,
+3,11,0,73,21,0,73,0,21,0,
+11,0,0,0,0,0,4,0,0,0,
 0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,7,0,0,
-3,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,4,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,4,0,0,0,0,0,
+0,0,0,21,4,0,0,0,0,0,
 0,0,0,0,0,0,0,0,4,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0
-</data>
- </layer>
- <layer id="4" name="balloons" width="10" height="10">
-  <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,
-0,1,0,0,1,0,0,1,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,11,0,0,21,0,0,0,21,0,
-1,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
-0,0,0,21,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,21,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0
 </data>
