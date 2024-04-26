@@ -153,9 +153,17 @@ def print_vhdl_formatted(palette):
 
 
 if __name__ == '__main__':
-    # save_to_image(get_list_of_colors('build/frame1.png'), 'palette.gif')
-    colors_in_frame = get_list_of_colors('build/frame1.png')
-    colors_in_frame = sort_by_hue(colors_in_frame)
-    colors_in_frame = move_black_and_white_to_front(colors_in_frame)
-    print_vhdl_formatted(colors_in_frame)
-    save_to_image(colors_in_frame, 'palette.gif')
+    colors_in_tileset = []
+
+    colors_in_tileset = get_list_of_colors('tileset.png')
+
+    colors_in_tileset = list(set(colors_in_tileset))  # remove duplicates
+
+    if len(colors_in_tileset) > 32:
+        raise ValueError("Too many colors in the frames")
+
+    colors_in_tileset = sort_by_hue(colors_in_tileset)
+    colors_in_tileset = move_black_and_white_to_front(colors_in_tileset)
+
+    # print_vhdl_formatted(colors_in_frames)
+    save_to_image(colors_in_tileset, 'palette.png')
