@@ -42,8 +42,7 @@ BIT_NAME=$(shell echo "$(TOP_MODULE)" | sed 's/\.[^.]*$$/\.bit/')
 PART=xc7a35ticpg236-1L
 
 # Set bin folder
-BIN=/courses/TSEA83/bin
-
+BIN=$(shell pwd)
 
 .PHONY: help
 help	:
@@ -79,8 +78,8 @@ prog	: $(WORK)/$(BIT_NAME)
 sim	: $(VHD) $(TBF)
 	mkdir -p $(SIMDIR)
 	$(eval VHDS := $(shell for i in $(VHD); do echo "../$$i"; done))
-	cd $(SIMDIR); vcom $(VHDS)
-	cd $(SIMDIR); vcom ../$(TBF)
+	cd $(SIMDIR); vcom -2008 $(VHDS)
+	cd $(SIMDIR); vcom -2008 ../$(TBF)
 	cd $(SIMDIR); vsim -voptargs=+acc -L work $(TBF_BASE)
 
 .PHONY:	clean
