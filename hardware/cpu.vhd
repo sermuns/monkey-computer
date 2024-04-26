@@ -1,7 +1,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.NUMERIC_STD.ALL;
-USE std.env.stop;
+--USE std.env.stop;
 
 ENTITY cpu IS
     PORT (
@@ -60,31 +60,43 @@ ARCHITECTURE func OF cpu IS
     ALIAS V IS flags(3);
 
     SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"111111111111"; -- Bottom of the PM
+
+    COMPONENT alu IS
+        PORT (
+            data_bus : IN unsigned(23 DOWNTO 0);
+            AR : OUT unsigned(23 DOWNTO 0);
+            op : IN unsigned(3 DOWNTO 0);
+
+            -- Z, N, C, V
+            flags : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+            rst : IN STD_LOGIC
+        );
+    END COMPONENT;
+
+    COMPONENT pMem IS
+        PORT (
+        rst : IN STD_LOGIC;
+        cpu_address : IN unsigned(11 DOWNTO 0);
+        cpu_data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
+        cpu_data_in : IN unsigned(23 DOWNTO 0);
+        cpu_we : IN STD_LOGIC;
+        video_address : IN unsigned(6 DOWNTO 0);
+        video_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0));
+    END COMPONENT;
+
+    COMPONENT uMem IS
+        PORT (
+            address : IN unsigned(7 DOWNTO 0);
+            data : OUT STD_LOGIC_VECTOR(24 DOWNTO 0)
+        );
+    END COMPONENT;
+
 BEGIN
 
     -- PROGRAM MEMORY
     PM_should_store <=
     '1' WHEN FB = "001" ELSE
     '0';
-
-    pMem : ENTITY work.pMem
-        PORT MAP(
-            rst => rst,
-            cpu_address => ASR,
-            cpu_data_out => PM_out,
-            cpu_data_in => data_bus,
-            cpu_we => PM_should_store,
-            video_address => v_addr,
-            video_data => v_data
-        );
-
-    -- MICRO MEMORY
-    uMem : ENTITY work.uMem
-        PORT MAP(
-            address => uPC,
-            data => uPM
-        );
-
     -- MICRO TICKING
     PROCESS (clk, rst)
     BEGIN
@@ -136,8 +148,7 @@ BEGIN
                         uPC <= UNSIGNED(uADR);
                     END IF;
                 WHEN "1111" =>
-                    REPORT "CPU gracefully halting.";
-                    STOP;
+                    REPORT "CPU gracefully halting." SEVERITY FAILURE;
                 WHEN OTHERS =>
                     REPORT "Unknown SEQ in uMem address " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
             END CASE;
@@ -158,17 +169,6 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
-
-    -- ALU
-    ALU_inst : ENTITY work.alu
-        PORT MAP(
-            data_bus => data_bus,
-            AR => AR,
-            op => unsigned(ALU_op),
-            rst => rst,
-            flags => flags
-        );
-
     -- INSTRUCTION REGISTER
     PROCESS (clk, rst)
     BEGIN
@@ -212,31 +212,31 @@ BEGIN
     END PROCESS;
 
     K1 <=
-    b"00001010"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
-    b"00001011"/*STORE.b8*/ WHEN (OP = "00001") ELSE
-    b"00001100"/*ADD.b8*/ WHEN (OP = "00010") ELSE
-    b"00001111"/*SUB.b8*/ WHEN (OP = "00011") ELSE
-    b"00010010"/*CMP.b8*/ WHEN (OP = "00100") ELSE
-    b"00010101"/*AND.b8*/ WHEN (OP = "00101") ELSE
-    b"00011101"/*OR.b8*/ WHEN (OP = "00110") ELSE
-    b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
-    b"00100111"/*JSR.b8*/ WHEN (OP = "01001") ELSE
-    b"00100000"/*BRA.b8*/ WHEN (OP = "01010") ELSE
-    b"00100011"/*BNE.b8*/ WHEN (OP = "01011") ELSE
-    b"00100101"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
-    b"00101010"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
-    b"00101100"/*POP.b8*/ WHEN (OP = "01110") ELSE
-    b"00011010"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-    b"00101111"/*RET.b8*/ WHEN (OP = "10000") ELSE
-    b"00110001"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+    b"00001010" WHEN (OP = "00000") ELSE
+    b"00001011" WHEN (OP = "00001") ELSE
+    b"00001100" WHEN (OP = "00010") ELSE
+    b"00001111" WHEN (OP = "00011") ELSE
+    b"00010010" WHEN (OP = "00100") ELSE
+    b"00010101" WHEN (OP = "00101") ELSE
+    b"00011101" WHEN (OP = "00110") ELSE
+    b"00011000" WHEN (OP = "00111") ELSE
+    b"00100111" WHEN (OP = "01001") ELSE
+    b"00100000" WHEN (OP = "01010") ELSE
+    b"00100011" WHEN (OP = "01011") ELSE
+    b"00100101" WHEN (OP = "01100") ELSE
+    b"00101010" WHEN (OP = "01101") ELSE
+    b"00101100" WHEN (OP = "01110") ELSE
+    b"00011010" WHEN (OP = "01111") ELSE
+    b"00101111" WHEN (OP = "10000") ELSE
+    b"00110001" WHEN (OP = "11111") ELSE
     (OTHERS => '-') WHEN (OP = "-----") ELSE
     (OTHERS => 'U'); -- something wrong
 
     K2 <=
-    b"00000011"/*DIREKT.b8*/ WHEN (M = "00" OR M = "--") ELSE
-    b"00000100"/*OMEDELBAR.b8*/ WHEN (M = "01") ELSE
-    b"00000110"/*INDIREKT.b8*/ WHEN (M = "10") ELSE
-    b"00000111"/*INDEXERAD.b8*/ WHEN (M = "11") ELSE
+    b"00000011" WHEN (M = "00" OR M = "--") ELSE
+    b"00000100" WHEN (M = "01") ELSE
+    b"00000110" WHEN (M = "10") ELSE
+    b"00000111"WHEN (M = "11") ELSE
     (OTHERS => 'U'); -- something wrong
 
     -- DATA BUS (TO-BUS)
@@ -251,4 +251,31 @@ BEGIN
     (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
     (OTHERS => 'U'); -- something wrong
 
+    -- ALU
+    ALU_inst : alu
+    PORT MAP(
+        data_bus => data_bus,
+        AR => AR,
+        op => unsigned(ALU_op),
+        rst => rst,
+        flags => flags
+    );
+
+    pMem_inst : pMem
+    PORT MAP(
+        rst => rst,
+        cpu_address => ASR,
+        cpu_data_out => PM_out,
+        cpu_data_in => data_bus,
+        cpu_we => PM_should_store,
+        video_address => v_addr,
+        video_data => v_data
+    );
+
+    -- MICRO MEMORY
+    uMem_inst : uMem
+    PORT MAP(
+        address => uPC,
+        data => uPM
+    );
 END ARCHITECTURE;

@@ -31,20 +31,43 @@ architecture Behavioral of main is
 	
 	signal video_data : std_logic_vector(23 downto 0); -- data
 	signal video_address : unsigned(6 downto 0);        -- address
+
+	component cpu 
+    PORT (
+        clk : IN STD_LOGIC;
+        rst : IN STD_LOGIC;
+        v_addr : IN unsigned(6 DOWNTO 0);
+        v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+    );
+	end component;
+
+	component VGA_MOTOR
+	PORT (
+		clk : IN STD_LOGIC;
+		rst : IN STD_LOGIC;
+		vmem_address_out : OUT unsigned(6 DOWNTO 0);
+		vmem_data : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
+		vga_hsync : OUT STD_LOGIC;
+		vga_vsync : OUT STD_LOGIC;
+		vga_red : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+		vga_green : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+		vga_blue : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
+	);
+	end component;
 	
 begin
 	
 	-- keyboard encoder component connectio n
 	-- U0 : kbd_enc port map(clk=>clk, rst=>btnC, PS2KeyboardCLK=>PS2Clk, PS2KeyboardData=>PS2Data, ScanCode=>ScanCode, make_op=>make_op);
 	
-	U1 : ENTITY work.cpu port map (
+	U1 : cpu port map (
         clk => clk,
         rst => rst,
         v_addr => video_address,
         v_data => video_data
     );
 
-	U2 : entity work.VGA_MOTOR port map (
+	U2 : VGA_MOTOR port map (
 		clk => clk,
 		rst => rst,
 		vmem_address_out => video_address,

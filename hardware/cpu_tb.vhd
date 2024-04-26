@@ -15,11 +15,30 @@ ARCHITECTURE testbench OF cpu_tb IS
   SIGNAL clk_tb : STD_LOGIC := '0';
   SIGNAL rst_tb : STD_LOGIC := '1';
 
+  component main is
+	port (
+		clk      : in std_logic;                         -- system clock
+		rst     : in std_logic;                         -- reset
+		Hsync    : out std_logic;                        -- horizontal sync
+		Vsync    : out std_logic;                        -- vertical sync
+		vgaRed   : out std_logic_vector(3 downto 0);     -- VGA red
+		vgaGreen : out std_logic_vector(3 downto 0);     -- VGA green
+		vgaBlue  : out std_logic_vector(3 downto 0)    -- VGA blue
+		-- PS2Clk  : in std_logic;                  -- PS2 clock
+		-- PS2Data : in std_logic                 -- PS2 data
+    );
+  end component;
+
 BEGIN
   -- Instantiate the Unit Under Test (UUT)
-  UUT : ENTITY work.main PORT MAP(
+  UUT : main PORT MAP(
     clk => clk_tb,
-    rst => rst_tb
+    rst => rst_tb,
+    Hsync => open,
+    Vsync => open,
+    vgaRed => open,
+    vgaGreen => open,
+    vgaBlue => open
     );
 
   -- Clock process

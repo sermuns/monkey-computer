@@ -195,11 +195,11 @@ BEGIN
     tile_rom_address <=
         (tile_rom_address'RANGE => '0') + x_macro_within_tile + 12 * y_macro_within_tile + 12 * 12 * current_tiletype;
 
-    tile_rom_inst : ENTITY work.tile_rom
-        PORT MAP(
-            address => tile_rom_address,
-            data_out => tile_rom_data_out
-        );
+    -- tile_rom_inst : ENTITY work.tile_rom_menu
+    --     PORT MAP(
+    --         address => tile_rom_address,
+    --         data_out => tile_rom_data_out
+    --     );
 
         PROCESS (clk)
 	BEGIN

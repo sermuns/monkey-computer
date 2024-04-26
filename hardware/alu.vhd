@@ -44,8 +44,8 @@ BEGIN
         WHEN load_op => AR_internal <= ('0' & data_bus);
         WHEN and_op => AR_internal <= AR_internal AND ('0' & data_bus);
         WHEN or_op => AR_internal <= AR_internal OR ('0' & data_bus);
-        WHEN lsr_op => AR_internal <= shift_right(AR, to_integer('0' & data_bus));
-        WHEN lsl_op => AR_internal <= shift_left(AR, to_integer('0' & data_bus));
+        WHEN lsr_op => AR_internal <= shift_right(AR_internal, to_integer('0' & data_bus));
+        WHEN lsl_op => AR_internal <= shift_left(AR_internal, to_integer('0' & data_bus));
         WHEN cmp_op => NULL; -- only set flags
         WHEN OTHERS => REPORT "Unknown ALU operation!" & INTEGER'image(to_integer(op)) SEVERITY FAILURE;
       END CASE;
@@ -56,7 +56,7 @@ BEGIN
 
   -- all zeroes?
   Zc <=
-    '1' WHEN AR = (AR'length - 1 DOWNTO 0 => '0')
+    '1' WHEN AR_internal = (AR_internal'length - 2 DOWNTO 0 => '0')
     ELSE
     '0';
 
@@ -70,18 +70,19 @@ BEGIN
   Vc <=
     '0';
 
-  status_flags_proc : PROCESS (data_bus, op, rst)
-  BEGIN
-    IF (rst = '1') THEN
-      flags <= (OTHERS => '0');
-    ELSE
-      CASE op IS
-        WHEN add_op | sub_op =>
-          flags <= Zc & Nc & Cc & Vc;
-        WHEN mul_op =>
-          flags <= Zc & Nc & Cc & flags(3);
-        WHEN OTHERS => NULL;
-      END CASE;
-    END IF;
-  END PROCESS;
+  flags <= (others => '0'); 
+  -- status_flags_proc : PROCESS (data_bus, op, rst)
+  -- BEGIN
+  --   IF (rst = '1') THEN
+  --     flags <= (OTHERS => '0');
+  --   ELSE
+  --     CASE op IS
+  --       WHEN add_op | sub_op =>
+  --         flags <= Zc & Nc & Cc & Vc;
+  --       WHEN mul_op =>
+  --         flags <= Zc & Nc & Cc & flags(3);
+  --       WHEN OTHERS => NULL;
+  --     END CASE;
+  --   END IF;
+  -- END PROCESS;
 END ARCHITECTURE;

@@ -23,10 +23,10 @@ ARCHITECTURE func OF pMem IS
     -- 5     3   2  2  12  
     CONSTANT p_mem_init : p_mem_type := (
         -- PROGRAM MEMORY
-        0 => b"00010_000_01_00_------------", -- ADDI GR0, 1
+        0 => b"00010_000_01_00_000000000000", -- ADDI GR0, 1
         1 => b"000000000000000000000001",
         2 => b"01010_000_00_00_111111111010", -- BRA 0xFFA // relative jump -1
-        3 => b"11111_---_--_--_------------", -- HALT
+        3 => b"11111_000_00_00_000000000000", -- HALT
 
         -- VIDEO MEMORY
         VMEM_START + 00 => b"000000_000010_001000_010000",
@@ -59,7 +59,7 @@ ARCHITECTURE func OF pMem IS
 
         -- STACK
 
-        OTHERS => (OTHERS => 'U')
+        OTHERS => (OTHERS => '0')
     );
     SIGNAL p_mem : p_mem_type;
 

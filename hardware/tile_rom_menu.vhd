@@ -2,14 +2,14 @@ LIBRARY IEEE;
 USE IEEE.STD_LOGIC_1164.ALL;
 USE IEEE.NUMERIC_STD.ALL;
 
-ENTITY tile_rom IS
+ENTITY tile_rom_menu IS
     PORT (
         address : IN UNSIGNED(13 DOWNTO 0); -- 14 bit address
         data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
-END tile_rom;
+END tile_rom_menu;
 
-ARCHITECTURE func OF tile_rom IS
+ARCHITECTURE func OF tile_rom_menu IS
     TYPE palette_rom_type IS ARRAY(0 TO 31) OF STD_LOGIC_VECTOR(11 DOWNTO 0);
     CONSTANT palette_rom : palette_rom_type := (
         00 => x"fff",

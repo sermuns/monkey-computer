@@ -5,12 +5,11 @@ USE IEEE.NUMERIC_STD.ALL;
 ENTITY tile_rom IS
     PORT (
         address : IN UNSIGNED(13 DOWNTO 0); -- 14 bit address
-        data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+        data_out : OUT STD_LOGIC_VECTOR(11 DOWNTO 0)
     );
 END tile_rom;
 
-ARCHITECTURE func OF tile_rom IS
-    TYPE palette_rom_type IS ARRAY(0 TO 31) OF STD_LOGIC_VECTOR(11 DOWNTO 0);
+ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 TO 31) OF STD_LOGIC_VECTOR(11 DOWNTO 0);
     CONSTANT palette_rom : palette_rom_type := (
         00 => x"fff",
         01 => x"000",
@@ -31,19 +30,19 @@ ARCHITECTURE func OF tile_rom IS
         16 => x"712",
         17 => x"e67",
         18 => x"b22",
-        19 => x"UUU",
-        20 => x"UUU",
-        21 => x"UUU",
-        22 => x"UUU",
-        23 => x"UUU",
-        24 => x"UUU",
-        25 => x"UUU",
-        26 => x"UUU",
-        27 => x"UUU",
-        28 => x"UUU",
-        29 => x"UUU",
-        30 => x"UUU",
-        31 => x"UUU"
+        20 => x"000",
+        21 => x"000",
+        19 => x"000",
+        22 => x"000",
+        23 => x"000",
+        24 => x"000",
+        25 => x"000",
+        26 => x"000",
+        27 => x"000",
+        28 => x"000",
+        29 => x"000",
+        30 => x"000",
+        31 => x"000"
     );
 
     CONSTANT NUM_TILES : INTEGER := 32;
@@ -88,7 +87,7 @@ ARCHITECTURE func OF tile_rom IS
         "00000", "00000", "00000", "00101", "00101", "00000", "00000", "00101", "00101", "00000", "00000", "00000",
         "00001", "00001", "00101", "00101", "00101", "00101", "00101", "00101", "00101", "00101", "00000", "00000",
 
-        OTHERS => (OTHERS => 'U')
+        OTHERS => (OTHERS => '0')
     );
 
     SIGNAL palette_index : unsigned(4 DOWNTO 0); -- max 32 colors
