@@ -12,7 +12,8 @@ STANDALONE_MODULES = alu.vhd uMem.vhd pMem.vhd tile_rom.vhd
 DEPENDENT_MODULES = vga_motor.vhd cpu.vhd main.vhd
 
 ALL_MODULES = $(STANDALONE_MODULES) $(DEPENDENT_MODULES)
-SOURCE_FILES = $(addprefix src/,$(ALL_MODULES))
+SRC_DIR = 
+SOURCE_FILES = $(addprefix $(SRC_DIR),$(ALL_MODULES))
 
 # try to compile all files
 help:
@@ -21,7 +22,7 @@ help:
 	@grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":"}; {printf " \033[36m%-30s\033[0m\n", $$1}'
 
 parse_umem:
-	@python $(SCRIPTDIR)/parse_mem.py src/uMem.vhd
+	@python $(SCRIPTDIR)/parse_mem.py uMem.vhd
  
 preprocess:
 	@python $(SCRIPTDIR)/preprocess.py -q

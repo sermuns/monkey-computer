@@ -17,18 +17,23 @@ ENTITY vga_motor IS
 END ENTITY vga_motor;
 
 ARCHITECTURE behavioral OF vga_motor IS
-    -- Define your signals and variables here
+    COMPONENT tile_rom IS
+        PORT (
+            address : IN unsigned(13 DOWNTO 0);
+            data_out : OUT STD_LOGIC_VECTOR(11 DOWNTO 0)
+        );
+    END COMPONENT;
 
     -- Actual pixels which are displayed on the screen
-    SIGNAL x_subpixel, x_subpixel1  : unsigned(9 DOWNTO 0) := (others => '0') ;
-    SIGNAL y_subpixel, y_subpixel1 : unsigned(9 DOWNTO 0) := (others => '0') ;
+    SIGNAL x_subpixel, x_subpixel1 : unsigned(9 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL y_subpixel, y_subpixel1 : unsigned(9 DOWNTO 0) := (OTHERS => '0');
 
     SIGNAL ClkDiv : unsigned(1 DOWNTO 0); -- Clock divisor, to generate 25 MHz signal
     SIGNAL Clk25 : STD_LOGIC; -- One pulse width 25 MHz signal
 
     SIGNAL blank1, blank2, blank : STD_LOGIC; -- blanking signal, with delayed versions
-	SIGNAL Hsync, Hsync1 : STD_LOGIC;
-	SIGNAL Vsync, Vsync1 : STD_LOGIC;
+    SIGNAL Hsync, Hsync1 : STD_LOGIC;
+    SIGNAL Vsync, Vsync1 : STD_LOGIC;
 
     -- 100 tiles
     SIGNAL vmem_address : unsigned(6 DOWNTO 0); -- which row of the video memory
@@ -41,7 +46,7 @@ ARCHITECTURE behavioral OF vga_motor IS
     ALIAS y_macro_within_tile IS y_within_tile(5 DOWNTO 2); -- divided by 4, value 0-11mpx
 
     SIGNAL tile_rom_address : unsigned(13 DOWNTO 0); -- Address for tile ROM
-    SIGNAL tile_rom_data_out : STD_LOGIC_VECTOR(23 DOWNTO 0); -- Data from tile ROM
+    SIGNAL tile_rom_data_out : STD_LOGIC_VECTOR(11 DOWNTO 0); -- Data from tile ROM
 
     CONSTANT TILE_SUBPIXEL_SIZE : INTEGER := 48; -- 48 subpixels per tile
 
@@ -98,7 +103,7 @@ BEGIN
         '0' WHEN (x_subpixel > 656) AND (x_subpixel < 752) ELSE
         '1';
 
-    Vsync1    <=
+    Vsync1 <=
         '0' WHEN (y_subpixel > 490) AND (y_subpixel < 492) ELSE
         '1';
 
@@ -171,17 +176,15 @@ BEGIN
     END PROCESS;
 
     PROCESS (clk)
-	BEGIN
-		IF rising_edge(clk) THEN
-			blank2 <= blank1;
-			Hsync <= Hsync1;
-			Vsync <= Vsync1;
-			x_subpixel1 <= x_subpixel;
-			y_subpixel1 <= y_subpixel;
-		END IF;
-	END PROCESS;
-
-
+    BEGIN
+        IF rising_edge(clk) THEN
+            blank2 <= blank1;
+            Hsync <= Hsync1;
+            Vsync <= Vsync1;
+            x_subpixel1 <= x_subpixel;
+            y_subpixel1 <= y_subpixel;
+        END IF;
+    END PROCESS;
     vmem_address_out <= vmem_address;
 
     -- slice out the correct field from the video memory data
@@ -191,8 +194,6 @@ BEGIN
         unsigned(vmem_data(11 DOWNTO 6)) WHEN vmem_field = "10" ELSE
         unsigned(vmem_data(5 DOWNTO 0)) WHEN vmem_field = "11" ELSE
         (OTHERS => 'U');
-
-
     --TODO what does each bit in the tile_rom_address mean? and what else does it affect?
     tile_rom_address <=
         (tile_rom_address'RANGE => '0') + x_macro_within_tile + 12 * y_macro_within_tile + 12 * 12 * current_tiletype;
@@ -203,40 +204,44 @@ BEGIN
     --         data_out => tile_rom_data_out
     --     );
 
-        PROCESS (clk)
-	BEGIN
-		IF rising_edge(clk) THEN
-			vga_hsync <= Hsync;
-			vga_vsync <= Vsync;
-			blank <= blank2;
-		END IF;
-	END PROCESS;
+    tile_rom_inst : tile_rom
+    PORT MAP(
+        address => tile_rom_address,
+        data_out => tile_rom_data_out
+    );
+
+    PROCESS (clk)
+    BEGIN
+        IF rising_edge(clk) THEN
+            vga_hsync <= Hsync;
+            vga_vsync <= Vsync;
+            blank <= blank2;
+        END IF;
+    END PROCESS;
 
     vga_Red(3) <= tile_rom_data_out(11) WHEN blank = '0' ELSE
-	'0';
-	vga_Red(2) <= tile_rom_data_out(10) WHEN blank = '0' ELSE
-	'0';
-	vga_Red(1) <= tile_rom_data_out(9) WHEN blank = '0' ELSE
-	'0';
-	vga_Red(0) <= tile_rom_data_out(8) WHEN blank = '0' ELSE
-	'0';
-	vga_Green(3) <= tile_rom_data_out(7) WHEN blank = '0' ELSE
-	'0';
-	vga_Green(2) <= tile_rom_data_out(6) WHEN blank = '0' ELSE
-	'0';
-	vga_Green(1) <= tile_rom_data_out(5) WHEN blank = '0' ELSE
-	'0';
-	vga_Green(0) <= tile_rom_data_out(4) WHEN blank = '0' ELSE
-	'0';
-	vga_Blue(3) <= tile_rom_data_out(3) WHEN blank = '0' ELSE
-	'0';
-	vga_Blue(2) <= tile_rom_data_out(2) WHEN blank = '0' ELSE
-	'0';
-	vga_Blue(1) <= tile_rom_data_out(1) WHEN blank = '0' ELSE
-	'0';
-	vga_Blue(0) <= tile_rom_data_out(0) WHEN blank = '0' ELSE
-	'0';
-
-
+    '0';
+    vga_Red(2) <= tile_rom_data_out(10) WHEN blank = '0' ELSE
+    '0';
+    vga_Red(1) <= tile_rom_data_out(9) WHEN blank = '0' ELSE
+    '0';
+    vga_Red(0) <= tile_rom_data_out(8) WHEN blank = '0' ELSE
+    '0';
+    vga_Green(3) <= tile_rom_data_out(7) WHEN blank = '0' ELSE
+    '0';
+    vga_Green(2) <= tile_rom_data_out(6) WHEN blank = '0' ELSE
+    '0';
+    vga_Green(1) <= tile_rom_data_out(5) WHEN blank = '0' ELSE
+    '0';
+    vga_Green(0) <= tile_rom_data_out(4) WHEN blank = '0' ELSE
+    '0';
+    vga_Blue(3) <= tile_rom_data_out(3) WHEN blank = '0' ELSE
+    '0';
+    vga_Blue(2) <= tile_rom_data_out(2) WHEN blank = '0' ELSE
+    '0';
+    vga_Blue(1) <= tile_rom_data_out(1) WHEN blank = '0' ELSE
+    '0';
+    vga_Blue(0) <= tile_rom_data_out(0) WHEN blank = '0' ELSE
+    '0';
 
 END ARCHITECTURE behavioral;
