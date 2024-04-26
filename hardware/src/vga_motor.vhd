@@ -6,8 +6,8 @@ ENTITY vga_motor IS
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
-        video_addr : OUT unsigned(7 DOWNTO 0); -- to ask the video memory
-        video_data : IN STD_LOGIC_VECTOR(23 DOWNTO 0);
+        vmem_address_out : OUT unsigned(6 DOWNTO 0); -- to ask the video memory
+        vmem_data : IN STD_LOGIC_VECTOR(23 DOWNTO 0); -- from the video memory
         vga_hsync : OUT STD_LOGIC;
         vga_vsync : OUT STD_LOGIC;
         vga_red : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
@@ -25,10 +25,6 @@ ARCHITECTURE behavioral OF vga_motor IS
     SIGNAL x_subpixel : unsigned(9 DOWNTO 0);
     SIGNAL y_subpixel : unsigned(9 DOWNTO 0);
 
-    -- Logical pixels which the Tile ROM uses (4 subpixels = 1 pixel)
-    ALIAS x_macropixel IS x_subpixel(9 DOWNTO 2);
-    ALIAS y_macropixel IS y_subpixel(9 DOWNTO 2);
-
     SIGNAL ClkDiv : unsigned(1 DOWNTO 0); -- Clock divisor, to generate 25 MHz signal
     SIGNAL Clk25 : STD_LOGIC; -- One pulse width 25 MHz signal
 
@@ -37,15 +33,14 @@ ARCHITECTURE behavioral OF vga_motor IS
     SIGNAL Vsync1, Vsync2 : STD_LOGIC;
 
     -- 100 tiles
-    SIGNAL tile_index : unsigned(7 DOWNTO 0);
-    SIGNAL tile_col : unsigned(3 DOWNTO 0); -- max value 10: 10 tiles in row
-    SIGNAL tile_row : unsigned(3 DOWNTO 0); -- max value 10: 10 rows
+    SIGNAL vmem_address : unsigned(6 DOWNTO 0); -- which row of the video memory
+    SIGNAL vmem_field : unsigned(1 DOWNTO 0); -- which field in the row
+    SIGNAL current_tiletype : unsigned(5 DOWNTO 0); -- which tiletype is currently being displayed
 
-    SIGNAL vmem_address : unsigned(6 DOWNTO 0); -- 
-    SIGNAL vmem_field : unsigned(1 DOWNTO 0); -- 4 fields
-
-    SIGNAL x_within_tile : unsigned(5 DOWNTO 0); -- max value 48px
-    SIGNAL y_within_tile : unsigned(5 DOWNTO 0); -- max value 48px
+    SIGNAL x_within_tile : unsigned(5 DOWNTO 0); -- value 0-47px
+    SIGNAL y_within_tile : unsigned(5 DOWNTO 0); -- value 0-47px
+    ALIAS x_macro_within_tile IS x_within_tile(5 DOWNTO 2); -- divided by 4, value 0-11mpx
+    ALIAS y_macro_within_tile IS y_within_tile(5 DOWNTO 2); -- divided by 4, value 0-11mpx
 
     SIGNAL tile_rom_address : unsigned(13 DOWNTO 0); -- Address for tile ROM
     SIGNAL tile_rom_data_out : STD_LOGIC_VECTOR(23 DOWNTO 0); -- Data from tile ROM
@@ -92,7 +87,7 @@ BEGIN
             y_subpixel <= to_unsigned(0, y_subpixel'LENGTH);
         ELSIF rising_edge(clk) THEN
             IF (x_subpixel = 800 AND Clk25 = '1') THEN
-                IF (y_subpixel ?< 520) THEN
+                IF (y_subpixel < 520) THEN
                     y_subpixel <= y_subpixel + 1;
                 ELSE
                     y_subpixel <= (OTHERS => '0');
@@ -118,7 +113,9 @@ BEGIN
         IF rst = '1' THEN
             x_within_tile <= (OTHERS => '0');
         ELSIF rising_edge(clk) AND clk25 = '1' THEN
-            IF (x_subpixel < 479) THEN
+            IF (x_subpixel = 800) THEN
+                x_within_tile <= (OTHERS => '0'); -- time to restart
+            ELSIF (x_subpixel < 479) THEN
                 IF (x_within_tile < TILE_SUBPIXEL_SIZE - 1) THEN
                     x_within_tile <= x_within_tile + 1;
                 ELSE
@@ -134,8 +131,10 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             y_within_tile <= (OTHERS => '0');
-        ELSIF rising_edge(clk) AND clk25 = '1' AND x_subpixel = 799 THEN
-            IF (y_subpixel < 479) THEN
+        ELSIF rising_edge(clk) AND clk25 = '1' AND x_subpixel = 800 THEN
+            IF (y_subpixel = 639) THEN
+                y_within_tile <= (OTHERS => '0'); -- time to restart
+            ELSIF (y_subpixel < 479) THEN
                 IF (y_within_tile < TILE_SUBPIXEL_SIZE - 1) THEN
                     y_within_tile <= y_within_tile + 1;
                 ELSE
@@ -147,43 +146,44 @@ BEGIN
         END IF;
     END PROCESS;
 
-    tile_col_counter : PROCESS (clk)
+    vmem_field_counter : PROCESS (clk)
     BEGIN
         IF rst = '1' THEN
-            tile_col <= (OTHERS => '0');
-        ELSIF rising_edge(clk)
-            AND Clk25 = '1'
-            THEN
-            IF (x_within_tile = 47) THEN
-                IF (tile_col < 9) THEN
-                    IF (x_subpixel < 479) THEN
-                        tile_col <= tile_col + 1;
-                    ELSE
-                        tile_col <= (OTHERS => '-'); -- right edge of screen
-                    END IF;
-                ELSE
-                    tile_col <= (OTHERS => '0'); -- right edge of screen
+            vmem_field <= (OTHERS => '0');
+        ELSIF rising_edge(clk) AND clk25 = '1' THEN
+            IF (x_subpixel < 479) THEN
+                IF (x_within_tile = TILE_SUBPIXEL_SIZE - 1) THEN
+                    vmem_field <= vmem_field + 1;
                 END IF;
             END IF;
         END IF;
     END PROCESS;
 
-    tile_row_counter : PROCESS (clk)
+    vmem_address_counter : PROCESS (clk)
     BEGIN
         IF rst = '1' THEN
-            tile_row <= (OTHERS => '0');
-        ELSIF rising_edge(clk)
-            AND Clk25 = '1'
-            AND tile_col = 9
-            AND y_within_tile = 47
-            THEN
-            IF (tile_row < 8) THEN
-                tile_row <= tile_row + 1;
-            ELSE
-                tile_row <= (OTHERS => '0'); -- bottom of map
+            vmem_address <= (OTHERS => '0');
+        ELSIF rising_edge(clk) AND clk25 = '1' THEN
+            IF (x_subpixel < 479) THEN
+                IF (vmem_field = 3 AND x_within_tile = TILE_SUBPIXEL_SIZE - 1) THEN
+                    vmem_address <= vmem_address + 1;
+                END IF;
             END IF;
         END IF;
     END PROCESS;
+
+    vmem_address_out <= vmem_address;
+
+    -- slice out the correct field from the video memory data
+    current_tiletype <=
+        unsigned(vmem_data(23 DOWNTO 18)) WHEN vmem_field = "00" ELSE
+        unsigned(vmem_data(17 DOWNTO 12)) WHEN vmem_field = "01" ELSE
+        unsigned(vmem_data(11 DOWNTO 6)) WHEN vmem_field = "10" ELSE
+        unsigned(vmem_data(5 DOWNTO 0)) WHEN vmem_field = "11" ELSE
+        (OTHERS => 'U');
+
+    tile_rom_address <=
+        (tile_rom_address'RANGE => '0') + x_macro_within_tile + 12 * y_macro_within_tile + 12 * 12 * current_tiletype;
 
     tile_rom_inst : ENTITY work.tile_rom
         PORT MAP(
