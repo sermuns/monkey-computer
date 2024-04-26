@@ -30,7 +30,7 @@ end main;
 architecture Behavioral of main is
 	
 	signal video_data : std_logic_vector(23 downto 0); -- data
-	signal video_address : unsigned(7 downto 0);        -- address
+	signal video_address : unsigned(6 downto 0);        -- address
 	
 begin
 	
@@ -47,8 +47,8 @@ begin
 	U2 : entity work.VGA_MOTOR port map (
 		clk => clk,
 		rst => rst,
-		video_addr => video_address,
-		video_data => video_data,
+		vmem_address_out => video_address,
+		vmem_data => video_data,
 		vga_hsync => Hsync,
 		vga_vsync => Vsync,
 		vga_red => vgaRed,
