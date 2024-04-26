@@ -20,7 +20,7 @@ def prepend_index(file):
     # Find array elements
     element_index = 0
     for i in range(array_start_index, len(lines)):
-        if not re.match(r'.*b".*--.*', lines[i]):
+        if not re.match(r'\s*b".*".*--.*', lines[i]):
             continue # not an array element WITH comment
 
         lines[i] = prepend_index_in_comment(lines[i], element_index)
@@ -37,31 +37,35 @@ def prepend_index_in_comment(line, index):
     DECIMAL_WIDTH = 2
     BINARY_WIDTH = 8
 
-    if "--" not in line:
+    if not re.match(r'\s*b".*".*--.*', line):
         return
 
     # Split line into comment and code
-    comment_column = line.index("--") + 2
-    code = line[:comment_column]
-    comment = line[comment_column:]
+    groups = re.match(r'(\s*b".*",)(\s*--.*)', line)
+    if not groups:
+        raise Exception(f"Error: Could not split line into code and comment: {line}")
+    code = groups.group(1)
+    comment = groups.group(2)
 
     # Remove previous index if exists
-    comment = re.sub(rf"^\[.*\|.*\]\s*", "", comment)
+    comment = re.sub(r'--\[.+\|.+\]\s*', '', comment) 
 
     # Pad index with whitespaces
     padded_index = str(index).rjust(2)
     binary_index = format(index, f'0{BINARY_WIDTH}b')
 
     # Insert index
-    new_comment = f"[{padded_index}|{binary_index}] {comment}"
+    new_comment = f"--[{padded_index}|{binary_index}] {comment}\n"
 
-    return code + new_comment
+    return f"{code}{new_comment}"
 
 
 def main():
     if not sys.argv[1:]:
         print('Usage: {} <filename>'.format(sys.argv[0]))
         return
+    elif sys.argv[1] == '--debug':
+        sys.argv[1] = 'src/uMem.vhd'
 
     filename = sys.argv[1]
 
