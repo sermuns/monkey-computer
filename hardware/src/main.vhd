@@ -17,9 +17,9 @@ entity main is
 		rst     : in std_logic;                         -- reset
 		Hsync    : out std_logic;                        -- horizontal sync
 		Vsync    : out std_logic;                        -- vertical sync
-		vgaRed   : out std_logic_vector(7 downto 0);     -- VGA red
-		vgaGreen : out std_logic_vector(7 downto 0);     -- VGA green
-		vgaBlue  : out std_logic_vector(7 downto 0)    -- VGA blue
+		vgaRed   : out std_logic_vector(3 downto 0);     -- VGA red
+		vgaGreen : out std_logic_vector(3 downto 0);     -- VGA green
+		vgaBlue  : out std_logic_vector(3 downto 0)    -- VGA blue
 		-- PS2Clk  : in std_logic;                  -- PS2 clock
 		-- PS2Data : in std_logic                 -- PS2 data
     );

@@ -10,11 +10,9 @@ ENTITY vga_motor IS
         vmem_data : IN STD_LOGIC_VECTOR(23 DOWNTO 0); -- from the video memory
         vga_hsync : OUT STD_LOGIC;
         vga_vsync : OUT STD_LOGIC;
-        vga_red : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-        vga_green : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-        vga_blue : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-        Hsync : OUT STD_LOGIC;
-        Vsync : OUT STD_LOGIC
+        vga_red : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+        vga_green : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
+        vga_blue : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
     );
 END ENTITY vga_motor;
 
@@ -22,15 +20,15 @@ ARCHITECTURE behavioral OF vga_motor IS
     -- Define your signals and variables here
 
     -- Actual pixels which are displayed on the screen
-    SIGNAL x_subpixel : unsigned(9 DOWNTO 0);
-    SIGNAL y_subpixel : unsigned(9 DOWNTO 0);
+    SIGNAL x_subpixel, x_subpixel1  : unsigned(9 DOWNTO 0) := (others => '0') ;
+    SIGNAL y_subpixel, y_subpixel1 : unsigned(9 DOWNTO 0) := (others => '0') ;
 
     SIGNAL ClkDiv : unsigned(1 DOWNTO 0); -- Clock divisor, to generate 25 MHz signal
     SIGNAL Clk25 : STD_LOGIC; -- One pulse width 25 MHz signal
 
-    SIGNAL blank1, blank2, blank : STD_LOGIC; -- blanking signal, with delayed versions+
-    SIGNAL Hsync1, Hsync2 : STD_LOGIC;
-    SIGNAL Vsync1, Vsync2 : STD_LOGIC;
+    SIGNAL blank1, blank2, blank : STD_LOGIC; -- blanking signal, with delayed versions
+	SIGNAL Hsync, Hsync1 : STD_LOGIC;
+	SIGNAL Vsync, Vsync1 : STD_LOGIC;
 
     -- 100 tiles
     SIGNAL vmem_address : unsigned(6 DOWNTO 0); -- which row of the video memory
@@ -96,15 +94,15 @@ BEGIN
         END IF;
     END PROCESS;
 
-    Hsync1 <=
+    Hsync <=
         '0' WHEN (x_subpixel > 656) AND (x_subpixel < 752) ELSE
         '1';
 
-    Vsync1 <=
+    Vsync    <=
         '0' WHEN (y_subpixel > 490) AND (y_subpixel < 492) ELSE
         '1';
 
-    Blank1 <= -- outside of visible area
+    Blank <= -- outside of visible area
         '1' WHEN (x_subpixel > 640) OR (y_subpixel > 480) ELSE
         '0';
 
@@ -172,6 +170,18 @@ BEGIN
         END IF;
     END PROCESS;
 
+    PROCESS (clk)
+	BEGIN
+		IF rising_edge(clk) THEN
+			blank2 <= blank1;
+			Hsync <= Hsync1;
+			Vsync <= Vsync1;
+			x_subpixel1 <= x_subpixel;
+			y_subpixel1 <= y_subpixel;
+		END IF;
+	END PROCESS;
+
+
     vmem_address_out <= vmem_address;
 
     -- slice out the correct field from the video memory data
@@ -190,5 +200,41 @@ BEGIN
             address => tile_rom_address,
             data_out => tile_rom_data_out
         );
+
+        PROCESS (clk)
+	BEGIN
+		IF rising_edge(clk) THEN
+			vga_hsync <= Hsync;
+			vga_vsync <= Vsync;
+			blank <= blank2;
+		END IF;
+	END PROCESS;
+
+    vga_Red(3) <= tile_rom_data_out(11) WHEN blank = '0' ELSE
+	'0';
+	vga_Red(2) <= tile_rom_data_out(10) WHEN blank = '0' ELSE
+	'0';
+	vga_Red(1) <= tile_rom_data_out(9) WHEN blank = '0' ELSE
+	'0';
+	vga_Red(0) <= tile_rom_data_out(8) WHEN blank = '0' ELSE
+	'0';
+	vga_Green(3) <= tile_rom_data_out(7) WHEN blank = '0' ELSE
+	'0';
+	vga_Green(2) <= tile_rom_data_out(6) WHEN blank = '0' ELSE
+	'0';
+	vga_Green(1) <= tile_rom_data_out(5) WHEN blank = '0' ELSE
+	'0';
+	vga_Green(0) <= tile_rom_data_out(4) WHEN blank = '0' ELSE
+	'0';
+	vga_Blue(3) <= tile_rom_data_out(3) WHEN blank = '0' ELSE
+	'0';
+	vga_Blue(2) <= tile_rom_data_out(2) WHEN blank = '0' ELSE
+	'0';
+	vga_Blue(1) <= tile_rom_data_out(1) WHEN blank = '0' ELSE
+	'0';
+	vga_Blue(0) <= tile_rom_data_out(0) WHEN blank = '0' ELSE
+	'0';
+
+
 
 END ARCHITECTURE behavioral;
