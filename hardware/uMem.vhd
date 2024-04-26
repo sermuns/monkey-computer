@@ -69,7 +69,7 @@ ARCHITECTURE func OF uMem IS
         b"110_000_0000_0_00_0000_00000000",--[47|00101111] {RET} PM(ASR) := PC,
         b"001_010_0000_0_10_0011_00000000",--[48|00110000] PC = PM(SP), sp++, uPC = 0
         b"111_111_0000_0_00_1111_00000000",--[49|00110001] {HALT}
-        OTHERS => (OTHERS => 'U')
+        OTHERS => (OTHERS => '0')
     );
 BEGIN
     data <= u_mem_array(TO_INTEGER(address));
