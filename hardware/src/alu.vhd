@@ -24,6 +24,7 @@ ARCHITECTURE func OF alu IS
   CONSTANT lsr_op : unsigned(3 DOWNTO 0) := "0111";
   CONSTANT lsl_op : unsigned(3 DOWNTO 0) := "1000";
   CONSTANT cmp_op : unsigned(3 DOWNTO 0) := "1001";
+  CONSTANT dont_care : unsigned(3 DOWNTO 0) := "----";
 
   -- candidate flags
   SIGNAL Zc, Nc, Cc, Vc : STD_LOGIC;
@@ -36,7 +37,7 @@ BEGIN
       AR_internal <= (OTHERS => '0');
     ELSE
       CASE op IS
-        WHEN noop_op => NULL;
+        WHEN noop_op | dont_care => NULL;
         WHEN add_op => AR_internal <= AR_internal + ('0' & data_bus);
         WHEN sub_op => AR_internal <= AR_internal - ('0' & data_bus);
         WHEN mul_op => AR_internal <= resize(('0' & data_bus) * AR_internal, AR_internal'length);
