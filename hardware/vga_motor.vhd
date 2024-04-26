@@ -94,15 +94,15 @@ BEGIN
         END IF;
     END PROCESS;
 
-    Hsync <=
+    Hsync1 <=
         '0' WHEN (x_subpixel > 656) AND (x_subpixel < 752) ELSE
         '1';
 
-    Vsync    <=
+    Vsync1    <=
         '0' WHEN (y_subpixel > 490) AND (y_subpixel < 492) ELSE
         '1';
 
-    Blank <= -- outside of visible area
+    blank1 <= -- outside of visible area
         '1' WHEN (x_subpixel > 640) OR (y_subpixel > 480) ELSE
         '0';
 
