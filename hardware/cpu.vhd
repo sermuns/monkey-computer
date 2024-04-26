@@ -75,13 +75,13 @@ ARCHITECTURE func OF cpu IS
 
     COMPONENT pMem IS
         PORT (
-        rst : IN STD_LOGIC;
-        cpu_address : IN unsigned(11 DOWNTO 0);
-        cpu_data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
-        cpu_data_in : IN unsigned(23 DOWNTO 0);
-        cpu_we : IN STD_LOGIC;
-        video_address : IN unsigned(6 DOWNTO 0);
-        video_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0));
+            rst : IN STD_LOGIC;
+            cpu_address : IN unsigned(11 DOWNTO 0);
+            cpu_data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
+            cpu_data_in : IN unsigned(23 DOWNTO 0);
+            cpu_we : IN STD_LOGIC;
+            video_address : IN unsigned(6 DOWNTO 0);
+            video_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0));
     END COMPONENT;
 
     COMPONENT uMem IS
@@ -212,31 +212,31 @@ BEGIN
     END PROCESS;
 
     K1 <=
-    b"00001010" WHEN (OP = "00000") ELSE
-    b"00001011" WHEN (OP = "00001") ELSE
-    b"00001100" WHEN (OP = "00010") ELSE
-    b"00001111" WHEN (OP = "00011") ELSE
-    b"00010010" WHEN (OP = "00100") ELSE
-    b"00010101" WHEN (OP = "00101") ELSE
-    b"00011101" WHEN (OP = "00110") ELSE
-    b"00011000" WHEN (OP = "00111") ELSE
-    b"00100111" WHEN (OP = "01001") ELSE
-    b"00100000" WHEN (OP = "01010") ELSE
-    b"00100011" WHEN (OP = "01011") ELSE
-    b"00100101" WHEN (OP = "01100") ELSE
-    b"00101010" WHEN (OP = "01101") ELSE
-    b"00101100" WHEN (OP = "01110") ELSE
-    b"00011010" WHEN (OP = "01111") ELSE
-    b"00101111" WHEN (OP = "10000") ELSE
-    b"00110001" WHEN (OP = "11111") ELSE
+    b"00001010"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
+    b"00001011"/*STORE.b8*/ WHEN (OP = "00001") ELSE
+    b"00001100"/*ADD.b8*/ WHEN (OP = "00010") ELSE
+    b"00001111"/*SUB.b8*/ WHEN (OP = "00011") ELSE
+    b"00010010"/*CMP.b8*/ WHEN (OP = "00100") ELSE
+    b"00010101"/*AND.b8*/ WHEN (OP = "00101") ELSE
+    b"00011101"/*OR.b8*/ WHEN (OP = "00110") ELSE
+    b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
+    b"00100111"/*JSR.b8*/ WHEN (OP = "01001") ELSE
+    b"00100000"/*BRA.b8*/ WHEN (OP = "01010") ELSE
+    b"00100011"/*BNE.b8*/ WHEN (OP = "01011") ELSE
+    b"00100101"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
+    b"00101010"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
+    b"00101100"/*POP.b8*/ WHEN (OP = "01110") ELSE
+    b"00011010"/*MUL.b8*/ WHEN (OP = "01111") ELSE
+    b"00101111"/*RET.b8*/ WHEN (OP = "10000") ELSE
+    b"00110001"/*HALT.b8*/ WHEN (OP = "11111") ELSE
     (OTHERS => '-') WHEN (OP = "-----") ELSE
     (OTHERS => 'U'); -- something wrong
 
     K2 <=
-    b"00000011" WHEN (M = "00" OR M = "--") ELSE
-    b"00000100" WHEN (M = "01") ELSE
-    b"00000110" WHEN (M = "10") ELSE
-    b"00000111"WHEN (M = "11") ELSE
+    b"00000011"/*DIREKT.b8*/ WHEN (M = "00" OR M = "--") ELSE
+    b"00000100"/*OMEDELBAR.b8*/ WHEN (M = "01") ELSE
+    b"00000110"/*INDIREKT.b8*/ WHEN (M = "10") ELSE
+    b"00000111"/*INDEXERAD.b8*/ WHEN (M = "11") ELSE
     (OTHERS => 'U'); -- something wrong
 
     -- DATA BUS (TO-BUS)
