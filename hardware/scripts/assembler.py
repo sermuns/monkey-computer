@@ -24,6 +24,8 @@ NO_ARGS_OPERATIONS = {"RET"}
 # OP ADR
 ONE_ADDR_OPERATIONS = {"BRA"}
 
+INSTRUCTION_WIDTH = 24
+
 def get_opcodes():
     """
     Get the opcodes from the `fax.md` file
@@ -126,18 +128,21 @@ def assemble_binary_line(line, known_opcodes):
         elif base == 'x':
             op_adr = int(op_adr, 16)
 
-    # parse the address-mode
-    if op_address_mode == "":       # direct
-        op_address_mode_code = "00"
-        op_adr_bin = f'{int(op_adr):0{ADR_WIDTH}b}'
-    elif op_address_mode == "I":    # immediate
-        op_address_mode_code = "01"
-        
-        op_adr_bin = '-' * ADR_WIDTH # dont care
-        immediate_value = f'{int(op_adr):024b}'
+        # parse the address-mode
+        if op_address_mode == "":       # direct
+            op_address_mode_code = "00"
+            op_adr_bin = f'{int(op_adr):0{ADR_WIDTH}b}'
+        elif op_address_mode == "I":    # immediate
+            op_address_mode_code = "01"
+            
+            op_adr_bin = '-' * ADR_WIDTH # dont care
+            immediate_value = f'{int(op_adr):0{INSTRUCTION_WIDTH}b}'
+        else:
+            print(f"Error: Unknown address mode {op_address_mode}")
+            sys.exit(1)
     else:
-        print(f"Error: Unknown address mode {op_address_mode}")
-        sys.exit(1)
+        op_address_mode_code = "--"
+        op_adr_bin = "-" * ADR_WIDTH
 
     if grx_name != "-":
         # parse the register
@@ -150,11 +155,12 @@ def assemble_binary_line(line, known_opcodes):
         grx_bin = "000"
 
     # create binary code
-    binary_lines += [f'{known_opcodes[op_basename]}_{grx_bin}_{op_address_mode_code}_00_{op_adr_bin}']
+    binary_line = f'{known_opcodes[op_basename]}_{grx_bin}_{op_address_mode_code}_00_{op_adr_bin}'
+    binary_lines += [(binary_line, line.strip())]
 
     # possible immediate value
     if immediate_value:
-        binary_lines += [immediate_value]
+        binary_lines += [(immediate_value, "")]
     
     return binary_lines
 
@@ -223,7 +229,7 @@ def main():
             sys.exit(1)
     
     # assume that HALT needs to be added
-    binary_lines += ["11111_000_00_00_000000000000"]
+    binary_lines += [("11111_---_--_--_------------", "HALT")]
 
     # find start and end of the program memory part of array
     mem_start_linenum = None
@@ -233,8 +239,8 @@ def main():
             while re.match(r"\s*--.*", mem_lines[i+1]):
                 i += 1 # skip comments
             mem_start_linenum = i+1 # found the start
-        elif re.match(r"\s*.*TO.*OTHERS.*", line):
-            program_end_linenum = i
+        elif re.match(r"\s*VMEM_START.*=>.*\,.*", line):
+            program_end_linenum = i-2
             break # found the end
     
     # no program memory array found?
@@ -258,18 +264,15 @@ def main():
     # insert the new content
     array_index = len(binary_lines) - 1
     for binary_line in reversed(binary_lines):
-        new_line = f'        {array_index} => b"{binary_line}",\n'
+        new_line = f'        {array_index} => b"{binary_line[0]}",'
+
+        # add original assembly line as a comment, none if immediate value
+        if binary_line[1] != "": 
+            new_line += f' -- {binary_line[1]}'
+        new_line += '\n'
+
         mem_lines.insert(mem_start_linenum, new_line)
         array_index -= 1
-
-    # adjust the "* TO VMEM_START => (OTHERS => 'U')"
-    for i, line in enumerate(mem_lines):
-        if re.match(r'.*TO.*VMEM_STAR.*', line):
-            mem_lines[i] = f"        {len(binary_lines)} TO VMEM_START - 1 => (OTHERS => 'U'),\n"
-            break
-    else:
-        print(f"Error: Could not find VMEM_START in {PMEM_FILE}")
-        sys.exit(1)
 
     # write the new program memory file
     with open(PMEM_FILE, "w") as f:
