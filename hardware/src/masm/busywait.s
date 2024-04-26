@@ -1,2 +1,2 @@
-LDI GR0, 1
-BRA 0xFFB // relative jump -1
+ADDI GR0, 1
+BRA 0xFFA // relative jump -1

@@ -15,7 +15,7 @@ ARCHITECTURE testbench OF video_tb IS
     SIGNAL rst_tb : STD_LOGIC := '1';
 
     SIGNAL clock_count_tb : NATURAL := 0;
-    CONSTANT MAX_CLK_COUNT : NATURAL := 1e5;
+    CONSTANT MAX_CLK_COUNT : NATURAL := 1e4;
 
 BEGIN
     -- Instantiate the Unit Under Test (UUT)
@@ -23,8 +23,8 @@ BEGIN
         PORT MAP(
             clk => clk_tb,
             rst => rst_tb,
-            video_addr => OPEN,
-            video_data => (OTHERS => '0'),
+            vmem_address_out => OPEN,
+            vmem_data => (OTHERS => '0'),
             vga_hsync => OPEN,
             vga_vsync => OPEN,
             vga_red => OPEN,

@@ -9,13 +9,11 @@ END ENTITY;
 ARCHITECTURE testbench OF cpu_tb IS
   -- Constants
   CONSTANT CLK_PERIOD : TIME := 10 ns;
+  CONSTANT MAX_CLK_COUNT : NATURAL := 1e3;
 
   -- Signals
   SIGNAL clk_tb : STD_LOGIC := '0';
   SIGNAL rst_tb : STD_LOGIC := '1';
-
-  SIGNAL clock_count_tb : NATURAL := 0;
-  CONSTANT MAX_CLK_COUNT : NATURAL := 100;
 
 BEGIN
   -- Instantiate the Unit Under Test (UUT)
@@ -26,6 +24,7 @@ BEGIN
 
   -- Clock process
   clk_process : PROCESS
+    VARIABLE clock_count_tb : NATURAL := 0;
   BEGIN
     WAIT FOR CLK_PERIOD / 2;
     clk_tb <= NOT clk_tb;
@@ -34,19 +33,17 @@ BEGIN
       REPORT "Simulation has continued for longer than MAX_CLK_COUNT, stopping";
       STOP;
     END IF;
-  END PROCESS;
 
-  clk_counter : PROCESS
-  BEGIN
-    WAIT UNTIL rising_edge(clk_tb);
-    clock_count_tb <= clock_count_tb + 1; -- rising edge => increment clock count
+    IF rising_edge(clk_tb) THEN
+      clock_count_tb := clock_count_tb + 1; -- rising edge => increment clock count
+    END IF;
   END PROCESS;
 
   -- Stimulus process
   stimulus_process : PROCESS
   BEGIN
     -- reset
-    WAIT FOR CLK_PERIOD * 1.25;
+    WAIT FOR CLK_PERIOD * 1.6;
     rst_tb <= '0';
 
     WAIT;
