@@ -7,7 +7,7 @@ ENTITY cpu IS
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
-        v_addr : IN unsigned(7 DOWNTO 0);
+        v_addr : IN unsigned(6 DOWNTO 0);
         v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
 END ENTITY;
@@ -64,8 +64,8 @@ BEGIN
 
     -- PROGRAM MEMORY
     PM_should_store <=
-        '1' WHEN FB = "001" ELSE
-        '0';
+    '1' WHEN FB = "001" ELSE
+    '0';
 
     pMem : ENTITY work.pMem
         PORT MAP(
@@ -90,7 +90,7 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             uPC <= (OTHERS => '0');
-        ELSIF rising_edge(clk) THEN
+            ELSIF rising_edge(clk) THEN
             CASE SEQ IS
                 WHEN "0000" =>
                     -- uPC++
@@ -136,7 +136,7 @@ BEGIN
                         uPC <= UNSIGNED(uADR);
                     END IF;
                 WHEN "1111" =>
-                    REPORT "CPU halting" SEVERITY note;
+                    REPORT "CPU gracefully halting.";
                     STOP;
                 WHEN OTHERS =>
                     REPORT "Unknown SEQ in uMem address " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
@@ -149,7 +149,7 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             PC <= (OTHERS => '0');
-        ELSIF rising_edge(clk) THEN
+            ELSIF rising_edge(clk) THEN
             IF (FB = "010") THEN
                 PC <= data_bus(11 DOWNTO 0);
             END IF;
@@ -174,7 +174,7 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             IR <= (OTHERS => '0');
-        ELSIF rising_edge(clk) THEN
+            ELSIF rising_edge(clk) THEN
             IF (FB = "100") THEN
                 IR <= STD_LOGIC_VECTOR(data_bus);
             END IF;
@@ -182,7 +182,7 @@ BEGIN
     END PROCESS;
 
     -- GENERAL REGISTERS (GRx) 
-    GRx <= GR(TO_INTEGER(unsigned(GRx_num)));
+    GRx <= GR(TO_INTEGER(unsigned(GRx_num))) WHEN GRx_num /= "---" else (OTHERS => '-');
     GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus WHEN (FB = "101");
 
     -- ASR
@@ -190,7 +190,7 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             ASR <= (OTHERS => '0');
-        ELSIF rising_edge(clk) THEN
+            ELSIF rising_edge(clk) THEN
             IF (FB = "000") THEN
                 ASR <= data_bus(11 DOWNTO 0);
             END IF;
@@ -202,51 +202,53 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             SP <= b"111111111111";
-        ELSIF rising_edge(clk) THEN
+            ELSIF rising_edge(clk) THEN
             IF SP_op = "01" THEN
                 SP <= SP - 1;
-            ELSIF SP_op = "10" AND (SP /= b"111111111111111") THEN
+                ELSIF SP_op = "10" AND (SP /= b"111111111111111") THEN
                 SP <= SP + 1;
             END IF;
         END IF;
     END PROCESS;
 
     K1 <=
-        b"00001010"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
-        b"00001011"/*STORE.b8*/ WHEN (OP = "00001") ELSE
-        b"00001100"/*ADD.b8*/ WHEN (OP = "00010") ELSE
-        b"00001111"/*SUB.b8*/ WHEN (OP = "00011") ELSE
-        b"00010010"/*CMP.b8*/ WHEN (OP = "00100") ELSE
-        b"00010101"/*AND.b8*/ WHEN (OP = "00101") ELSE
-        b"00011101"/*OR.b8*/ WHEN (OP = "00110") ELSE
-        b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
-        b"00100111"/*JSR.b8*/ WHEN (OP = "01001") ELSE
-        b"00100000"/*BRA.b8*/ WHEN (OP = "01010") ELSE
-        b"00100011"/*BNE.b8*/ WHEN (OP = "01011") ELSE
-        b"00100101"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
-        b"00101010"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
-        b"00101100"/*POP.b8*/ WHEN (OP = "01110") ELSE
-        b"00011010"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-        b"00101111"/*RET.b8*/ WHEN (OP = "10000") ELSE
-        b"00110001"/*HALT.b8*/ WHEN (OP = "11111") ELSE
-        (OTHERS => 'U'); -- something wrong
+    b"00001010"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
+    b"00001011"/*STORE.b8*/ WHEN (OP = "00001") ELSE
+    b"00001100"/*ADD.b8*/ WHEN (OP = "00010") ELSE
+    b"00001111"/*SUB.b8*/ WHEN (OP = "00011") ELSE
+    b"00010010"/*CMP.b8*/ WHEN (OP = "00100") ELSE
+    b"00010101"/*AND.b8*/ WHEN (OP = "00101") ELSE
+    b"00011101"/*OR.b8*/ WHEN (OP = "00110") ELSE
+    b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
+    b"00100111"/*JSR.b8*/ WHEN (OP = "01001") ELSE
+    b"00100000"/*BRA.b8*/ WHEN (OP = "01010") ELSE
+    b"00100011"/*BNE.b8*/ WHEN (OP = "01011") ELSE
+    b"00100101"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
+    b"00101010"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
+    b"00101100"/*POP.b8*/ WHEN (OP = "01110") ELSE
+    b"00011010"/*MUL.b8*/ WHEN (OP = "01111") ELSE
+    b"00101111"/*RET.b8*/ WHEN (OP = "10000") ELSE
+    b"00110001"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+    (OTHERS => '-') WHEN (OP = "-----") ELSE
+    (OTHERS => 'U'); -- something wrong
 
     K2 <=
-        b"00000011"/*DIREKT.b8*/ WHEN (M = "00") ELSE
-        b"00000100"/*OMEDELBAR.b8*/ WHEN (M = "01") ELSE
-        b"00000110"/*INDIREKT.b8*/ WHEN (M = "10") ELSE
-        b"00000111"/*INDEXERAD.b8*/ WHEN (M = "11");
+    b"00000011"/*DIREKT.b8*/ WHEN (M = "00" OR M = "--") ELSE
+    b"00000100"/*OMEDELBAR.b8*/ WHEN (M = "01") ELSE
+    b"00000110"/*INDIREKT.b8*/ WHEN (M = "10") ELSE
+    b"00000111"/*INDEXERAD.b8*/ WHEN (M = "11") ELSE
+    (OTHERS => 'U'); -- something wrong
 
     -- DATA BUS (TO-BUS)
     data_bus <=
-        (data_bus'RANGE => '0') + ASR WHEN (TB = "000") ELSE -- Padding + ASR
-        unsigned(PM_out) WHEN (TB = "001") ELSE
-        (data_bus'RANGE => '0') + PC WHEN (TB = "010") ELSE -- Padding + PC
-        AR WHEN (TB = "011") ELSE
-        (data_bus'RANGE => '0') + unsigned(IR(11 DOWNTO 0)) WHEN (TB = "100") ELSE
-        (data_bus'RANGE => '0') + SP WHEN (TB = "110") ELSE
-        GRx WHEN (TB = "101") ELSE
-        (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
-        (OTHERS => 'U'); -- something wrong
+    (data_bus'LENGTH - 1 DOWNTO ASR'LENGTH => '0') & ASR WHEN (TB = "000") ELSE -- Padding + ASR
+    unsigned(PM_out) WHEN (TB = "001") ELSE
+    (data_bus'LENGTH - 1 DOWNTO PC'LENGTH => '0') & PC WHEN (TB = "010") ELSE -- Padding + PC
+    AR WHEN (TB = "011") ELSE
+    (data_bus'LENGTH - 1 DOWNTO IR(11 DOWNTO 0)'LENGTH => '0') & unsigned(IR(11 DOWNTO 0)) WHEN (TB = "100") ELSE
+    (data_bus'LENGTH - 1 DOWNTO SP'LENGTH => '0') & SP WHEN (TB = "110") ELSE
+    GRx WHEN (TB = "101") ELSE
+    (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
+    (OTHERS => 'U'); -- something wrong
 
 END ARCHITECTURE;
