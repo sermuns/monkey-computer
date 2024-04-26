@@ -192,6 +192,8 @@ BEGIN
         unsigned(vmem_data(5 DOWNTO 0)) WHEN vmem_field = "11" ELSE
         (OTHERS => 'U');
 
+
+    --TODO what does each bit in the tile_rom_address mean? and what else does it affect?
     tile_rom_address <=
         (tile_rom_address'RANGE => '0') + x_macro_within_tile + 12 * y_macro_within_tile + 12 * 12 * current_tiletype;
 
