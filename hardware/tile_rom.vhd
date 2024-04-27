@@ -48,7 +48,7 @@ ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 TO 31) OF STD_
     CONSTANT NUM_TILES : INTEGER := 32;
     CONSTANT TILE_SIZE : INTEGER := 12 * 12;
 
-    TYPE tile_rom_type IS ARRAY(0 TO TILE_SIZE * NUM_TILES) OF unsigned(4 DOWNTO 0);
+    TYPE tile_rom_type IS ARRAY(natural range<>) OF unsigned(4 DOWNTO 0);
     CONSTANT tile_rom_data : tile_rom_type := (
         -- 0
         "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001",
@@ -85,9 +85,7 @@ ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 TO 31) OF STD_
         "00000", "00000", "00101", "00101", "00001", "00101", "00101", "00001", "00101", "00101", "00000", "00000",
         "00000", "00000", "00101", "00101", "00101", "00101", "00101", "00101", "00101", "00101", "00000", "00000",
         "00000", "00000", "00000", "00101", "00101", "00000", "00000", "00101", "00101", "00000", "00000", "00000",
-        "00001", "00001", "00101", "00101", "00101", "00101", "00101", "00101", "00101", "00101", "00000", "00000",
-
-        OTHERS => (OTHERS => '0')
+        "00001", "00001", "00101", "00101", "00101", "00101", "00101", "00101", "00101", "00101", "00000", "00000"
     );
 
     SIGNAL palette_index : unsigned(4 DOWNTO 0); -- max 32 colors

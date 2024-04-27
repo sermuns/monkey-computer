@@ -35,9 +35,10 @@ set workDir work
 #file mkdir $workDir
 
 # Init global variables
-set_param general.maxThreads 8 
 set help 0
 set error 0
+
+set_param general.maxThreads 16
 
 if {[llength $argv] == 0} { incr help };
 
@@ -79,6 +80,7 @@ proc synthesize {} {
 
     puts "Reading: $xdcFile"
     read_xdc ../$xdcFile
+
 
     synth_design -top $top -part xc7a35ticpg236-1L
 }

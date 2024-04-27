@@ -14,7 +14,7 @@ use IEEE.NUMERIC_STD.ALL;               -- IEEE library for the unsigned type
 entity main is
 	port (
 		clk      : in std_logic;                         -- system clock
-		rst     : in std_logic;                         -- reset
+		btnC     : in std_logic;                         -- reset
 		Hsync    : out std_logic;                        -- horizontal sync
 		Vsync    : out std_logic;                        -- vertical sync
 		vgaRed   : out std_logic_vector(3 downto 0);     -- VGA red
@@ -62,14 +62,14 @@ begin
 	
 	U1 : cpu port map (
         clk => clk,
-        rst => rst,
+        rst => btnC,
         v_addr => video_address,
         v_data => video_data
     );
 
 	U2 : VGA_MOTOR port map (
 		clk => clk,
-		rst => rst,
+		rst => btnC,
 		vmem_address_out => video_address,
 		vmem_data => video_data,
 		vga_hsync => Hsync,

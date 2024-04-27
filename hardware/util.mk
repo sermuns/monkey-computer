@@ -74,11 +74,13 @@ prog	: $(WORK)/$(BIT_NAME)
 	mkdir -p $(WORK)
 	cd $(WORK); vivado -mode batch -source $(BIN)/build.tcl -notrace -journal vivado_prog.jou -log vivado_prog.log -tclargs prog $(VHD) $(XDC)
 
-.PHONY:	sim
-sim	: $(VHD) $(TBF)
+compile:
 	mkdir -p $(SIMDIR)
 	$(eval VHDS := $(shell for i in $(VHD); do echo "../$$i"; done))
 	cd $(SIMDIR); vcom -2008 $(VHDS)
+
+.PHONY:	sim
+sim	: $(VHD) $(TBF) compile
 	cd $(SIMDIR); vcom -2008 ../$(TBF)
 	cd $(SIMDIR); vsim -voptargs=+acc -L work $(TBF_BASE)
 
