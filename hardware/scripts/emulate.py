@@ -4,14 +4,8 @@ Video memory is visualised using pygame. The VGA output is effectively emulated.
 """
 
 import sys
-import time
 import os
 import numpy as np
-import struct
-from PIL import Image
-from PIL import ImageOps
-from PIL import ImageEnhance
-
 import array_manip as am
 import re
 
@@ -22,14 +16,14 @@ import pygame
 SURFACE_WIDTH_PX = 640
 SURFACE_HEIGHT_PX = 480
 MAP_SIZE_PX = SURFACE_HEIGHT_PX
-
 MAP_SIZE_TILES = 10
-
 SCALE = 1.5
 
-CLK_FREQ = 25e6
+TILE_SIZE_PX = MAP_SIZE_PX // MAP_SIZE_TILES
 
+# Global variables
 CONSTANTS = {}
+PALETTE = []
 
 def parse_vmem(vmem_lines):
     """
@@ -66,8 +60,13 @@ def read_palette(tile_rom_lines):
 
     for elem in palette_elements:
         # Extract the 3-digit hex values
-        palette += [re.search(r'"(\w+)"', elem).group(1)]
-        
+        hex_color = re.search(r'x"(\w+)"', elem).group(1)
+        # Convert to 0-255 r,g,b values
+        r = int(hex_color[0], 16)*17
+        g = int(hex_color[1], 16)*17
+        b = int(hex_color[2], 16)*17
+        palette.append((r, g, b))
+
     return palette
 
 
@@ -136,41 +135,34 @@ def read_tile_rom(tile_rom_lines):
     return np.array(tile_rom, dtype=np.uint8)
 
 
-def draw_tile():
-    pass
-
-
-def get_tile(tile_type, tile_rom, palette):
+def get_tile(tile_type: int, tile_rom: list) -> pygame.Surface:
     """
-    Get the tile from the tile ROM.
+    Get tile appearance from tile ROM, use the values from it to fetch
+    real colors from the palette.
     """
 
-    TILE_SIZE = 12 # 12x12 macropixels in tile
+    TILE_SIZE_MACROPIXELS = TILE_SIZE_PX // 4 # 12x12 macropixels per tile
+    COLOR_CHANNELS = 3
 
-    tile = np.zeros((TILE_SIZE, TILE_SIZE), dtype=np.uint8)
+    surface = pygame.Surface((TILE_SIZE_MACROPIXELS, TILE_SIZE_MACROPIXELS))
 
     # Get the tile from the tile ROM
-    tile_data = tile_rom[tile_type * TILE_SIZE**2: (tile_type + 1) * TILE_SIZE**2]
+    tile_data = tile_rom[tile_type * TILE_SIZE_MACROPIXELS**2: (tile_type + 1) * TILE_SIZE_MACROPIXELS**2]
 
-    for i, palette_index in enumerate(tile_data):
-        row = i // TILE_SIZE
-        col = i % TILE_SIZE
-        tile[row, col] = palette_index
+    # Map the palette indices to colors
+    tile_colors = []
+    for palette_index in tile_data:
+        tile_colors.append(PALETTE[palette_index])
 
-    # Create a surface from the tile
-    surface = pygame.Surface((TILE_SIZE, TILE_SIZE))
+    for y in range(TILE_SIZE_MACROPIXELS):
+        for x in range(TILE_SIZE_MACROPIXELS):
+            color = tile_colors[y*TILE_SIZE_MACROPIXELS + x]
+            surface.set_at((x, y), color)
 
-    for row in range(TILE_SIZE):
-        for col in range(TILE_SIZE):
-            palette_index = tile[row, col]
-            # Create r,g,b tuple from the 3-digit hex value
-            color = tuple(int(palette[palette_index][i], 16)*16 for i in range(3))
-            surface.set_at((col, row), color)
-
-    return surface
+    return pygame.transform.scale(surface, (TILE_SIZE_PX, TILE_SIZE_PX))
 
 
-def get_map_surface(main_memory, tile_rom, palette):
+def get_map_surface(main_memory, tile_rom):
     """
     Draw the map from video memory to a surface, return it.
     """
@@ -178,22 +170,18 @@ def get_map_surface(main_memory, tile_rom, palette):
     VMEM_START = CONSTANTS['VMEM_START']
     VMEM_FIELD_BIT_WIDTH = 6
 
-    surface = pygame.Surface((MAP_SIZE_TILES, MAP_SIZE_TILES))
+    surface = pygame.Surface((MAP_SIZE_PX, MAP_SIZE_PX))
 
-    for row in range(MAP_SIZE_TILES):
-        for col in range(MAP_SIZE_TILES):
-            id = row*MAP_SIZE_TILES + col
+    for y in range(MAP_SIZE_TILES):
+        for x in range(MAP_SIZE_TILES):
+            id = y*MAP_SIZE_TILES + x
             vmem_row = bin(main_memory[VMEM_START + id // 4])[2:].zfill(24)
             vmem_row_fields = re.findall(rf'\d{{{VMEM_FIELD_BIT_WIDTH}}}', vmem_row)
             current_tile_type = int(vmem_row_fields[id % 4],2)
 
-            tile = get_tile(
-                tile_type=current_tile_type,
-                tile_rom=tile_rom,
-                palette=palette
-            )
+            tile = get_tile(current_tile_type, tile_rom)
 
-            surface.blit(tile, (col, row))
+            surface.blit(tile, (x*TILE_SIZE_PX, y*TILE_SIZE_PX))
 
     return surface
 
@@ -205,8 +193,8 @@ if __name__ == "__main__":
 
     # get tile_rom and palette from tile_rom.vhd
     tile_rom_lines = open('tile_rom.vhd').readlines()
-    palette = read_palette(tile_rom_lines)
-    tile_rom = read_tile_rom(tile_rom_lines)
+    PALETTE = read_palette(tile_rom_lines)
+    TILE_ROM = read_tile_rom(tile_rom_lines)
 
     # initialise pygame
     pygame.init()
@@ -215,7 +203,7 @@ if __name__ == "__main__":
 
     # Create a surface to draw on
     surface = pygame.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
-    surface.fill((0, 0, 0))
+    surface.fill((0, 0, 0)) # fill with black
 
     # Wait until user closes the window
     while True:
@@ -224,20 +212,17 @@ if __name__ == "__main__":
                 sys.exit()
 
         # Get grid map surface
-        map_surface = get_map_surface(main_memory, tile_rom, palette)
+        map_surface = get_map_surface(main_memory, TILE_ROM)
 
-        # Scale it to fit the screen
-        scaled_map_surface = pygame.transform.scale(map_surface, (SCALE*MAP_SIZE_PX, SCALE*MAP_SIZE_PX))
+        # # Scale it to fit the screen
+        # scaled_map_surface = pygame.transform.scale(map_surface, (MAP_SIZE_PX, MAP_SIZE_PX))
 
         # Draw the map surface on the main surface
-        surface.blit(scaled_map_surface, (0, 0))
+        surface.blit(map_surface, (0, 0))
+        final_surface = pygame.transform.scale_by(surface, SCALE)
 
         # Update the screen
-        main_surface = pygame.transform.scale(surface, (SCALE*SURFACE_WIDTH_PX, SCALE*SURFACE_HEIGHT_PX))
-        screen.blit(main_surface, (0, 0))
+        screen.blit(final_surface, (0, 0))
         pygame.display.flip()
 
         clock.tick(60)
-    
-
-
