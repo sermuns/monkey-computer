@@ -43,7 +43,7 @@ all: parse_umem preprocess compile ## Should be used to compile all files
 	@ghdl -e $(GHDL_FLAGS) $*_tb
 	@mkdir -p $(WAVEDIR)
 # Allow for simulation to fail
-	-@ghdl -r $(GHDL_FLAGS) $*_tb --wave=$(WAVEDIR)/$*_tb.ghw --ieee-asserts=disable-at-0
+	-@ghdl -r $(GHDL_FLAGS) $*_tb --wave=$(WAVEDIR)/$*_tb.ghw --ieee-asserts=disable-at-0 --assert-level=warning
 
 %.ghw: ## Launch wave in GTKWave, if not already running
 	@if ! pgrep -x "gtkwave" > /dev/null; then \
