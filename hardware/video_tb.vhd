@@ -15,7 +15,8 @@ ARCHITECTURE testbench OF video_tb IS
     SIGNAL rst_tb : STD_LOGIC := '1';
 
     SIGNAL clock_count_tb : NATURAL := 0;
-    CONSTANT MAX_CLK_COUNT : NATURAL := 1e4;
+    CONSTANT MAX_CLK_COUNT : NATURAL := 2e6;
+    -- CONSTANT MAX_CLK_COUNT : NATURAL := 60;
 
 BEGIN
     -- Instantiate the Unit Under Test (UUT)
@@ -29,9 +30,7 @@ BEGIN
             vga_vsync => OPEN,
             vga_red => OPEN,
             vga_green => OPEN,
-            vga_blue => OPEN,
-            hsync => OPEN,
-            vsync => OPEN
+            vga_blue => OPEN
         );
 
     -- Clock process
