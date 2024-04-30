@@ -1,29 +1,30 @@
 [*]
 [*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
-[*] Fri Apr 26 08:12:56 2024
+[*] Tue Apr 30 06:07:46 2024
 [*]
 [dumpfile] "/home/sermuns/Git/code/hardware/wave/video_tb.ghw"
-[dumpfile_mtime] "Fri Apr 26 08:10:23 2024"
-[dumpfile_size] 229471
+[dumpfile_mtime] "Tue Apr 30 06:07:34 2024"
+[dumpfile_size] 1953
 [savefile] "/home/sermuns/Git/code/hardware/save/video_tb.gtkw"
-[timestart] 25358700000
+[timestart] 0
 [size] 1920 1016
 [pos] -1 -1
-*-27.554050 25513300000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+*-24.479500 25100000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
 [treeopen] top.
-[treeopen] top.video_tb.
 [treeopen] top.video_tb.uut.
 [sst_width] 233
-[signals_width] 274
+[signals_width] 266
 [sst_expanded] 1
 [sst_vpaned_height] 280
 @28
 top.video_tb.clk_tb
-@420
+@24
 top.video_tb.clock_count_tb
 @28
 top.video_tb.rst_tb
 top.video_tb.uut.blank1
+top.video_tb.uut.blank2
+top.video_tb.uut.blank
 top.video_tb.uut.clk
 top.video_tb.uut.clk25
 @c00028
@@ -38,10 +39,11 @@ top.video_tb.uut.clkdiv[0]
 @28
 top.video_tb.uut.hsync1
 top.video_tb.uut.rst
+@24
+#{top.video_tb.uut.tile_rom_address[13:0]} top.video_tb.uut.tile_rom_address[13] top.video_tb.uut.tile_rom_address[12] top.video_tb.uut.tile_rom_address[11] top.video_tb.uut.tile_rom_address[10] top.video_tb.uut.tile_rom_address[9] top.video_tb.uut.tile_rom_address[8] top.video_tb.uut.tile_rom_address[7] top.video_tb.uut.tile_rom_address[6] top.video_tb.uut.tile_rom_address[5] top.video_tb.uut.tile_rom_address[4] top.video_tb.uut.tile_rom_address[3] top.video_tb.uut.tile_rom_address[2] top.video_tb.uut.tile_rom_address[1] top.video_tb.uut.tile_rom_address[0]
 @22
 #{top.video_tb.uut.tile_rom_data_out[11:0]} top.video_tb.uut.tile_rom_data_out[11] top.video_tb.uut.tile_rom_data_out[10] top.video_tb.uut.tile_rom_data_out[9] top.video_tb.uut.tile_rom_data_out[8] top.video_tb.uut.tile_rom_data_out[7] top.video_tb.uut.tile_rom_data_out[6] top.video_tb.uut.tile_rom_data_out[5] top.video_tb.uut.tile_rom_data_out[4] top.video_tb.uut.tile_rom_data_out[3] top.video_tb.uut.tile_rom_data_out[2] top.video_tb.uut.tile_rom_data_out[1] top.video_tb.uut.tile_rom_data_out[0]
 #{top.video_tb.uut.tile_rom_inst.palette_index[4:0]} top.video_tb.uut.tile_rom_inst.palette_index[4] top.video_tb.uut.tile_rom_inst.palette_index[3] top.video_tb.uut.tile_rom_inst.palette_index[2] top.video_tb.uut.tile_rom_inst.palette_index[1] top.video_tb.uut.tile_rom_inst.palette_index[0]
-#{top.video_tb.uut.video_data[23:0]} top.video_tb.uut.video_data[23] top.video_tb.uut.video_data[22] top.video_tb.uut.video_data[21] top.video_tb.uut.video_data[20] top.video_tb.uut.video_data[19] top.video_tb.uut.video_data[18] top.video_tb.uut.video_data[17] top.video_tb.uut.video_data[16] top.video_tb.uut.video_data[15] top.video_tb.uut.video_data[14] top.video_tb.uut.video_data[13] top.video_tb.uut.video_data[12] top.video_tb.uut.video_data[11] top.video_tb.uut.video_data[10] top.video_tb.uut.video_data[9] top.video_tb.uut.video_data[8] top.video_tb.uut.video_data[7] top.video_tb.uut.video_data[6] top.video_tb.uut.video_data[5] top.video_tb.uut.video_data[4] top.video_tb.uut.video_data[3] top.video_tb.uut.video_data[2] top.video_tb.uut.video_data[1] top.video_tb.uut.video_data[0]
 @28
 top.video_tb.uut.vsync1
 @24
@@ -49,14 +51,65 @@ top.video_tb.uut.vsync1
 #{top.video_tb.uut.y_subpixel[9:0]} top.video_tb.uut.y_subpixel[9] top.video_tb.uut.y_subpixel[8] top.video_tb.uut.y_subpixel[7] top.video_tb.uut.y_subpixel[6] top.video_tb.uut.y_subpixel[5] top.video_tb.uut.y_subpixel[4] top.video_tb.uut.y_subpixel[3] top.video_tb.uut.y_subpixel[2] top.video_tb.uut.y_subpixel[1] top.video_tb.uut.y_subpixel[0]
 #{top.video_tb.uut.x_within_tile[5:0]} top.video_tb.uut.x_within_tile[5] top.video_tb.uut.x_within_tile[4] top.video_tb.uut.x_within_tile[3] top.video_tb.uut.x_within_tile[2] top.video_tb.uut.x_within_tile[1] top.video_tb.uut.x_within_tile[0]
 #{top.video_tb.uut.y_within_tile[5:0]} top.video_tb.uut.y_within_tile[5] top.video_tb.uut.y_within_tile[4] top.video_tb.uut.y_within_tile[3] top.video_tb.uut.y_within_tile[2] top.video_tb.uut.y_within_tile[1] top.video_tb.uut.y_within_tile[0]
-@22
-#{top.video_tb.uut.vmem_address[6:0]} top.video_tb.uut.vmem_address[6] top.video_tb.uut.vmem_address[5] top.video_tb.uut.vmem_address[4] top.video_tb.uut.vmem_address[3] top.video_tb.uut.vmem_address[2] top.video_tb.uut.vmem_address[1] top.video_tb.uut.vmem_address[0]
-@c00025
+@c00024
 #{top.video_tb.uut.vmem_field[1:0]} top.video_tb.uut.vmem_field[1] top.video_tb.uut.vmem_field[0]
 @28
 top.video_tb.uut.vmem_field[1]
 top.video_tb.uut.vmem_field[0]
-@1401205
+@1401200
 -group_end
+@22
+#{top.video_tb.uut.vmem_address[6:0]} top.video_tb.uut.vmem_address[6] top.video_tb.uut.vmem_address[5] top.video_tb.uut.vmem_address[4] top.video_tb.uut.vmem_address[3] top.video_tb.uut.vmem_address[2] top.video_tb.uut.vmem_address[1] top.video_tb.uut.vmem_address[0]
+#{top.video_tb.uut.current_tiletype[5:0]} top.video_tb.uut.current_tiletype[5] top.video_tb.uut.current_tiletype[4] top.video_tb.uut.current_tiletype[3] top.video_tb.uut.current_tiletype[2] top.video_tb.uut.current_tiletype[1] top.video_tb.uut.current_tiletype[0]
+@200
+-
+@28
+top.video_tb.clk_tb
+@420
+top.video_tb.clock_count_tb
+@28
+top.video_tb.rst_tb
+top.video_tb.uut.blank
+top.video_tb.uut.blank1
+top.video_tb.uut.blank2
+top.video_tb.uut.clk
+top.video_tb.uut.clk25
+@22
+#{top.video_tb.uut.current_tiletype[5:0]} top.video_tb.uut.current_tiletype[5] top.video_tb.uut.current_tiletype[4] top.video_tb.uut.current_tiletype[3] top.video_tb.uut.current_tiletype[2] top.video_tb.uut.current_tiletype[1] top.video_tb.uut.current_tiletype[0]
+@28
+top.video_tb.uut.hsync
+@29
+top.video_tb.uut.hsync1
+@28
+top.video_tb.uut.rst
+@22
+#{top.video_tb.uut.tile_rom_address[13:0]} top.video_tb.uut.tile_rom_address[13] top.video_tb.uut.tile_rom_address[12] top.video_tb.uut.tile_rom_address[11] top.video_tb.uut.tile_rom_address[10] top.video_tb.uut.tile_rom_address[9] top.video_tb.uut.tile_rom_address[8] top.video_tb.uut.tile_rom_address[7] top.video_tb.uut.tile_rom_address[6] top.video_tb.uut.tile_rom_address[5] top.video_tb.uut.tile_rom_address[4] top.video_tb.uut.tile_rom_address[3] top.video_tb.uut.tile_rom_address[2] top.video_tb.uut.tile_rom_address[1] top.video_tb.uut.tile_rom_address[0]
+#{top.video_tb.uut.tile_rom_data_out[11:0]} top.video_tb.uut.tile_rom_data_out[11] top.video_tb.uut.tile_rom_data_out[10] top.video_tb.uut.tile_rom_data_out[9] top.video_tb.uut.tile_rom_data_out[8] top.video_tb.uut.tile_rom_data_out[7] top.video_tb.uut.tile_rom_data_out[6] top.video_tb.uut.tile_rom_data_out[5] top.video_tb.uut.tile_rom_data_out[4] top.video_tb.uut.tile_rom_data_out[3] top.video_tb.uut.tile_rom_data_out[2] top.video_tb.uut.tile_rom_data_out[1] top.video_tb.uut.tile_rom_data_out[0]
+#{top.video_tb.uut.tile_rom_inst.address[13:0]} top.video_tb.uut.tile_rom_inst.address[13] top.video_tb.uut.tile_rom_inst.address[12] top.video_tb.uut.tile_rom_inst.address[11] top.video_tb.uut.tile_rom_inst.address[10] top.video_tb.uut.tile_rom_inst.address[9] top.video_tb.uut.tile_rom_inst.address[8] top.video_tb.uut.tile_rom_inst.address[7] top.video_tb.uut.tile_rom_inst.address[6] top.video_tb.uut.tile_rom_inst.address[5] top.video_tb.uut.tile_rom_inst.address[4] top.video_tb.uut.tile_rom_inst.address[3] top.video_tb.uut.tile_rom_inst.address[2] top.video_tb.uut.tile_rom_inst.address[1] top.video_tb.uut.tile_rom_inst.address[0]
+#{top.video_tb.uut.tile_rom_inst.data_out[11:0]} top.video_tb.uut.tile_rom_inst.data_out[11] top.video_tb.uut.tile_rom_inst.data_out[10] top.video_tb.uut.tile_rom_inst.data_out[9] top.video_tb.uut.tile_rom_inst.data_out[8] top.video_tb.uut.tile_rom_inst.data_out[7] top.video_tb.uut.tile_rom_inst.data_out[6] top.video_tb.uut.tile_rom_inst.data_out[5] top.video_tb.uut.tile_rom_inst.data_out[4] top.video_tb.uut.tile_rom_inst.data_out[3] top.video_tb.uut.tile_rom_inst.data_out[2] top.video_tb.uut.tile_rom_inst.data_out[1] top.video_tb.uut.tile_rom_inst.data_out[0]
+#{top.video_tb.uut.tile_rom_inst.palette_index[4:0]} top.video_tb.uut.tile_rom_inst.palette_index[4] top.video_tb.uut.tile_rom_inst.palette_index[3] top.video_tb.uut.tile_rom_inst.palette_index[2] top.video_tb.uut.tile_rom_inst.palette_index[1] top.video_tb.uut.tile_rom_inst.palette_index[0]
+#{top.video_tb.uut.vga_blue[3:0]} top.video_tb.uut.vga_blue[3] top.video_tb.uut.vga_blue[2] top.video_tb.uut.vga_blue[1] top.video_tb.uut.vga_blue[0]
+#{top.video_tb.uut.vga_green[3:0]} top.video_tb.uut.vga_green[3] top.video_tb.uut.vga_green[2] top.video_tb.uut.vga_green[1] top.video_tb.uut.vga_green[0]
+@28
+top.video_tb.uut.vga_hsync
+@22
+#{top.video_tb.uut.vga_red[3:0]} top.video_tb.uut.vga_red[3] top.video_tb.uut.vga_red[2] top.video_tb.uut.vga_red[1] top.video_tb.uut.vga_red[0]
+@28
+top.video_tb.uut.vga_vsync
+@22
+#{top.video_tb.uut.vmem_address[6:0]} top.video_tb.uut.vmem_address[6] top.video_tb.uut.vmem_address[5] top.video_tb.uut.vmem_address[4] top.video_tb.uut.vmem_address[3] top.video_tb.uut.vmem_address[2] top.video_tb.uut.vmem_address[1] top.video_tb.uut.vmem_address[0]
+#{top.video_tb.uut.vmem_address_out[6:0]} top.video_tb.uut.vmem_address_out[6] top.video_tb.uut.vmem_address_out[5] top.video_tb.uut.vmem_address_out[4] top.video_tb.uut.vmem_address_out[3] top.video_tb.uut.vmem_address_out[2] top.video_tb.uut.vmem_address_out[1] top.video_tb.uut.vmem_address_out[0]
+#{top.video_tb.uut.vmem_data[23:0]} top.video_tb.uut.vmem_data[23] top.video_tb.uut.vmem_data[22] top.video_tb.uut.vmem_data[21] top.video_tb.uut.vmem_data[20] top.video_tb.uut.vmem_data[19] top.video_tb.uut.vmem_data[18] top.video_tb.uut.vmem_data[17] top.video_tb.uut.vmem_data[16] top.video_tb.uut.vmem_data[15] top.video_tb.uut.vmem_data[14] top.video_tb.uut.vmem_data[13] top.video_tb.uut.vmem_data[12] top.video_tb.uut.vmem_data[11] top.video_tb.uut.vmem_data[10] top.video_tb.uut.vmem_data[9] top.video_tb.uut.vmem_data[8] top.video_tb.uut.vmem_data[7] top.video_tb.uut.vmem_data[6] top.video_tb.uut.vmem_data[5] top.video_tb.uut.vmem_data[4] top.video_tb.uut.vmem_data[3] top.video_tb.uut.vmem_data[2] top.video_tb.uut.vmem_data[1] top.video_tb.uut.vmem_data[0]
+@28
+#{top.video_tb.uut.vmem_field[1:0]} top.video_tb.uut.vmem_field[1] top.video_tb.uut.vmem_field[0]
+top.video_tb.uut.vsync
+top.video_tb.uut.vsync1
+@22
+#{top.video_tb.uut.x_subpixel1[9:0]} top.video_tb.uut.x_subpixel1[9] top.video_tb.uut.x_subpixel1[8] top.video_tb.uut.x_subpixel1[7] top.video_tb.uut.x_subpixel1[6] top.video_tb.uut.x_subpixel1[5] top.video_tb.uut.x_subpixel1[4] top.video_tb.uut.x_subpixel1[3] top.video_tb.uut.x_subpixel1[2] top.video_tb.uut.x_subpixel1[1] top.video_tb.uut.x_subpixel1[0]
+#{top.video_tb.uut.x_subpixel[9:0]} top.video_tb.uut.x_subpixel[9] top.video_tb.uut.x_subpixel[8] top.video_tb.uut.x_subpixel[7] top.video_tb.uut.x_subpixel[6] top.video_tb.uut.x_subpixel[5] top.video_tb.uut.x_subpixel[4] top.video_tb.uut.x_subpixel[3] top.video_tb.uut.x_subpixel[2] top.video_tb.uut.x_subpixel[1] top.video_tb.uut.x_subpixel[0]
+#{top.video_tb.uut.x_within_tile[5:0]} top.video_tb.uut.x_within_tile[5] top.video_tb.uut.x_within_tile[4] top.video_tb.uut.x_within_tile[3] top.video_tb.uut.x_within_tile[2] top.video_tb.uut.x_within_tile[1] top.video_tb.uut.x_within_tile[0]
+#{top.video_tb.uut.y_subpixel1[9:0]} top.video_tb.uut.y_subpixel1[9] top.video_tb.uut.y_subpixel1[8] top.video_tb.uut.y_subpixel1[7] top.video_tb.uut.y_subpixel1[6] top.video_tb.uut.y_subpixel1[5] top.video_tb.uut.y_subpixel1[4] top.video_tb.uut.y_subpixel1[3] top.video_tb.uut.y_subpixel1[2] top.video_tb.uut.y_subpixel1[1] top.video_tb.uut.y_subpixel1[0]
+#{top.video_tb.uut.y_subpixel[9:0]} top.video_tb.uut.y_subpixel[9] top.video_tb.uut.y_subpixel[8] top.video_tb.uut.y_subpixel[7] top.video_tb.uut.y_subpixel[6] top.video_tb.uut.y_subpixel[5] top.video_tb.uut.y_subpixel[4] top.video_tb.uut.y_subpixel[3] top.video_tb.uut.y_subpixel[2] top.video_tb.uut.y_subpixel[1] top.video_tb.uut.y_subpixel[0]
+#{top.video_tb.uut.y_within_tile[5:0]} top.video_tb.uut.y_within_tile[5] top.video_tb.uut.y_within_tile[4] top.video_tb.uut.y_within_tile[3] top.video_tb.uut.y_within_tile[2] top.video_tb.uut.y_within_tile[1] top.video_tb.uut.y_within_tile[0]
 [pattern_trace] 1
 [pattern_trace] 0
