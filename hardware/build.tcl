@@ -39,6 +39,7 @@ set help 0
 set error 0
 
 set_param general.maxThreads 16
+set_param constraints.essentialACDB 1
 
 if {[llength $argv] == 0} { incr help };
 

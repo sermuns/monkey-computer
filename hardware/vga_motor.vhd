@@ -19,6 +19,7 @@ END ENTITY vga_motor;
 ARCHITECTURE behavioral OF vga_motor IS
     COMPONENT tile_rom IS
         PORT (
+            clk : IN STD_LOGIC;
             address : IN unsigned(13 DOWNTO 0);
             data_out : OUT STD_LOGIC_VECTOR(11 DOWNTO 0)
         );
@@ -119,13 +120,13 @@ BEGIN
             IF (x_subpixel = 800) THEN
                 x_within_tile <= (OTHERS => '0'); -- time to restart
             ELSIF (x_subpixel < 479) THEN
-                IF (x_within_tile < TILE_SUBPIXEL_SIZE - 1) THEN
+                IF (x_within_tile < 47) THEN
                     x_within_tile <= x_within_tile + 1;
                 ELSE
                     x_within_tile <= (OTHERS => '0'); -- right edge of tile
                 END IF;
             ELSE
-                x_within_tile <= (OTHERS => '-'); -- outside of map
+                x_within_tile <= (OTHERS => '0'); -- outside of map
             END IF;
         END IF;
     END PROCESS;
@@ -138,13 +139,13 @@ BEGIN
             IF (y_subpixel = 639) THEN
                 y_within_tile <= (OTHERS => '0'); -- time to restart
             ELSIF (y_subpixel < 479) THEN
-                IF (y_within_tile < TILE_SUBPIXEL_SIZE - 1) THEN
+                IF (y_within_tile < 47) THEN
                     y_within_tile <= y_within_tile + 1;
                 ELSE
                     y_within_tile <= (OTHERS => '0'); -- bottom edge of tile
                 END IF;
             ELSE
-                y_within_tile <= (OTHERS => '-'); -- outside of map
+                y_within_tile <= (OTHERS => '0'); -- outside of map
             END IF;
         END IF;
     END PROCESS;
@@ -155,9 +156,11 @@ BEGIN
             vmem_field <= (OTHERS => '0');
         ELSIF rising_edge(clk) AND clk25 = '1' THEN
             IF (x_subpixel < 479) THEN
-                IF (x_within_tile = TILE_SUBPIXEL_SIZE - 1) THEN
+                IF (x_within_tile = 47) THEN
                     vmem_field <= vmem_field + 1;
                 END IF;
+            else
+                vmem_field <= (OTHERS => '0');
             END IF;
         END IF;
     END PROCESS;
@@ -168,9 +171,10 @@ BEGIN
             vmem_address <= (OTHERS => '0');
         ELSIF rising_edge(clk) AND clk25 = '1' THEN
             IF (x_subpixel < 479) THEN
-                IF (vmem_field = 3 AND x_within_tile = TILE_SUBPIXEL_SIZE - 1) THEN
+                IF (vmem_field = 3 AND x_within_tile = 47) THEN
                     vmem_address <= vmem_address + 1;
                 END IF;
+                
             END IF;
         END IF;
     END PROCESS;
@@ -193,12 +197,12 @@ BEGIN
         unsigned(vmem_data(23 DOWNTO 18)) WHEN vmem_field = "00" ELSE
         unsigned(vmem_data(17 DOWNTO 12)) WHEN vmem_field = "01" ELSE
         unsigned(vmem_data(11 DOWNTO 6)) WHEN vmem_field = "10" ELSE
-        unsigned(vmem_data(5 DOWNTO 0)) WHEN vmem_field = "11" ELSE
-        (OTHERS => 'U');
+        unsigned(vmem_data(5 DOWNTO 0)) WHEN vmem_field = "11";
 
     --TODO what does each bit in the tile_rom_address mean? and what else does it affect?
     tile_rom_address <=
         (tile_rom_address'RANGE => '0') + x_macro_within_tile + 12 * y_macro_within_tile + 12 * 12 * current_tiletype;
+
 
     -- tile_rom_inst : ENTITY work.tile_rom_menu
     --     PORT MAP(
@@ -208,6 +212,7 @@ BEGIN
 
     tile_rom_inst : tile_rom
     PORT MAP(
+        clk => clk,
         address => tile_rom_address,
         data_out => tile_rom_data_out
     );
@@ -227,5 +232,24 @@ BEGIN
         (OTHERS => '0');
     vga_blue <= tile_rom_data_out(3 DOWNTO 0) WHEN blank = '0' ELSE
         (OTHERS => '0');
+
+    -- PROCESS (clk)
+    -- BEGIN
+    --     IF rising_edge(clk) AND clk25 = '1' THEN
+    --         IF blank = '0' THEN
+    --             IF x_subpixel < 480 THEN
+    --                 vga_red <= NOT(vga_red);
+    --             ELSE
+    --                 vga_red <= (OTHERS => '0');
+    --             END IF;
+    --         ELSE
+    --             vga_red <= (OTHERS => '0');
+    --         END IF;
+    --     END IF;
+    -- END PROCESS;
+    -- vga_green <= x"0" WHEN blank = '0' ELSE
+    --     (OTHERS => '0');
+    -- vga_blue <= x"0" WHEN blank = '0' ELSE
+    --     (OTHERS => '0');
 
 END ARCHITECTURE behavioral;

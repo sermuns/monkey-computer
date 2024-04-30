@@ -75,6 +75,7 @@ ARCHITECTURE func OF cpu IS
 
     COMPONENT pMem IS
         PORT (
+            clk : IN STD_LOGIC;
             cpu_address : IN unsigned(11 DOWNTO 0);
             cpu_data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
             cpu_data_in : IN unsigned(23 DOWNTO 0);
@@ -262,6 +263,7 @@ BEGIN
 
     pMem_inst : pMem
     PORT MAP(
+        clk => clk,
         cpu_address => ASR,
         cpu_data_out => PM_out,
         cpu_data_in => data_bus,
