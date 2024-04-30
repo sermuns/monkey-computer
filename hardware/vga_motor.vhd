@@ -71,7 +71,7 @@ BEGIN
     x_counter : PROCESS (rst, clk)
     BEGIN
         IF rst = '1' THEN
-            x_subpixel <= to_unsigned(0, x_subpixel'LENGTH);
+            x_subpixel <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
             IF (Clk25 = '1') THEN
                 IF (x_subpixel < 800) THEN
@@ -84,10 +84,10 @@ BEGIN
     END PROCESS;
 
     -- Vertical pixel counter
-    y_counter : PROCESS (clk)
+    y_counter : PROCESS (clk, rst)
     BEGIN
         IF rst = '1' THEN
-            y_subpixel <= to_unsigned(0, y_subpixel'LENGTH);
+            y_subpixel <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
             IF (x_subpixel = 800 AND Clk25 = '1') THEN
                 IF (y_subpixel < 520) THEN
@@ -104,14 +104,14 @@ BEGIN
         '1';
 
     Vsync1 <=
-        '0' WHEN (y_subpixel > 490) AND (y_subpixel < 492) ELSE
+        '0' WHEN (y_subpixel > 490) AND (y_subpixel <= 492) ELSE
         '1';
 
     blank1 <= -- outside of visible area
         '1' WHEN (x_subpixel > 640) OR (y_subpixel > 480) ELSE
         '0';
 
-    x_within_tile_counter : PROCESS (clk)
+    x_within_tile_counter : PROCESS (clk, rst)
     BEGIN
         IF rst = '1' THEN
             x_within_tile <= (OTHERS => '0');
@@ -130,7 +130,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    y_within_tile_counter : PROCESS (clk)
+    y_within_tile_counter : PROCESS (clk, rst)
     BEGIN
         IF rst = '1' THEN
             y_within_tile <= (OTHERS => '0');
@@ -149,7 +149,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    vmem_field_counter : PROCESS (clk)
+    vmem_field_counter : PROCESS (clk, rst)
     BEGIN
         IF rst = '1' THEN
             vmem_field <= (OTHERS => '0');
@@ -185,6 +185,7 @@ BEGIN
             y_subpixel1 <= y_subpixel;
         END IF;
     END PROCESS;
+
     vmem_address_out <= vmem_address;
 
     -- slice out the correct field from the video memory data
@@ -194,6 +195,7 @@ BEGIN
         unsigned(vmem_data(11 DOWNTO 6)) WHEN vmem_field = "10" ELSE
         unsigned(vmem_data(5 DOWNTO 0)) WHEN vmem_field = "11" ELSE
         (OTHERS => 'U');
+
     --TODO what does each bit in the tile_rom_address mean? and what else does it affect?
     tile_rom_address <=
         (tile_rom_address'RANGE => '0') + x_macro_within_tile + 12 * y_macro_within_tile + 12 * 12 * current_tiletype;
@@ -219,29 +221,11 @@ BEGIN
         END IF;
     END PROCESS;
 
-    vga_Red(3) <= tile_rom_data_out(11) WHEN blank = '0' ELSE
-    '0';
-    vga_Red(2) <= tile_rom_data_out(10) WHEN blank = '0' ELSE
-    '0';
-    vga_Red(1) <= tile_rom_data_out(9) WHEN blank = '0' ELSE
-    '0';
-    vga_Red(0) <= tile_rom_data_out(8) WHEN blank = '0' ELSE
-    '0';
-    vga_Green(3) <= tile_rom_data_out(7) WHEN blank = '0' ELSE
-    '0';
-    vga_Green(2) <= tile_rom_data_out(6) WHEN blank = '0' ELSE
-    '0';
-    vga_Green(1) <= tile_rom_data_out(5) WHEN blank = '0' ELSE
-    '0';
-    vga_Green(0) <= tile_rom_data_out(4) WHEN blank = '0' ELSE
-    '0';
-    vga_Blue(3) <= tile_rom_data_out(3) WHEN blank = '0' ELSE
-    '0';
-    vga_Blue(2) <= tile_rom_data_out(2) WHEN blank = '0' ELSE
-    '0';
-    vga_Blue(1) <= tile_rom_data_out(1) WHEN blank = '0' ELSE
-    '0';
-    vga_Blue(0) <= tile_rom_data_out(0) WHEN blank = '0' ELSE
-    '0';
+    vga_red <= tile_rom_data_out(11 DOWNTO 8) WHEN blank = '0' ELSE
+        (OTHERS => '0');
+    vga_green <= tile_rom_data_out(7 DOWNTO 4) WHEN blank = '0' ELSE
+        (OTHERS => '0');
+    vga_blue <= tile_rom_data_out(3 DOWNTO 0) WHEN blank = '0' ELSE
+        (OTHERS => '0');
 
 END ARCHITECTURE behavioral;
