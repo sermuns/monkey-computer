@@ -5,6 +5,7 @@ WAVEDIR = wave
 SAVEDIR = save
 SCRIPTDIR = scripts
 GHDL_FLAGS = --std=08 --workdir=$(WORKDIR) 
+SRC_DIR=./
 
 # can be compiled in any order
 STANDALONE_MODULES = alu.vhd uMem.vhd pMem.vhd tile_rom.vhd
@@ -12,7 +13,6 @@ STANDALONE_MODULES = alu.vhd uMem.vhd pMem.vhd tile_rom.vhd
 DEPENDENT_MODULES = vga_motor.vhd cpu.vhd main.vhd
 
 ALL_MODULES = $(STANDALONE_MODULES) $(DEPENDENT_MODULES)
-SRC_DIR = 
 SOURCE_FILES = $(addprefix $(SRC_DIR),$(ALL_MODULES))
 
 # try to compile all files
@@ -22,7 +22,7 @@ help:
 	@grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":"}; {printf " \033[36m%-30s\033[0m\n", $$1}'
 
 parse_umem:
-	@python $(SCRIPTDIR)/parse_mem.py uMem.vhd
+	@python $(SCRIPTDIR)/parse_mem.py $(SRC_DIR)/uMem.vhd
  
 preprocess:
 	@python $(SCRIPTDIR)/preprocess.py -q
@@ -39,7 +39,7 @@ $(WORKDIR):
 all: parse_umem preprocess compile ## Should be used to compile all files
 
 %_tb.vhd: all
-	@ghdl -a $(GHDL_FLAGS) src/$@
+	@ghdl -a $(GHDL_FLAGS) $(SRC_DIR)/$@
 	@ghdl -e $(GHDL_FLAGS) $*_tb
 	@mkdir -p $(WAVEDIR)
 # Allow for simulation to fail
@@ -50,7 +50,7 @@ all: parse_umem preprocess compile ## Should be used to compile all files
 		gtkwave -a $(SAVEDIR)/$*.gtkw $(WAVEDIR)/$*.ghw & \
 	fi
 
-gtk: all cpu_tb.vhd cpu_tb.ghw ## Simulate, then launch wave
+sim: all cpu_tb.vhd cpu_tb.ghw ## Simulate, then launch wave
 
 assemble: ## Assemble a program from src/masm into pMem.vhd
 	@if [ -z $(prog) ]; then \

@@ -18,7 +18,7 @@ ARCHITECTURE testbench OF cpu_tb IS
   component main is
 	port (
 		clk      : in std_logic;                         -- system clock
-		rst     : in std_logic;                         -- reset
+		btnC     : in std_logic;                         -- reset
 		Hsync    : out std_logic;                        -- horizontal sync
 		Vsync    : out std_logic;                        -- vertical sync
 		vgaRed   : out std_logic_vector(3 downto 0);     -- VGA red
@@ -33,7 +33,7 @@ BEGIN
   -- Instantiate the Unit Under Test (UUT)
   UUT : main PORT MAP(
     clk => clk_tb,
-    rst => rst_tb,
+    btnC => rst_tb,
     Hsync => open,
     Vsync => open,
     vgaRed => open,

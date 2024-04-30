@@ -41,7 +41,7 @@ def prepend_index_in_comment(line, index):
         return
 
     # Split line into comment and code
-    groups = re.match(r'(\s*b".*",)(\s*--.*)', line)
+    groups = re.match(r'(\s*b".*",?)(\s*--.*)', line)
     if not groups:
         raise Exception(f"Error: Could not split line into code and comment: {line}")
     code = groups.group(1)
@@ -65,9 +65,11 @@ def main():
         print('Usage: {} <filename>'.format(sys.argv[0]))
         return
     elif sys.argv[1] == '--debug':
-        sys.argv[1] = 'src/uMem.vhd'
+        sys.argv[1] = 'uMem.vhd'
 
     filename = sys.argv[1]
+
+    print(filename)
 
     with open(filename, 'r') as file:
         new_file_lines = prepend_index(file)
