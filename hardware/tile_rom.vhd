@@ -9,7 +9,7 @@ ENTITY tile_rom IS
     );
 END tile_rom;
 
-ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 TO 31) OF STD_LOGIC_VECTOR(11 DOWNTO 0);
+ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(NATURAL RANGE <>) OF STD_LOGIC_VECTOR(11 DOWNTO 0);
     CONSTANT palette_rom : palette_rom_type := (
         00 => x"fff",
         01 => x"000",
@@ -29,30 +29,17 @@ ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 TO 31) OF STD_
         15 => x"423",
         16 => x"712",
         17 => x"e67",
-        18 => x"b22",
-        20 => x"000",
-        21 => x"000",
-        19 => x"000",
-        22 => x"000",
-        23 => x"000",
-        24 => x"000",
-        25 => x"000",
-        26 => x"000",
-        27 => x"000",
-        28 => x"000",
-        29 => x"000",
-        30 => x"000",
-        31 => x"000"
+        18 => x"b22"
     );
 
     CONSTANT NUM_TILES : INTEGER := 32;
     CONSTANT TILE_SIZE : INTEGER := 12 * 12;
 
-    TYPE tile_rom_type IS ARRAY(natural range<>) OF unsigned(4 DOWNTO 0);
+    TYPE tile_rom_type IS ARRAY(NATURAL RANGE <>) OF unsigned(4 DOWNTO 0);
     CONSTANT tile_rom_data : tile_rom_type := (
         -- 0
         "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001",
-        "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000",
+        "00001", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000",
         "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000",
         "00000", "00001", "00001", "00001", "00001", "00001", "00001", "00001", "00001", "00001", "00001", "00000",
         "00001", "00001", "00001", "00001", "00001", "00001", "00001", "00001", "00001", "00001", "00001", "00000",
