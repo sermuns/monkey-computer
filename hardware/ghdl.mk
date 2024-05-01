@@ -3,9 +3,9 @@
 WORKDIR = work
 WAVEDIR = wave
 SAVEDIR = save
-SCRIPTDIR = scripts
+SCRIPTDIR = ../scripts
 GHDL_FLAGS = --std=08 --workdir=$(WORKDIR) 
-SRC_DIR=./
+SRC_DIR=.
 
 # can be compiled in any order
 STANDALONE_MODULES = alu.vhd uMem.vhd pMem.vhd tile_rom.vhd
@@ -13,7 +13,7 @@ STANDALONE_MODULES = alu.vhd uMem.vhd pMem.vhd tile_rom.vhd
 DEPENDENT_MODULES = vga_motor.vhd cpu.vhd main.vhd
 
 ALL_MODULES = $(STANDALONE_MODULES) $(DEPENDENT_MODULES)
-SOURCE_FILES = $(addprefix $(SRC_DIR),$(ALL_MODULES))
+SOURCE_FILES = $(addprefix $(SRC_DIR)/,$(ALL_MODULES))
 
 # try to compile all files
 help:
@@ -28,7 +28,7 @@ preprocess:
 	@python $(SCRIPTDIR)/preprocess.py -q
 
 clean:
-	@rm -rf $(WORKDIR) $(WAVEDIR)
+	rm -rf $(WORKDIR) $(WAVEDIR)
 
 compile: $(WORKDIR)
 	@ghdl -a $(GHDL_FLAGS) $(SOURCE_FILES)
