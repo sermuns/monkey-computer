@@ -241,13 +241,13 @@ BEGIN
 
     -- DATA BUS (TO-BUS)
     data_bus <=
-    (data_bus'LENGTH - 1 DOWNTO ASR'LENGTH => '0') & ASR WHEN (TB = "000") ELSE -- Padding + ASR
-    unsigned(PM_out) WHEN (TB = "001") ELSE
-    (data_bus'LENGTH - 1 DOWNTO PC'LENGTH => '0') & PC WHEN (TB = "010") ELSE -- Padding + PC
-    AR WHEN (TB = "011") ELSE
-    (data_bus'LENGTH - 1 DOWNTO IR(11 DOWNTO 0)'LENGTH => '0') & unsigned(IR(11 DOWNTO 0)) WHEN (TB = "100") ELSE
-    (data_bus'LENGTH - 1 DOWNTO SP'LENGTH => '0') & SP WHEN (TB = "110") ELSE
-    GRx WHEN (TB = "101") ELSE
+    resize(ASR, data_bus'LENGTH) WHEN (TB = "000") ELSE -- Resize ASR
+    resize(unsigned(PM_out), data_bus'LENGTH) WHEN (TB = "001") ELSE
+    resize(PC, data_bus'LENGTH) WHEN (TB = "010") ELSE -- Resize PC
+    resize(AR, data_bus'LENGTH) WHEN (TB = "011") ELSE
+    resize(unsigned(IR(11 DOWNTO 0)), data_bus'LENGTH) WHEN (TB = "100") ELSE
+    resize(SP, data_bus'LENGTH) WHEN (TB = "110") ELSE -- Resize SP
+    resize(GRx, data_bus'LENGTH) WHEN (TB = "101") ELSE
     (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
     (OTHERS => 'U'); -- something wrong
 
