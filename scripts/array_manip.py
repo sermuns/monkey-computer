@@ -42,10 +42,9 @@ def extract_vhdl_array(lines, array_start_pattern):
 
     return lines[start:start+end+1]
 
-def clear_vhdl_array(lines: list, element_pattern: str) -> list:
+def clear_vhdl_array(lines: list, element_pattern: str, remove_comments=False) -> list:
     """
     Given lines of a VHDL array, remove all elements from it.
-    Keep the comments and empty lines.
     """
     
     text = '\n'.join(lines)
@@ -57,8 +56,12 @@ def clear_vhdl_array(lines: list, element_pattern: str) -> list:
     for elem in elements:
         text = text.replace(elem, '')
 
+    if remove_comments:
+        # Remove lines with only comments
+        text = re.sub(r'\s*--.*\n', '', text)
+
     # Split the text back into lines
-    lines = [line for line in text.split('\n') if line] # ignore empty
+    lines = [line for line in text.splitlines(keepends=True) if line.strip()] # ignore empty
     return lines
 
 

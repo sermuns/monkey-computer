@@ -96,15 +96,10 @@ def move_black_and_white_to_front(palette):
     """
     Given a list of hex colors, move the black and white colors to the front.
     """
-
-    # remove the black and white colors
-    palette.remove('000000')
-    palette.remove('ffffff')
-
-    # move them to the front
-    palette.insert(0, '000000')
-    palette.insert(0, 'ffffff')
-
+    for color in ['ffffff', '000000']:
+        if color in palette:
+            palette.remove(color)
+            palette.insert(0, color)
     return palette
 
 

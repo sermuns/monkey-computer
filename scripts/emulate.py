@@ -12,6 +12,10 @@ import re
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
 
+# File paths
+PMEM_FILE = 'hardware/pMem.vhd'
+TILE_ROM_FILE = 'hardware/tile_rom.vhd'
+
 # Constants
 SURFACE_WIDTH_PX = 640
 SURFACE_HEIGHT_PX = 480
@@ -62,9 +66,9 @@ def read_palette(tile_rom_lines):
         # Extract the 3-digit hex values
         hex_color = re.search(r'x"(\w+)"', elem).group(1)
         # Convert to 0-255 r,g,b values
-        r = int(hex_color[0], 16)*17
-        g = int(hex_color[1], 16)*17
-        b = int(hex_color[2], 16)*17
+        r = int(hex_color[0:2], 16)
+        g = int(hex_color[2:4], 16)
+        b = int(hex_color[4:6], 16)
         palette.append((r, g, b))
 
     return palette
@@ -188,11 +192,11 @@ def get_map_surface(main_memory, tile_rom):
 
 if __name__ == "__main__":
     # initialise main memory from pMem.vhd
-    pmem_lines = open('pMem.vhd').readlines()
+    pmem_lines = open(PMEM_FILE).readlines()
     main_memory = init_main_memory(pmem_lines)
 
     # get tile_rom and palette from tile_rom.vhd
-    tile_rom_lines = open('tile_rom.vhd').readlines()
+    tile_rom_lines = open(TILE_ROM_FILE).readlines()
     PALETTE = read_palette(tile_rom_lines)
     TILE_ROM = read_tile_rom(tile_rom_lines)
 
@@ -213,9 +217,6 @@ if __name__ == "__main__":
 
         # Get grid map surface
         map_surface = get_map_surface(main_memory, TILE_ROM)
-
-        # # Scale it to fit the screen
-        # scaled_map_surface = pygame.transform.scale(map_surface, (MAP_SIZE_PX, MAP_SIZE_PX))
 
         # Draw the map surface on the main surface
         surface.blit(map_surface, (0, 0))

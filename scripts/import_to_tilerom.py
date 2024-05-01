@@ -5,24 +5,32 @@ then write it to the tile ROM.
 
 from PIL import Image
 import re, sys
+import numpy as np
 import array_manip as am
 
 def parse_tileset_image(image_file: str, palette: list) -> list:
     """
-    Parse the tileset image as a flat list of palette indices.
+    Parse the tileset image and list of lists of palette indices.
+
+    Each list in the returned list is a flat list representation (colors, palette indices)
+    of a tile.
     """
+
+    TRANSPARENT_INDEX = 1
+
     # Open the image
     with Image.open(image_file) as img:
-        # Convert the image to RGB
-        img = img.convert("RGB")
-        # Get the image data
         data = list(img.getdata())
 
     # Convert the image data to a flat list of palette indices
-    tileset = []
+    palette_indices = []
     for pixel in data:
         # Get the RGB values
-        r, g, b = pixel
+        r, g, b, a = pixel
+
+        if a < 128: # transparent pixel
+            palette_indices.append(TRANSPARENT_INDEX)
+            continue
 
         # Convert the RGB values to a hex color string
         hex_color = f"{r:02x}{g:02x}{b:02x}"
@@ -32,18 +40,29 @@ def parse_tileset_image(image_file: str, palette: list) -> list:
             raise ValueError(f"Color {hex_color} not found in palette")
 
         # Get the index of the color
-        index = palette.index(hex_color)
+        try:
+            index = palette.index(hex_color)
+        except ValueError:
+            print(f"Color {hex_color} from tileset not found in palette")
+            sys.exit(1)
 
         # Add the index to the tileset
-        tileset.append(index)
+        palette_indices.append(index)
 
-    # # save tileset as an image
-    # tileset_image = Image.new("P", (120, 120))
-    # tileset_image.putdata(tileset)
-    # # add some colors to the palette
-    # tileset_image.putpalette([0, 0, 0, 255, 255, 255, 255, 0, 0])
-    # tileset_image.save("tileset.png")
+    palette_indices_matrix = np.array(
+        palette_indices,
+        dtype=np.uint8
+        ).reshape(12*10, 12*10)
 
+    # Convert the palette indices to a list of lists
+    tileset = []
+    for y in range(10):
+        for x in range(10):
+            tile = palette_indices_matrix[y*12:y*12+12, x*12:x*12+12].flatten()
+            if all(color == TRANSPARENT_INDEX for color in tile):
+                continue # skip completely black/empty tiles
+            tileset.append(tile.tolist())
+    
     return tileset
 
 
@@ -78,6 +97,7 @@ def read_palette(palette_file: str) -> list:
 
     return palette
 
+
 def create_palette_rom_line(index: int, hex_color: str) -> str:
     """
     Create a correct VHDL line for the palette ROM.
@@ -86,7 +106,8 @@ def create_palette_rom_line(index: int, hex_color: str) -> str:
     line = f"        {index:02} => x\"{hex_color}\",\n"
     return line
 
-def create_tile_rom_line(colors: list) -> str:
+
+def create_tile_rom_line(tile_appearance: list) -> str:
     """
     Create a correct VHDL line for the tile ROM.
     Every tile is represented as a 5-bit integer representing
@@ -95,11 +116,11 @@ def create_tile_rom_line(colors: list) -> str:
     Every line consists of 12 array elements (hex colors)
     """
     
-    if len(colors) != 12:
-        raise ValueError(f"Wrong number of colors in a line: {len(colors)}")
+    if len(tile_appearance) != 12:
+        raise ValueError(f"Wrong number of colors in a line: {len(tile_appearance)}")
 
     line = ""
-    for color in colors:
+    for color in tile_appearance:
         if color > 2**5 - 1:
             raise ValueError(f"Color {color} is too wide")
         line += f'"{color:05b}", '
@@ -157,7 +178,8 @@ def write_tile_rom(tileset: list, palette: list, tile_rom_file: str):
     # clear previous contents of tile ROM
     tile_rom_lines = am.clear_vhdl_array(
         lines=tile_rom_lines,
-        element_pattern=r'\s*".*",?'
+        element_pattern=r'\s*".*",?',
+        remove_comments=True
     )
 
     # find start linenum of tile_rom
@@ -168,29 +190,23 @@ def write_tile_rom(tileset: list, palette: list, tile_rom_file: str):
     
     # write the tile_rom
     NUM_COLORS_PER_LINE = 12
-    lines_written = 0
     for i in range(len(tileset)):
+        # append index
+        tile_rom_lines.insert(-1, f"        -- {i}\n")
+        tile_appearance = tileset[i]
+        for j in range(NUM_COLORS_PER_LINE):
+            layer = tile_appearance[12*j:12*(j+1)]
+            new_line = create_tile_rom_line(layer)
+            tile_rom_lines.insert(-1, new_line)
+            
 
-        # add comment every 12 lines
-        if i % NUM_COLORS_PER_LINE == 0:
-            tile_rom_lines.insert(i+1, f"        -- {i//NUM_COLORS_PER_LINE}\n")
-            comment_line = True
-
-        colors_in_line = tileset[i*NUM_COLORS_PER_LINE:(i+1)*NUM_COLORS_PER_LINE]
-        if len(colors_in_line) == 0:
-            # replace last comma in lines with ''
-            tile_rom_lines[i] = tile_rom_lines[i].replace(',\n', '\n')
-            break # end of tileset
-        new_line = create_tile_rom_line(colors_in_line)
-        tile_rom_lines.insert(i+1+comment_line, new_line)
-        lines_written += 1
-
+    tile_rom_lines[-2] = tile_rom_lines[-2].replace(',\n', '\n')
     # clear tile rom in file_lines
     file_lines[tile_rom_start:tile_rom_end+1] = []
 
     # insert the tile_rom_lines back into file_lines
     for i, line in enumerate(tile_rom_lines):
-        file_lines.insert(tile_rom_start+i+1, line)
+        file_lines.insert(tile_rom_start+i, line)
 
     with open(tile_rom_file, 'w') as f:
         f.writelines(file_lines)
@@ -210,9 +226,6 @@ def main():
 
     # Parse the tileset image
     tileset = parse_tileset_image(tileset_file, palette)
-
-    # write tileset to a temp image
-    tileset_image = Image.new("P", (10, 10))
 
     # Write the tileset to the tile ROM
     write_tile_rom(tileset, palette, tile_rom_file)

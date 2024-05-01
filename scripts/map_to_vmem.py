@@ -109,7 +109,7 @@ def write_to_vmem(map, vmem_file):
 def main():
     if len(sys.argv) == 2 and sys.argv[1] == "--debug":
         # for debugging purposes
-        sys.argv = ["map_to_vmem.py", "map.tmx", "../hardware/src/pMem.vhd"]
+        sys.argv = ["map_to_vmem.py", "../assets/map.tmx", "../hardware/pMem.vhd"]
     elif len(sys.argv) != 3:
         print("Usage: python map_to_vmem.py <map.tmx> <pmem.vhd>")
         sys.exit(1)
