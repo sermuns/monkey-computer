@@ -4,7 +4,8 @@ then write it to the tile ROM.
 """
 
 from PIL import Image
-import re
+import re, sys
+import array_manip as am
 
 def parse_tileset_image(image_file: str, palette: list) -> list:
     """
@@ -36,15 +37,22 @@ def parse_tileset_image(image_file: str, palette: list) -> list:
         # Add the index to the tileset
         tileset.append(index)
 
+    # # save tileset as an image
+    # tileset_image = Image.new("P", (120, 120))
+    # tileset_image.putdata(tileset)
+    # # add some colors to the palette
+    # tileset_image.putpalette([0, 0, 0, 255, 255, 255, 255, 0, 0])
+    # tileset_image.save("tileset.png")
+
     return tileset
 
 
-def read_palette(palette_image_name: str) -> list:
+def read_palette(palette_file: str) -> list:
     """
     Read the palette image and return a list of hex colors.
     """
     # Load the palette image
-    palette_image = Image.open(palette_image_name)
+    palette_image = Image.open(palette_file)
 
     # Get the size of the palette image
     width, height = palette_image.size
@@ -99,10 +107,6 @@ def create_tile_rom_line(colors: list) -> str:
     final_line = f"        {line.strip()}\n"
     return final_line
 
-    
-
-
-
 
 def write_tile_rom(tileset: list, palette: list, tile_rom_file: str):
     """
@@ -111,88 +115,107 @@ def write_tile_rom(tileset: list, palette: list, tile_rom_file: str):
 
     if len(palette) > 32:
         raise ValueError("Too many colors in the palette")
-    elif len(palette) < 32:
-        print("Warning: palette has less than 32 colors, padding with undefined")
-        [palette.append("UUUUUU") for _ in range(32 - len(palette))]
     
-    with open(tile_rom_file, 'r') as f:
-        tile_rom_lines = f.readlines()
-
-    # find start linenum of palette_rom
-    palette_start = 0
-    for i, line in enumerate(tile_rom_lines):
-        if re.match(r'\s*CONSTANT palette_rom.*:=.*', line):
-            palette_start = i
-            break
-
-    # find end linenum of palette_rom
-    palette_height = 0
-    for i, line in enumerate(tile_rom_lines[palette_start:]):
-        if re.match(r'\s*\);\s*', line):
-            palette_height = i
-            break
+    file_lines = open(tile_rom_file, 'r').readlines()
+        
+    # get the palette array
+    palette_rom_start_pattern = r'\s*CONSTANT palette_rom.*:=.*'
+    palette_rom_array_lines = am.extract_vhdl_array(
+        lines=file_lines,
+        array_start_pattern=palette_rom_start_pattern
+    )
 
     # clear previous contents of palette ROM
-    tile_rom_lines[palette_start+1:palette_start+palette_height] = []
+    palette_rom_array_lines = am.clear_vhdl_array(
+        lines=palette_rom_array_lines,
+        element_pattern=r'\s*\d+\s*=>.*,?\n'
+    )
 
     # write the palette_rom
+    palette_start, _ = am.find_array_start_end_index(
+        lines=file_lines,
+        array_start_pattern=palette_rom_start_pattern
+    )
     for i, color in enumerate(palette):
         line = create_palette_rom_line(i, color)
-        if i == 31: # last line, no comma
+
+        if i == len(palette)-1: # last line, no comma
             line = line.replace(',\n', '\n')
 
-        tile_rom_lines.insert(palette_start+i+1, line) 
+        palette_rom_array_lines.insert(i+1, line) 
             
+    # insert the palette_rom_array_lines back into tile_rom_lines    
+    file_lines[palette_start:palette_start+len(palette_rom_array_lines)] = palette_rom_array_lines
+
+    # get the tile_rom array
+    tile_rom_start_pattern = r'\s*CONSTANT tile_rom_data.*:=.*'
+    tile_rom_lines = am.extract_vhdl_array(
+        lines=file_lines,
+        array_start_pattern=tile_rom_start_pattern
+    )
+    
+    # clear previous contents of tile ROM
+    tile_rom_lines = am.clear_vhdl_array(
+        lines=tile_rom_lines,
+        element_pattern=r'\s*".*",?'
+    )
 
     # find start linenum of tile_rom
-    tile_rom_start = 0
-    for i, line in enumerate(tile_rom_lines):
-        if re.match(r'\s*CONSTANT tile_rom.*:=.*', line):
-            tile_rom_start = i + 1
-            break
-
-    # find end of tile_rom
-    tile_rom_height = 0
-    for i, line in enumerate(tile_rom_lines[tile_rom_start:]):
-        if re.match(r'\s*\);\s*', line):
-            tile_rom_height = i
-            break
-
-    # clear previous contents of tile ROM
-    tile_rom_lines[tile_rom_start:tile_rom_start+tile_rom_height] = []
+    tile_rom_start, tile_rom_end = am.find_array_start_end_index(
+        lines=file_lines,
+        array_start_pattern=tile_rom_start_pattern
+    )
     
     # write the tile_rom
     NUM_COLORS_PER_LINE = 12
     lines_written = 0
-    for i, tile in enumerate(tileset):
-        if i % 12 == 0:
-            tile_rom_lines.insert(tile_rom_start+i, f'        -- {i // 12}\n')
-        colors_in_line = tileset[i*NUM_COLORS_PER_LINE:i*NUM_COLORS_PER_LINE+NUM_COLORS_PER_LINE]
+    for i in range(len(tileset)):
+
+        # add comment every 12 lines
+        if i % NUM_COLORS_PER_LINE == 0:
+            tile_rom_lines.insert(i+1, f"        -- {i//NUM_COLORS_PER_LINE}\n")
+            comment_line = True
+
+        colors_in_line = tileset[i*NUM_COLORS_PER_LINE:(i+1)*NUM_COLORS_PER_LINE]
         if len(colors_in_line) == 0:
+            # replace last comma in lines with ''
+            tile_rom_lines[i] = tile_rom_lines[i].replace(',\n', '\n')
             break # end of tileset
-        tile_rom_lines.insert(tile_rom_start+i+1, create_tile_rom_line(colors_in_line))
+        new_line = create_tile_rom_line(colors_in_line)
+        tile_rom_lines.insert(i+1+comment_line, new_line)
         lines_written += 1
 
-        # if i % 12 == 0:
-        #     tile_rom_lines.insert(tile_start+i+1, '\n')
+    # clear tile rom in file_lines
+    file_lines[tile_rom_start:tile_rom_end+1] = []
 
-    # # add others undefined
-    # others_line = f'\n       OTHERS => (OTHERS => 'U')\n'
-    # tile_rom_lines.insert(tile_rom_start+lines_written+1, others_line) 
-
+    # insert the tile_rom_lines back into file_lines
+    for i, line in enumerate(tile_rom_lines):
+        file_lines.insert(tile_rom_start+i+1, line)
 
     with open(tile_rom_file, 'w') as f:
-        f.writelines(tile_rom_lines)
+        f.writelines(file_lines)
 
 def main():
+    if len(sys.argv) < 2:
+        sys.argv.append("hardware/tile_rom.vhd")
+    if len(sys.argv) < 3:
+        sys.argv.append("assets/palette.png")
+    if len(sys.argv) < 4:
+        sys.argv.append("assets/tileset.png")
+
+    _, tile_rom_file, palette_file, tileset_file = sys.argv
+
     # Get the hex palette
-    palette = read_palette("palette.png")
+    palette = read_palette(palette_file)
 
     # Parse the tileset image
-    tileset = parse_tileset_image("tileset.png", palette)
+    tileset = parse_tileset_image(tileset_file, palette)
+
+    # write tileset to a temp image
+    tileset_image = Image.new("P", (10, 10))
 
     # Write the tileset to the tile ROM
-    write_tile_rom(tileset, palette, "../hardware/src/tile_rom.vhd")
+    write_tile_rom(tileset, palette, tile_rom_file)
     
 if __name__ == "__main__":
     main()

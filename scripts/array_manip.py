@@ -42,6 +42,48 @@ def extract_vhdl_array(lines, array_start_pattern):
 
     return lines[start:start+end+1]
 
+def clear_vhdl_array(lines: list, element_pattern: str) -> list:
+    """
+    Given lines of a VHDL array, remove all elements from it.
+    Keep the comments and empty lines.
+    """
+    
+    text = '\n'.join(lines)
+
+    # Find all elements separated by commas
+    elements = re.findall(element_pattern, text)
+
+    # Remove all elements from the text
+    for elem in elements:
+        text = text.replace(elem, '')
+
+    # Split the text back into lines
+    lines = [line for line in text.split('\n') if line] # ignore empty
+    return lines
+
+
+def find_array_start_end_index (lines, array_start_pattern):
+    """
+    Find index of start and end of array declaration in `lines`.
+    """
+    # find start
+    for i, line in enumerate(lines):
+        if re.match(array_start_pattern, line):
+            start_index = i
+            break
+
+    # find end
+    for j, line in enumerate(lines[start_index:]):
+        if re.match(r'\s*\);', line):
+            end_index = start_index + j
+            break
+
+    if start_index > end_index:
+        raise ValueError("Array termination cannot be found")
+
+    return start_index, end_index
+
+
 
 def get_vhdl_array_elements(lines, element_pattern):
     """
