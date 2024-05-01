@@ -38,8 +38,8 @@ BEGIN
     ELSE
       CASE op IS
         WHEN noop_op | dont_care => NULL;
-        WHEN add_op => AR_internal <= AR_internal + ('0' & data_bus);
-        WHEN sub_op => AR_internal <= AR_internal - ('0' & data_bus);
+        WHEN add_op => AR_internal <= AR_internal + resize(data_bus, AR_internal'length);
+        WHEN sub_op => AR_internal <= AR_internal - resize(data_bus, AR_internal'length);
         WHEN mul_op => AR_internal <= resize(('0' & data_bus) * AR_internal, AR_internal'length);
         WHEN load_op => AR_internal <= ('0' & data_bus);
         WHEN and_op => AR_internal <= AR_internal AND ('0' & data_bus);
