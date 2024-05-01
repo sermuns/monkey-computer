@@ -1,0 +1,26 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Wed May  1 20:45:02 2024
+[*]
+[dumpfile] "/home/sermuns/Git/code/hardware/wave/test_tb.ghw"
+[dumpfile_mtime] "Wed May  1 20:44:51 2024"
+[dumpfile_size] 2115
+[savefile] "/home/sermuns/Git/code/hardware/save/test_tb.gtkw"
+[timestart] 0
+[size] 1125 600
+[pos] -1 -1
+*0.000000 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[sst_width] 233
+[signals_width] 142
+[sst_expanded] 1
+[sst_vpaned_height] 136
+@28
+top.test_tb.clk_tb
+@420
+top.test_tb.clock_count_tb
+@28
+top.test_tb.rst_tb
+@420
+top.test_tb.x
+[pattern_trace] 1
+[pattern_trace] 0
