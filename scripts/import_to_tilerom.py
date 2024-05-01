@@ -159,11 +159,9 @@ def write_tile_rom(tileset: list, palette: list, tile_rom_file: str):
     )
     for i, color in enumerate(palette):
         line = create_palette_rom_line(i, color)
+        palette_rom_array_lines.insert(-1, line) 
 
-        if i == len(palette)-1: # last line, no comma
-            line = line.replace(',\n', '\n')
-
-        palette_rom_array_lines.insert(i+1, line) 
+    palette_rom_array_lines[-2] = palette_rom_array_lines[-2].replace(',\n', '\n')
             
     # insert the palette_rom_array_lines back into tile_rom_lines    
     file_lines[palette_start:palette_start+len(palette_rom_array_lines)] = palette_rom_array_lines
