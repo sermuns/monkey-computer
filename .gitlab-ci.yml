@@ -13,4 +13,5 @@ build-job:
     - make -f ghdl.mk compile
   only:
     changes:
-      - hardware/src/**/*.vhd
+      - /**/*.vhd
+      - .gitlab-ci.yml
