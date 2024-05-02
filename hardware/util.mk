@@ -55,6 +55,11 @@ help	:
 	@echo "sim:	Start and simulate project in Modelsim simulator"
 	@echo "clean:	Clean project (remove all files created by make)"
 
+compile:
+	mkdir -p $(SIMDIR)
+	$(eval VHDS := $(shell for i in $(VHD); do echo "../$$i"; done))
+	cd $(SIMDIR); vcom -2008 $(VHDS)
+
 .PHONY:	synth
 synth	: $(WORK)/$(DCP_NAME)
 
@@ -74,10 +79,6 @@ prog	: $(WORK)/$(BIT_NAME)
 	mkdir -p $(WORK)
 	cd $(WORK); vivado -mode batch -source $(BIN)/build.tcl -notrace -journal vivado_prog.jou -log vivado_prog.log -tclargs prog $(VHD) $(XDC)
 
-compile:
-	mkdir -p $(SIMDIR)
-	$(eval VHDS := $(shell for i in $(VHD); do echo "../$$i"; done))
-	cd $(SIMDIR); vcom -2008 $(VHDS)
 
 .PHONY:	sim
 sim	: $(VHD) $(TBF) compile

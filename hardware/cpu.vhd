@@ -183,7 +183,7 @@ BEGIN
 
     -- GENERAL REGISTERS (GRx) 
     GRx <= GR(TO_INTEGER(unsigned(GRx_num))) WHEN GRx_num /= "---" else (OTHERS => '-');
-    GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus WHEN (FB = "101");
+    GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus WHEN (FB = "101") else GR(TO_INTEGER(unsigned(GRx_num)));
 
     -- ASR
     PROCESS (clk, rst)

@@ -31,7 +31,7 @@ ARCHITECTURE func OF alu IS
 
   SIGNAL AR_internal : unsigned(24 DOWNTO 0);
 BEGIN
-  ALU_proc : PROCESS (op, data_bus, rst)
+  ALU_proc : PROCESS (op, data_bus, rst, AR_internal)
   BEGIN
     IF rst = '1' THEN
       AR_internal <= (OTHERS => '0');

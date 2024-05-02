@@ -165,7 +165,7 @@ BEGIN
         END IF;
     END PROCESS;
 
-    vmem_address_counter : PROCESS (clk)
+    vmem_address_counter : PROCESS (clk, rst)
     BEGIN
         IF rst = '1' THEN
             vmem_address <= (OTHERS => '0');

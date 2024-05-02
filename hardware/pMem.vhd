@@ -15,8 +15,8 @@ ENTITY pMem IS
 END pMem;
 
 ARCHITECTURE func OF pMem IS
-    CONSTANT VMEM_START : INTEGER := 100;
-    TYPE p_mem_type IS ARRAY(0 TO 1023) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
+    CONSTANT VMEM_START : INTEGER := 1500;
+    TYPE p_mem_type IS ARRAY(0 TO 4095) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
 
     -- 00000_000_00_00_000000000000
     -- OP    GRx M  *  ADR 
@@ -29,7 +29,7 @@ ARCHITECTURE func OF pMem IS
         3 => b"11111_000_00_00_000000000000", -- HALT
 
         -- VIDEO MEMORY
-        VMEM_START + 00 => b"000000_000000_000000_000000",
+        VMEM_START + 00 => b"000001_000000_000000_000000",
         VMEM_START + 01 => b"000000_000000_000000_000000",
         VMEM_START + 02 => b"000000_000000_000000_011001",
         VMEM_START + 03 => b"011001_011001_011001_011001",
@@ -57,24 +57,33 @@ ARCHITECTURE func OF pMem IS
 
         -- HEAP
 
-        -- STACK
+        -- STACKcpu_we
 
         OTHERS => (OTHERS => '-')
     );
 
 BEGIN
 
+
+
+    -- Reading from two-port ram
+    process(clk)
+    begin
+        if rising_edge(clk) then
+            cpu_data_out <= p_mem(TO_INTEGER(cpu_address));
+            video_data <= p_mem(TO_INTEGER(video_address) + VMEM_START);
+            end if;
+        end process;
+            
     -- STORE
-    PROCESS (clk, cpu_we)
+    PROCESS (clk)
     BEGIN
         IF rising_edge(clk) THEN
+
             IF (cpu_we = '1') THEN
                 p_mem(TO_INTEGER(cpu_address)) <= STD_LOGIC_VECTOR(cpu_data_in);
             END IF;
-            -- LOAD
-            cpu_data_out <= p_mem(TO_INTEGER(cpu_address));
-            -- VIDEO 
-            video_data <= p_mem(TO_INTEGER(video_address) + VMEM_START);
+
         END IF;
     END PROCESS;
 

@@ -21,7 +21,7 @@ entity main is
 		vgaGreen : out std_logic_vector(3 downto 0);     -- VGA green
 		vgaBlue  : out std_logic_vector(3 downto 0)    -- VGA blue
 		-- PS2Clk  : in std_logic;                  -- PS2 clock
-		-- PS2Data : in std_logic                 -- PS2 data
+		-- PS2Data : in std_logic                   -- PS2 data
     );
 end main;
 

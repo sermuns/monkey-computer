@@ -9,7 +9,7 @@ ENTITY uMem IS
 END uMem;
 
 ARCHITECTURE func OF uMem IS
-    TYPE u_mem_t IS ARRAY(natural range<>) OF STD_LOGIC_VECTOR(24 DOWNTO 0);
+    TYPE u_mem_t IS ARRAY(0 to 127) OF STD_LOGIC_VECTOR(24 DOWNTO 0);
     CONSTANT u_mem_array : u_mem_t := (
         -- 000_000_0000_0_00_0000_00000000
         -- TB _FB _ALU_ P_S_ SEQ _uADR
@@ -68,7 +68,8 @@ ARCHITECTURE func OF uMem IS
         b"001_101_0000_0_00_0011_--------",--[46|00101110] GRx := PM(ASR),
         b"110_000_0000_0_00_0000_--------",--[47|00101111] {RET} PM(ASR) := PC,
         b"001_010_0000_0_10_0011_--------",--[48|00110000] PC = PM(SP), sp++, uPC = 0
-        b"111_111_0000_0_00_1111_--------"--[49|00110001] {HALT}
+        b"111_111_0000_0_00_1111_--------",--[49|00110001] {HALT}
+        others => (others => '0')
     );
 BEGIN
     data <= u_mem_array(TO_INTEGER(address));
