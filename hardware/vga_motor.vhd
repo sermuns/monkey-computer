@@ -90,8 +90,8 @@ BEGIN
         IF rst = '1' THEN
             y_subpixel <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
-            IF (x_subpixel = 800) THEN
-                IF clk25 = '1' THEN
+            IF clk25 = '1' THEN
+                IF (x_subpixel = 799) THEN 
                     IF (y_subpixel < 520) THEN
                         y_subpixel <= y_subpixel + 1;
                     ELSE
