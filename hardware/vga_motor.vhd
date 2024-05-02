@@ -90,11 +90,13 @@ BEGIN
         IF rst = '1' THEN
             y_subpixel <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
-            IF (x_subpixel = 800 AND Clk25 = '1') THEN
-                IF (y_subpixel < 520) THEN
-                    y_subpixel <= y_subpixel + 1;
-                ELSE
-                    y_subpixel <= (OTHERS => '0');
+            IF (x_subpixel = 800) THEN
+                IF clk25 = '1' THEN
+                    IF (y_subpixel < 520) THEN
+                        y_subpixel <= y_subpixel + 1;
+                    ELSE
+                        y_subpixel <= (OTHERS => '0');
+                    END IF;
                 END IF;
             END IF;
         END IF;
@@ -116,17 +118,19 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             x_within_tile <= (OTHERS => '0');
-        ELSIF rising_edge(clk) AND clk25 = '1' THEN
-            IF (x_subpixel = 800) THEN
-                x_within_tile <= (OTHERS => '0'); -- time to restart
-            ELSIF (x_subpixel < 479) THEN
-                IF (x_within_tile < 47) THEN
-                    x_within_tile <= x_within_tile + 1;
+        ELSIF rising_edge(clk) THEN
+            IF clk25 = '1' THEN
+                IF (x_subpixel = 800) THEN
+                    x_within_tile <= (OTHERS => '0'); -- time to restart
+                ELSIF (x_subpixel < 479) THEN
+                    IF (x_within_tile < 47) THEN
+                        x_within_tile <= x_within_tile + 1;
+                    ELSE
+                        x_within_tile <= (OTHERS => '0'); -- right edge of tile
+                    END IF;
                 ELSE
-                    x_within_tile <= (OTHERS => '0'); -- right edge of tile
+                    x_within_tile <= (OTHERS => '0'); -- outside of map
                 END IF;
-            ELSE
-                x_within_tile <= (OTHERS => '0'); -- outside of map
             END IF;
         END IF;
     END PROCESS;
@@ -135,17 +139,19 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             y_within_tile <= (OTHERS => '0');
-        ELSIF rising_edge(clk) AND clk25 = '1' AND x_subpixel = 800 THEN
-            IF (y_subpixel = 639) THEN
-                y_within_tile <= (OTHERS => '0'); -- time to restart
-            ELSIF (y_subpixel < 479) THEN
-                IF (y_within_tile < 47) THEN
-                    y_within_tile <= y_within_tile + 1;
+        ELSIF rising_edge(clk) AND x_subpixel = 800 THEN
+            IF clk25 = '1' THEN
+                IF (y_subpixel = 639) THEN
+                    y_within_tile <= (OTHERS => '0'); -- time to restart
+                ELSIF (y_subpixel < 479) THEN
+                    IF (y_within_tile < 47) THEN
+                        y_within_tile <= y_within_tile + 1;
+                    ELSE
+                        y_within_tile <= (OTHERS => '0'); -- bottom edge of tile
+                    END IF;
                 ELSE
-                    y_within_tile <= (OTHERS => '0'); -- bottom edge of tile
+                    y_within_tile <= (OTHERS => '0'); -- outside of map
                 END IF;
-            ELSE
-                y_within_tile <= (OTHERS => '0'); -- outside of map
             END IF;
         END IF;
     END PROCESS;
@@ -154,13 +160,15 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             vmem_field <= (OTHERS => '0');
-        ELSIF rising_edge(clk) AND clk25 = '1' THEN
-            IF (x_subpixel < 479) THEN
-                IF (x_within_tile = 47) THEN
-                    vmem_field <= vmem_field + 1;
+        ELSIF rising_edge(clk) THEN
+            IF clk25 = '1' THEN
+                IF (x_subpixel < 479) THEN
+                    IF (x_within_tile = 47) THEN
+                        vmem_field <= vmem_field + 1;
+                    END IF;
+                ELSE
+                    vmem_field <= (OTHERS => '0');
                 END IF;
-            else
-                vmem_field <= (OTHERS => '0');
             END IF;
         END IF;
     END PROCESS;
@@ -169,12 +177,13 @@ BEGIN
     BEGIN
         IF rst = '1' THEN
             vmem_address <= (OTHERS => '0');
-        ELSIF rising_edge(clk) AND clk25 = '1' THEN
-            IF (x_subpixel < 479) THEN
-                IF (vmem_field = 3 AND x_within_tile = 47) THEN
-                    vmem_address <= vmem_address + 1;
+        ELSIF rising_edge(clk) THEN
+            IF clk25 = '1' THEN
+                IF (x_subpixel < 479) THEN
+                    IF (vmem_field = 3 AND x_within_tile = 47) THEN
+                        vmem_address <= vmem_address + 1;
+                    END IF;
                 END IF;
-                
             END IF;
         END IF;
     END PROCESS;
@@ -202,8 +211,6 @@ BEGIN
     --TODO what does each bit in the tile_rom_address mean? and what else does it affect?
     tile_rom_address <=
         (tile_rom_address'RANGE => '0') + x_macro_within_tile + 12 * y_macro_within_tile + 12 * 12 * current_tiletype;
-
-
     -- tile_rom_inst : ENTITY work.tile_rom_menu
     --     PORT MAP(
     --         address => tile_rom_address,
