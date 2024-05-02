@@ -71,9 +71,11 @@ BEGIN
     begin
         if rising_edge(clk) then
             cpu_data_out <= p_mem(TO_INTEGER(cpu_address));
-            video_data <= p_mem(TO_INTEGER(video_address) + VMEM_START);
             end if;
         end process;
+
+        -- TODO: THIS HARDCODED FUCKK 
+            video_data <= b"000001_000001_000000_000001";
             
     -- STORE
     PROCESS (clk)
