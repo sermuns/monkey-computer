@@ -75,9 +75,9 @@ BEGIN
             x_subpixel <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
             IF (Clk25 = '1') THEN
-                IF (x_subpixel < 800) THEN
+                IF (x_subpixel < 800) THEN -- increment to outer screen edge so 0-799
                     x_subpixel <= x_subpixel + 1;
-                ELSE
+                ELSE -- reset to 0 after 799
                     x_subpixel <= (OTHERS => '0');
                 END IF;
             END IF;
@@ -92,7 +92,7 @@ BEGIN
         ELSIF rising_edge(clk) THEN
             IF clk25 = '1' THEN
                 IF (x_subpixel = 799) THEN 
-                    IF (y_subpixel < 520) THEN
+                    IF (y_subpixel < 521) THEN
                         y_subpixel <= y_subpixel + 1;
                     ELSE
                         y_subpixel <= (OTHERS => '0');
@@ -120,7 +120,7 @@ BEGIN
             x_within_tile <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
             IF clk25 = '1' THEN
-                IF (x_subpixel = 800) THEN
+                IF (x_subpixel < 800) THEN
                     x_within_tile <= (OTHERS => '0'); -- time to restart
                 ELSIF (x_subpixel < 479) THEN
                     IF (x_within_tile < 47) THEN
@@ -141,9 +141,9 @@ BEGIN
             y_within_tile <= (OTHERS => '0');
         ELSIF rising_edge(clk) AND x_subpixel = 800 THEN
             IF clk25 = '1' THEN
-                IF (y_subpixel = 639) THEN
+                IF (y_subpixel < 521) THEN
                     y_within_tile <= (OTHERS => '0'); -- time to restart
-                ELSIF (y_subpixel < 479) THEN
+                ELSIF (y_subpixel < 480) THEN
                     IF (y_within_tile < 47) THEN
                         y_within_tile <= y_within_tile + 1;
                     ELSE
