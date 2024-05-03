@@ -60,29 +60,32 @@ BEGIN
     ELSE
     '0';
 
-  -- negative bit set
-  Nc <=
+  -- negative bit set to the most significant bit as "two's complement"
+  Nc <= '1' WHEN AR_internal(AR_internal'length - 2) = '1'
+    ELSE
     '0';
 
   -- carry bit gets set when the result of the operation is greater than the maximum value
   Cc <= AR_internal(AR_internal'length - 1);
 
-  Vc <=
+
+  -- as of now overflow is only implemented for addition
+  Vc <= '1' WHEN AR_internal(AR_internal'length - 1) = '1' 
+    ELSE
     '0';
 
-  flags <= (others => '0'); 
-  -- status_flags_proc : PROCESS (data_bus, op, rst)
-  -- BEGIN
-  --   IF (rst = '1') THEN
-  --     flags <= (OTHERS => '0');
-  --   ELSE
-  --     CASE op IS
-  --       WHEN add_op | sub_op =>
-  --         flags <= Zc & Nc & Cc & Vc;
-  --       WHEN mul_op =>
-  --         flags <= Zc & Nc & Cc & flags(3);
-  --       WHEN OTHERS => NULL;
-  --     END CASE;
-  --   END IF;
-  -- END PROCESS;
+  status_flags_proc : PROCESS (data_bus, op, rst)
+  BEGIN
+    IF (rst = '1') THEN
+      flags <= (OTHERS => '0');
+    ELSE
+      CASE op IS
+        WHEN add_op | sub_op =>
+          flags <= Zc & Nc & Cc & Vc;
+        WHEN mul_op =>
+          flags <= Zc & Nc & Cc & flags(3);
+        WHEN OTHERS => NULL;
+      END CASE;
+    END IF;
+  END PROCESS;
 END ARCHITECTURE;

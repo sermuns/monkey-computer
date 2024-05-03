@@ -5,8 +5,8 @@ Parse the given argument file from monkey-assembly to binary code
 
 import re, sys
 
-PMEM_FILE = "src/pMem.vhd"
-FAX_FILE = "fax.md"
+PMEM_FILE = "hardware/pMem.vhd"
+FAX_FILE = "hardware/fax.md"
 ADR_WIDTH = 12
 
 DEBUG_ARG = "busywait.s"
