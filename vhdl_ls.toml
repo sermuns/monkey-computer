@@ -3,5 +3,5 @@
 
 [libraries]
 lib.files = [
-  '*.vhd',
+  '**/*.vhd',
 ]
