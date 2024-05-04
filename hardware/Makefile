@@ -9,7 +9,8 @@ TBF = cpu_tb.vhd
 
 .PHONY: emulate
 emulate:
-	@python scripts/emulate.py
+	@python ../scripts/emulate.py
 
 # Include Makefile utilities
 include util.mk
+include ghdl.mk
