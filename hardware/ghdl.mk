@@ -37,7 +37,7 @@ $(WORKDIR):
 
 gcompile: parse_umem preprocess ghdl
 
-%_tb.vhd: gall
+%_tb.vhd: gcompile
 	@ghdl -a $(GHDL_FLAGS) $(SRC_DIR)/$@
 	@ghdl -e $(GHDL_FLAGS) $*_tb
 	@mkdir -p $(WAVEDIR)
@@ -50,17 +50,20 @@ gcompile: parse_umem preprocess ghdl
 		gtkwave -a $(SAVEDIR)/$*.gtkw $(WAVEDIR)/$*.ghw > /dev/null & \
 	fi
 
-gsim: cpu_tb.vhd cpu_tb.ghw ## Simulate, then launch wave
+.PHONY: gtkwave
+gtkwave: cpu_tb.vhd cpu_tb.ghw ## Simulate, then launch wave
 
 
-.PHONY: surf
-surf: cpu_tb.vhd
-	surfer wave/cpu_tb.ghw -s save/cpu_tb.ron -c command/qol.surfer > /dev/null &
+.PHONY: surfer
+surfer: cpu_tb.vhd
+	@if ! pgrep -x "surfer" > /dev/null; then \
+		surfer wave/cpu_tb.ghw -s save/cpu_tb.ron -c command/qol.surfer > /dev/null &
+	fi
 
 
 assemble: ## Assemble a program from src/masm into pMem.vhd
 	@if [ -z $(prog) ]; then \
-		echo "ERROR: No program given. Usage: make assemble prog=<name of program (without extension .masm) in src/masm>"; \
+		echo "ERROR: No program given. Usage: make assemble prog=<name of program (without extension) in masm>"; \
 		exit 1; \
 	fi
 	@python3 $(SCRIPTDIR)/assembler.py $(prog)

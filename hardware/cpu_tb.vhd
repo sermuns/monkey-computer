@@ -14,51 +14,53 @@ ARCHITECTURE testbench OF cpu_tb IS
   -- Signals
   SIGNAL clk_tb : STD_LOGIC := '0';
   SIGNAL rst_tb : STD_LOGIC := '1';
+  SIGNAL clock_count_tb : NATURAL := 0;
 
-  component main is
-	port (
-		clk      : in std_logic;                         -- system clock
-		btnC     : in std_logic;                         -- reset
-		Hsync    : out std_logic;                        -- horizontal sync
-		Vsync    : out std_logic;                        -- vertical sync
-		vgaRed   : out std_logic_vector(3 downto 0);     -- VGA red
-		vgaGreen : out std_logic_vector(3 downto 0);     -- VGA green
-		vgaBlue  : out std_logic_vector(3 downto 0)    -- VGA blue
-		-- PS2Clk  : in std_logic;                  -- PS2 clock
-		-- PS2Data : in std_logic                 -- PS2 data
+  COMPONENT main IS
+    PORT (
+      clk : IN STD_LOGIC; -- system clock
+      btnC : IN STD_LOGIC; -- reset
+      Hsync : OUT STD_LOGIC; -- horizontal sync
+      Vsync : OUT STD_LOGIC; -- vertical sync
+      vgaRed : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- VGA red
+      vgaGreen : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- VGA green
+      vgaBlue : OUT STD_LOGIC_VECTOR(3 DOWNTO 0) -- VGA blue
+      -- PS2Clk  : in std_logic;                  -- PS2 clock
+      -- PS2Data : in std_logic                 -- PS2 data
     );
-  end component;
+  END COMPONENT;
 
 BEGIN
   -- Instantiate the Unit Under Test (UUT)
   UUT : main PORT MAP(
     clk => clk_tb,
     btnC => rst_tb,
-    Hsync => open,
-    Vsync => open,
-    vgaRed => open,
-    vgaGreen => open,
-    vgaBlue => open
-    );
+    Hsync => OPEN,
+    Vsync => OPEN,
+    vgaRed => OPEN,
+    vgaGreen => OPEN,
+    vgaBlue => OPEN
+  );
 
   -- Clock process
   clk_process : PROCESS
-    VARIABLE clock_count_tb : NATURAL := 0;
   BEGIN
     WAIT FOR CLK_PERIOD / 2;
     clk_tb <= NOT clk_tb;
+  END PROCESS;
 
-    IF now > CLK_PERIOD * MAX_CLK_COUNT THEN
-      REPORT "Simulation has continued for longer than MAX_CLK_COUNT, stopping";
-      STOP;
-    END IF;
-
+  clk_counter : PROCESS (clk_tb)
+  BEGIN
     IF rising_edge(clk_tb) THEN
-      clock_count_tb := clock_count_tb + 1; -- rising edge => increment clock count
+      IF clock_count_tb > MAX_CLK_COUNT THEN
+        REPORT "Simulation has continued for longer than MAX_CLK_COUNT, stopping";
+        STOP;
+      ELSE
+        clock_count_tb <= clock_count_tb + 1;
+      END IF;
     END IF;
   END PROCESS;
 
-  -- Stimulus process
   stimulus_process : PROCESS
   BEGIN
     -- reset
