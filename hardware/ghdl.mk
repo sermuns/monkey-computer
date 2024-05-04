@@ -1,5 +1,3 @@
-.PHONY: help clean %.ghw
-
 WORKDIR = work
 WAVEDIR = wave
 SAVEDIR = save
@@ -15,8 +13,8 @@ DEPENDENT_MODULES = vga_motor.vhd cpu.vhd main.vhd
 ALL_MODULES = $(STANDALONE_MODULES) $(DEPENDENT_MODULES)
 SOURCE_FILES = $(addprefix $(SRC_DIR)/,$(ALL_MODULES))
 
-# try to compile all files
-help:
+.PHONY: ghelp
+ghelp:
 	@echo "Usage: make [target]"
 	@echo "Available targets:"
 	@grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":"}; {printf " \033[36m%-30s\033[0m\n", $$1}'
@@ -27,30 +25,38 @@ parse_umem:
 preprocess:
 	@python $(SCRIPTDIR)/preprocess.py -q
 
-clean:
+.PHONY: gclean
+gclean:
 	rm -rf $(WORKDIR) $(WAVEDIR)
 
-compile: $(WORKDIR)
+gcompile: $(WORKDIR)
 	@ghdl -a $(GHDL_FLAGS) $(SOURCE_FILES)
 
 $(WORKDIR):
 	@mkdir -p $(WORKDIR)
 
-all: parse_umem preprocess compile ## Should be used to compile all files
+gall: parse_umem preprocess gcompile ## Should be used to compile all files
 
-%_tb.vhd: all
+%_tb.vhd: gall
 	@ghdl -a $(GHDL_FLAGS) $(SRC_DIR)/$@
 	@ghdl -e $(GHDL_FLAGS) $*_tb
 	@mkdir -p $(WAVEDIR)
 # Allow for simulation to fail
-	-@ghdl -r $(GHDL_FLAGS) $*_tb --wave=$(WAVEDIR)/$*_tb.ghw --ieee-asserts=disable-at-0 --assert-level=warning
+	-@ghdl -r $(GHDL_FLAGS) $*_tb --wave=$(WAVEDIR)/$*_tb.ghw --ieee-asserts=disable-at-0 --assert-level=error
 
+.PHONY: %.ghw
 %.ghw: ## Launch wave in GTKWave, if not already running
 	@if ! pgrep -x "gtkwave" > /dev/null; then \
 		gtkwave -a $(SAVEDIR)/$*.gtkw $(WAVEDIR)/$*.ghw & \
 	fi
 
-sim: all cpu_tb.vhd cpu_tb.ghw ## Simulate, then launch wave
+gsim: cpu_tb.vhd cpu_tb.ghw ## Simulate, then launch wave
+
+
+.PHONY: surf
+surf: cpu_tb.vhd
+	surfer wave/cpu_tb.ghw -s save/cpu_tb.ron -c command/qol.surfer > /dev/null &
+
 
 assemble: ## Assemble a program from src/masm into pMem.vhd
 	@if [ -z $(prog) ]; then \
@@ -59,4 +65,4 @@ assemble: ## Assemble a program from src/masm into pMem.vhd
 	fi
 	@python3 $(SCRIPTDIR)/assembler.py $(prog)
 
-sim_video: video_tb.vhd video_tb.ghw ## Simulate the video module
+gsim_video: video_tb.vhd video_tb.ghw ## Simulate the video module
