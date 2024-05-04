@@ -1,12 +1,17 @@
-#!/usr/bin/env python3
 """
 Parse the given argument file from monkey-assembly to binary code
 """
 
-import re, sys
+import re, sys, os
 
-PMEM_FILE = "hardware/pMem.vhd"
-FAX_FILE = "hardware/fax.md"
+import os
+
+PROG_DIR = "masm"
+HARDWARE_DIR = "hardware"
+
+PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
+FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
+
 ADR_WIDTH = 12
 
 DEBUG_ARG = "busywait.s"
@@ -205,8 +210,12 @@ def get_arg():
 
 
 def main():
+    # begin by changing dir to root of file
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(root_dir)
+
     asm_file_name = get_arg()
-    asm_file_path = f"src/masm/{asm_file_name}"
+    asm_file_path = os.path.join(PROG_DIR, asm_file_name)
 
     # read the program memory file
     mem_lines = read_lines(PMEM_FILE)
