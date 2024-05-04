@@ -109,9 +109,6 @@ BEGIN
                     uPC <= uPC + 1;
                 WHEN "0001" =>
                     -- K1
-                    IF (K1(0) = 'U') THEN
-                        REPORT "K1 is undefined" SEVERITY FAILURE;
-                    END IF;
                     uPC <= K1;
                 WHEN "0010" =>
                     -- K2
