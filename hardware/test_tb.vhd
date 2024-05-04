@@ -42,13 +42,4 @@ BEGIN
         WAIT;
     END PROCESS;
 
-    counter : PROCESS(clk_tb, rst_tb)
-    BEGIN
-        IF rst_tb = '1' THEN
-            x <= 0;
-        ELSIF rising_edge(clk_tb) THEN
-            x <= x + 1;
-        END IF;
-    END PROCESS;
-
 END ARCHITECTURE;
