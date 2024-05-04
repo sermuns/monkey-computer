@@ -1,8 +1,8 @@
 (
-    show_hierarchy: None,
+    show_hierarchy: Some(false),
     show_menu: None,
     show_ticks: None,
-    show_toolbar: None,
+    show_toolbar: Some(false),
     show_tooltip: None,
     show_overview: None,
     show_statusbar: None,
@@ -22,7 +22,18 @@
         displayed_items_order: [
             1,
             2,
-            3,
+            59,
+            68,
+            60,
+            61,
+            62,
+            63,
+            64,
+            65,
+            66,
+            67,
+            69,
+            70,
             6,
             7,
             8,
@@ -34,7 +45,6 @@
             14,
             15,
             16,
-            17,
             18,
             19,
             20,
@@ -78,7 +88,7 @@
             58,
         ],
         displayed_items: {
-            13: Variable((
+            29: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -87,26 +97,11 @@
                             "u1",
                         ],
                     ),
-                    name: "asr",
+                    name: "v_data",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "asr",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            2: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                        ],
-                    ),
-                    name: "rst_tb",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "rst_tb",
+                display_name: "v_data",
                 display_name_type: Unique,
                 manual_name: None,
             )),
@@ -127,54 +122,87 @@
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            56: Variable((
+            14: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
                             "uut",
-                            "u2",
+                            "u1",
                         ],
                     ),
-                    name: "y_subpixel",
+                    name: "clk",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "y_subpixel",
+                display_name: "…u1.clk",
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            41: Variable((
+            13: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
                             "uut",
-                            "u2",
+                            "u1",
                         ],
                     ),
-                    name: "tile_rom_data_out",
+                    name: "asr",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "tile_rom_data_out",
+                display_name: "asr",
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            54: Variable((
+            21: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
                             "uut",
-                            "u2",
+                            "u1",
                         ],
                     ),
-                    name: "x_subpixel1",
+                    name: "pc",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "x_subpixel1",
+                display_name: "pc",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            7: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                        ],
+                    ),
+                    name: "vgagreen",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vgagreen",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            25: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "sp",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "sp",
                 display_name_type: Unique,
                 manual_name: None,
             )),
@@ -211,41 +239,43 @@
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            16: Variable((
+            63: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
                             "uut",
                             "u1",
+                            "gr",
                         ],
                     ),
-                    name: "flags",
+                    name: "[3]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "flags",
+                display_name: "[3]",
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            23: Variable((
+            66: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
                             "uut",
                             "u1",
+                            "gr",
                         ],
                     ),
-                    name: "pm_should_store",
+                    name: "[6]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "pm_should_store",
+                display_name: "[6]",
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            39: Variable((
+            49: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -254,11 +284,78 @@
                             "u2",
                         ],
                     ),
-                    name: "rst",
+                    name: "vmem_data",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "…u2.rst",
+                display_name: "vmem_data",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            41: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "tile_rom_data_out",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "tile_rom_data_out",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            6: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                        ],
+                    ),
+                    name: "vgablue",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vgablue",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            50: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vmem_field",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vmem_field",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            36: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "current_tiletype",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "current_tiletype",
                 display_name_type: Unique,
                 manual_name: None,
             )),
@@ -279,91 +376,6 @@
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            35: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "clkdiv",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "clkdiv",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            43: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vga_green",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vga_green",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            14: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "clk",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "…u1.clk",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            29: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "v_data",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "v_data",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            38: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "hsync1",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "hsync1",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
             10: Variable((
                 variable_ref: (
                     path: (
@@ -380,7 +392,7 @@
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            19: Variable((
+            18: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -389,44 +401,11 @@
                             "u1",
                         ],
                     ),
-                    name: "k1",
+                    name: "ir",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "k1",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            6: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                        ],
-                    ),
-                    name: "vgablue",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vgablue",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            22: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "pm_out",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "pm_out",
+                display_name: "ir",
                 display_name_type: Unique,
                 manual_name: None,
             )),
@@ -447,7 +426,7 @@
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            40: Variable((
+            38: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -456,114 +435,33 @@
                             "u2",
                         ],
                     ),
-                    name: "tile_rom_address",
+                    name: "hsync1",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "tile_rom_address",
+                display_name: "hsync1",
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            51: Variable((
+            65: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
                             "uut",
-                            "u2",
+                            "u1",
+                            "gr",
                         ],
                     ),
-                    name: "vsync",
+                    name: "[5]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "…u2.vsync",
+                display_name: "[5]",
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            3: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                        ],
-                    ),
-                    name: "btnc",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "btnc",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            57: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "y_subpixel1",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "y_subpixel1",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            1: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                        ],
-                    ),
-                    name: "clk_tb",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "clk_tb",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            46: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vga_vsync",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vga_vsync",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            48: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vmem_address_out",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vmem_address_out",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            27: Variable((
+            22: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -572,11 +470,11 @@
                             "u1",
                         ],
                     ),
-                    name: "upm",
+                    name: "pm_out",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "upm",
+                display_name: "pm_out",
                 display_name_type: Unique,
                 manual_name: None,
             )),
@@ -613,392 +511,18 @@
                 display_name_type: Unique,
                 manual_name: None,
             )),
-            25: Variable((
+            1: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
-                            "uut",
-                            "u1",
                         ],
                     ),
-                    name: "sp",
+                    name: "clk_tb",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "sp",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            8: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                        ],
-                    ),
-                    name: "vgared",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vgared",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            47: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vmem_address",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vmem_address",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            15: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "data_bus",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "data_bus",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            18: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "ir",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "ir",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            52: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vsync1",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vsync1",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            32: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "blank2",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "blank2",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            26: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "upc",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "upc",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            44: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vga_hsync",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vga_hsync",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            30: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "blank",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "blank",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            45: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vga_red",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vga_red",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            7: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                        ],
-                    ),
-                    name: "vgagreen",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vgagreen",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            24: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "rst",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "…u1.rst",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            12: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "ar",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "ar",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            36: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "current_tiletype",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "current_tiletype",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            20: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "k2",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "k2",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            49: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vmem_data",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vmem_data",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            17: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "grx",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "grx",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            33: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "clk",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "…u2.clk",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            50: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vmem_field",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vmem_field",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            34: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "clk25",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "clk25",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            42: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u2",
-                        ],
-                    ),
-                    name: "vga_blue",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vga_blue",
-                display_name_type: Unique,
-                manual_name: None,
-            )),
-            21: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "pc",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "pc",
+                display_name: "clk_tb",
                 display_name_type: Unique,
                 manual_name: None,
             )),
@@ -1019,21 +543,640 @@
                 display_name_type: Unique,
                 manual_name: None,
             )),
+            61: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[1]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1]",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            69: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" "),
+            )),
+            26: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "upc",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "upc",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            70: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" video"),
+            )),
+            40: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "tile_rom_address",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "tile_rom_address",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            42: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vga_blue",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vga_blue",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            15: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "data_bus",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "data_bus",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            23: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "pm_should_store",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "pm_should_store",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            46: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vga_vsync",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vga_vsync",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            20: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "k2",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "k2",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            35: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "clkdiv",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "clkdiv",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            54: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "x_subpixel1",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "x_subpixel1",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            12: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "ar",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "ar",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            48: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vmem_address_out",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vmem_address_out",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            56: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "y_subpixel",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "y_subpixel",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            16: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "flags",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "flags",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            59: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" "),
+            )),
+            19: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "k1",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "k1",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            51: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vsync",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "…u2.vsync",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            34: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "clk25",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "clk25",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            24: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "rst",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "…u1.rst",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            30: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "blank",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "blank",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            57: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "y_subpixel1",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "y_subpixel1",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            60: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[0]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[0]",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            52: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vsync1",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vsync1",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            68: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" GRx"),
+            )),
+            27: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "upm",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "upm",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            32: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "blank2",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "blank2",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            47: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vmem_address",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vmem_address",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            39: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "rst",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "…u2.rst",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            33: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "clk",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "…u2.clk",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            43: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vga_green",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vga_green",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            2: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                        ],
+                    ),
+                    name: "rst_tb",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "rst_tb",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            45: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vga_red",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vga_red",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            62: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[2]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[2]",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            8: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                        ],
+                    ),
+                    name: "vgared",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vgared",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            64: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[4]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4]",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            44: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u2",
+                        ],
+                    ),
+                    name: "vga_hsync",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vga_hsync",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
+            67: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[7]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[7]",
+                display_name_type: Unique,
+                manual_name: None,
+            )),
         },
-        display_item_ref_counter: 58,
+        display_item_ref_counter: 70,
         viewports: [
             (
-                curr_left: (0.0054905493259429505),
-                curr_right: (0.5054905493259431),
+                curr_left: (0.0),
+                curr_right: (0.9999999999999991),
             ),
         ],
         variable_format: {},
-        cursor: None,
+        cursor: Some((1, [
+            12756008,
+        ])),
         right_cursor: None,
         markers: {},
-        focused_item: Some(4),
+        focused_item: Some(15),
         default_variable_name_type: Unique,
-        scroll_offset: 0.0,
+        scroll_offset: 3.8929615,
     )),
     drag_started: false,
     drag_source_idx: None,
