@@ -244,7 +244,7 @@ def main():
     mem_start_linenum = None
     program_end_linenum = None 
     for i, line in enumerate(mem_lines):
-        if mem_start_linenum is None and re.match(r"\s*CONSTANT p_mem_init.*", line):
+        if mem_start_linenum is None and re.match(r"\s*SIGNAL p_mem.*", line):
             while re.match(r"\s*--.*", mem_lines[i+1]):
                 i += 1 # skip comments
             mem_start_linenum = i+1 # found the start
