@@ -47,7 +47,7 @@ gall: parse_umem preprocess gcompile ## Should be used to compile all files
 .PHONY: %.ghw
 %.ghw: ## Launch wave in GTKWave, if not already running
 	@if ! pgrep -x "gtkwave" > /dev/null; then \
-		gtkwave -a $(SAVEDIR)/$*.gtkw $(WAVEDIR)/$*.ghw & \
+		gtkwave -a $(SAVEDIR)/$*.gtkw $(WAVEDIR)/$*.ghw > /dev/null & \
 	fi
 
 gsim: cpu_tb.vhd cpu_tb.ghw ## Simulate, then launch wave
