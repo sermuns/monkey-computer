@@ -191,6 +191,11 @@ def get_map_surface(main_memory, tile_rom):
 
 
 if __name__ == "__main__":
+    # change the working directory to the root of the project
+    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    os.chdir(root_dir)
+    print (f"Working directory: {os.getcwd()}")
+
     # initialise main memory from pMem.vhd
     pmem_lines = open(PMEM_FILE).readlines()
     main_memory = init_main_memory(pmem_lines)
