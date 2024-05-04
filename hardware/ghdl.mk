@@ -29,13 +29,13 @@ preprocess:
 gclean:
 	rm -rf $(WORKDIR) $(WAVEDIR)
 
-gcompile: $(WORKDIR)
+ghdl: $(WORKDIR)
 	@ghdl -a $(GHDL_FLAGS) $(SOURCE_FILES)
 
 $(WORKDIR):
 	@mkdir -p $(WORKDIR)
 
-gall: parse_umem preprocess gcompile ## Should be used to compile all files
+gcompile: parse_umem preprocess ghdl
 
 %_tb.vhd: gall
 	@ghdl -a $(GHDL_FLAGS) $(SRC_DIR)/$@
