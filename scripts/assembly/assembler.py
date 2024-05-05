@@ -19,7 +19,6 @@ chdir_to_root()
 
 PROG_DIR = "masm"
 HARDWARE_DIR = "hardware"
-
 PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
 FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
@@ -336,7 +335,7 @@ def main():
             while re.match(r"\s*--.*", mem_lines[i + 1]):
                 i += 1  # skip comments
             mem_start_linenum = i + 1  # found the start
-        elif re.match(r"\s*VMEM_START.*=>.*\,.*", line):
+        elif re.match(r"\s*([A-z]|_).*=>.*\,.*", line):
             program_end_linenum = i - 2
             break  # found the end
 
