@@ -8,6 +8,7 @@ import os
 import numpy as np
 import array_manip as am
 import re
+import utils
 
 os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
 import pygame
@@ -90,7 +91,7 @@ def init_main_memory(pmem_lines):
     main_memory = np.zeros(2**16, dtype=np.uint32)
     for elem in mem_elements:
         # Extract the 32-bit hex values
-        groups = re.search(r'\s*(.*)\s*=>\s*b"(.*)".*', elem)
+        groups = re.search(r'\s*(.+)\s*=>\s*b"(.*)".*', elem)
         if not groups:
             raise ValueError(f"Invalid memory element {elem}")
 
@@ -104,15 +105,15 @@ def init_main_memory(pmem_lines):
 
         # Evaluate arithmetic expressions
         try:
-            addr = str(eval(addr))
+            addr = eval(addr)
         except Exception as e:
-            raise ValueError(f"Invalid address: {addr}") from e
+            raise ValueError(f"Unable to evaluate address arithmetically: {addr}") from e
 
         # Convert to integer
         try:
             addr = int(addr)
         except ValueError as e:
-            raise ValueError(f"Invalid address: {addr}") from e
+            raise ValueError(f"Unable to parse address as integer: {addr}") from e
 
         val = int(groups.group(2), 2)
 
@@ -192,8 +193,7 @@ def get_map_surface(main_memory, tile_rom):
 
 if __name__ == "__main__":
     # change the working directory to the root of the project
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    os.chdir(root_dir)
+    utils.chdir_to_root()
 
     # initialise main memory from pMem.vhd
     pmem_lines = open(PMEM_FILE).readlines()
@@ -215,9 +215,13 @@ if __name__ == "__main__":
 
     # Wait until user closes the window
     while True:
-        for event in pygame.event.get():
+        events = pygame.event.get()
+        for event in events:
             if event.type == pygame.QUIT:
                 sys.exit()
+            elif event.type == pygame.KEYDOWN:
+                if event.key in {pygame.K_ESCAPE, pygame.K_q}:
+                    sys.exit()
 
         # Get grid map surface
         map_surface = get_map_surface(main_memory, TILE_ROM)
