@@ -175,9 +175,7 @@ def read_lines(filename):
     Return the lines from the given file
     """
 
-    lines = []
-    with open(filename, "r") as f:
-        lines = f.readlines()
+    lines = open(filename, "r").readlines()
 
     if not lines:
         print(f"Error: Could not read {filename}")
@@ -190,7 +188,8 @@ def remove_comments_and_empty_lines(lines):
     """
     Remove comments and empty lines from the given list of lines
     """
-    return [line for line in lines if not re.match(r"(--|//|@).*", line) and line.strip()]
+    COMMENT_INITIATORS = {"--", "//", "@"}
+    return [line for line in lines if not re.match(rf"({'|'.join(COMMENT_INITIATORS)}).*", line) and line.strip()]
 
 
 def get_arg():
@@ -214,6 +213,7 @@ def main():
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.chdir(root_dir)
 
+    # find the file containing assembly code
     asm_file_name = get_arg()
     asm_file_path = os.path.join(PROG_DIR, asm_file_name)
 
@@ -284,8 +284,7 @@ def main():
         array_index -= 1
 
     # write the new program memory file
-    with open(PMEM_FILE, "w") as f:
-        f.writelines(mem_lines)
+    open(PMEM_FILE, "w").writelines(mem_lines)
 
 
 if __name__ == "__main__":
