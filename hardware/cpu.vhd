@@ -233,8 +233,8 @@ BEGIN
     b"00101101"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
     b"00101111"/*POP.b8*/ WHEN (OP = "01110") ELSE
     b"00011101"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-    b"00110010"/*RET.b8*/ WHEN (OP = "10000") ELSE
-    b"00110100"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+    b"00110011"/*RET.b8*/ WHEN (OP = "10000") ELSE
+    b"00110101"/*HALT.b8*/ WHEN (OP = "11111") ELSE
     (OTHERS => 'U'); -- something wrong
 
     K2 <=
