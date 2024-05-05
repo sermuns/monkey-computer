@@ -21,7 +21,7 @@ SURFACE_WIDTH_PX = 640
 SURFACE_HEIGHT_PX = 480
 MAP_SIZE_PX = SURFACE_HEIGHT_PX
 MAP_SIZE_TILES = 10
-SCALE = 1.5
+SCALE = 3
 
 TILE_SIZE_PX = MAP_SIZE_PX // MAP_SIZE_TILES
 
@@ -194,7 +194,6 @@ if __name__ == "__main__":
     # change the working directory to the root of the project
     root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
     os.chdir(root_dir)
-    print (f"Working directory: {os.getcwd()}")
 
     # initialise main memory from pMem.vhd
     pmem_lines = open(PMEM_FILE).readlines()
