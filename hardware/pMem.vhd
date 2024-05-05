@@ -58,8 +58,6 @@ ARCHITECTURE func OF pMem IS
 
         -- HEAP
 
-        -- STACK
-        p_mem_type'HIGH => b"000000_000000_000000_000000",
 
         OTHERS => (OTHERS => '-')
     );
