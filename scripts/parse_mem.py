@@ -69,8 +69,6 @@ def main():
 
     filename = sys.argv[1]
 
-    print(filename)
-
     with open(filename, 'r') as file:
         new_file_lines = prepend_index(file)
 
