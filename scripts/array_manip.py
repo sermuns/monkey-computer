@@ -1,5 +1,15 @@
 import re
 
+def apply_constants_in_expr(expr, constants):
+    """
+    Replace all constants in `expr` with their values.
+    """
+
+    for c in constants:
+        expr = expr.replace(c, str(constants[c]))
+
+    return expr
+
 def parse_constants(lines):
     """
     Find all defined constants and return a dictionary of them.
@@ -9,10 +19,12 @@ def parse_constants(lines):
 
     for line in lines:
         if re.match(r'\s*CONSTANT.*INTEGER\s*:=.*', line):
-            groups = re.search(r'\s*CONSTANT\s+(\w+).*:=\s*(\d+).*', line)
+            line = apply_constants_in_expr(line, constants)
+            groups = re.search(r'\s*CONSTANT\s+(\w+).*:=\s*(.*);\n', line)
             if not groups:
                 raise ValueError(f"Invalid constant declaration: {line}")
             name, value = groups.groups()
+            value = eval(value)
 
             constants[name] = int(value)
 
