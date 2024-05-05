@@ -1,5 +1,6 @@
 import re
 
+
 def apply_constants_in_expr(expr, constants):
     """
     Replace all constants in `expr` with their values.
@@ -10,6 +11,7 @@ def apply_constants_in_expr(expr, constants):
 
     return expr
 
+
 def parse_constants(lines):
     """
     Find all defined constants and return a dictionary of them.
@@ -18,9 +20,9 @@ def parse_constants(lines):
     constants = {}
 
     for line in lines:
-        if re.match(r'\s*CONSTANT.*INTEGER\s*:=.*', line):
+        if re.match(r"\s*CONSTANT.*INTEGER\s*:=.*", line):
             line = apply_constants_in_expr(line, constants)
-            groups = re.search(r'\s*CONSTANT\s+(\w+).*:=\s*(.*);\n', line)
+            groups = re.search(r"\s*CONSTANT\s+(\w+).*:=\s*(.*);\n", line)
             if not groups:
                 raise ValueError(f"Invalid constant declaration: {line}")
             name, value = groups.groups()
@@ -29,6 +31,7 @@ def parse_constants(lines):
             constants[name] = int(value)
 
     return constants
+
 
 def extract_vhdl_array(lines, array_start_pattern):
     """
@@ -46,38 +49,41 @@ def extract_vhdl_array(lines, array_start_pattern):
 
     # Find the end of the array declaration
     for i, line in enumerate(lines[start:]):
-        if re.match(r'\s*\);', line):
+        if re.match(r"\s*\);", line):
             end = i
             break
     else:
         raise ValueError("Array termination cannot be found")
 
-    return lines[start:start+end+1]
+    return lines[start : start + end + 1]
+
 
 def clear_vhdl_array(lines: list, element_pattern: str, remove_comments=False) -> list:
     """
     Given lines of a VHDL array, remove all elements from it.
     """
-    
-    text = '\n'.join(lines)
+
+    text = "\n".join(lines)
 
     # Find all elements separated by commas
     elements = re.findall(element_pattern, text)
 
     # Remove all elements from the text
     for elem in elements:
-        text = text.replace(elem, '')
+        text = text.replace(elem, "")
 
     if remove_comments:
         # Remove lines with only comments
-        text = re.sub(r'\s*--.*\n', '', text)
+        text = re.sub(r"\s*--.*\n", "", text)
 
     # Split the text back into lines
-    lines = [line for line in text.splitlines(keepends=True) if line.strip()] # ignore empty
+    lines = [
+        line for line in text.splitlines(keepends=True) if line.strip()
+    ]  # ignore empty
     return lines
 
 
-def find_array_start_end_index (lines, array_start_pattern):
+def find_array_start_end_index(lines, array_start_pattern):
     """
     Find index of start and end of array declaration in `lines`.
     """
@@ -89,7 +95,7 @@ def find_array_start_end_index (lines, array_start_pattern):
 
     # find end
     for j, line in enumerate(lines[start_index:]):
-        if re.match(r'\s*\);', line):
+        if re.match(r"\s*\);", line):
             end_index = start_index + j
             break
 
@@ -97,7 +103,6 @@ def find_array_start_end_index (lines, array_start_pattern):
         raise ValueError("Array termination cannot be found")
 
     return start_index, end_index
-
 
 
 def get_vhdl_array_elements(lines, element_pattern):
@@ -112,13 +117,17 @@ def get_vhdl_array_elements(lines, element_pattern):
     clean_lines = []
     for line in lines:
         # Skip comments, empty lines and OTHERS
-        if re.match(r'\s*--.*', line) or re.match(r'\s*$', line) or re.match(r'\s*OTHERS.*', line):
+        if (
+            re.match(r"\s*--.*", line)
+            or re.match(r"\s*$", line)
+            or re.match(r"\s*OTHERS.*", line)
+        ):
             continue
         # Remove comments from the line
-        line_without_comment = re.sub(r'\s*--.*$', '', line)
+        line_without_comment = re.sub(r"\s*--.*$", "", line)
         clean_lines += [line_without_comment]
 
-    text = '\n'.join(clean_lines)
+    text = "\n".join(clean_lines)
 
     elements = []
 
@@ -127,6 +136,3 @@ def get_vhdl_array_elements(lines, element_pattern):
         elements += [elem.strip()]
 
     return elements
-
-
-
