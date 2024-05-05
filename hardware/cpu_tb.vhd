@@ -9,7 +9,7 @@ END ENTITY;
 ARCHITECTURE testbench OF cpu_tb IS
   -- Constants
   CONSTANT CLK_PERIOD : TIME := 10 ns;
-  CONSTANT MAX_CLK_COUNT : NATURAL := 1e2;
+  CONSTANT MAX_CLK_COUNT : NATURAL := 200;
 
   -- Signals
   SIGNAL clk_tb : STD_LOGIC := '0';
@@ -53,7 +53,7 @@ BEGIN
   BEGIN
     IF rising_edge(clk_tb) THEN
       IF clock_count_tb > MAX_CLK_COUNT THEN
-        REPORT "Simulation has continued for longer than MAX_CLK_COUNT, stopping";
+        REPORT "Simulation has continued for longer than MAX_CLOCK_CYCLES constant: " & INTEGER'image(MAX_CLK_COUNT) & ", stopping!";
         STOP;
       ELSE
         clock_count_tb <= clock_count_tb + 1;
