@@ -86,28 +86,25 @@ ARCHITECTURE func OF pMem IS
 
 BEGIN
 
-
-
     -- Reading from two-port ram
-    process(clk)
-    begin
-        if rising_edge(clk) then
+    PROCESS (clk)
+    BEGIN
+        IF rising_edge(clk) THEN
             cpu_data_out <= p_mem(TO_INTEGER(cpu_address));
-            end if;
-        end process;
+        END IF;
+    END PROCESS;
 
-        -- TODO: THIS HARDCODED FUCKK 
-            video_data <= b"000001_000001_000000_000001";
-            
+    -- TODO: THIS HARDCODED FUCKK 
+    video_data <= b"000001_000001_000000_000001";
+    -- video_data <= p_mem(TO_INTEGER(video_address) + VMEM_START);
+
     -- STORE
     PROCESS (clk)
     BEGIN
         IF rising_edge(clk) THEN
-
             IF (cpu_we = '1') THEN
                 p_mem(TO_INTEGER(cpu_address)) <= STD_LOGIC_VECTOR(cpu_data_in);
             END IF;
-
         END IF;
     END PROCESS;
 
