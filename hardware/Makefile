@@ -7,10 +7,6 @@ XDC = Basys3.xdc
 # Testbench file
 TBF = cpu_tb.vhd
 
-.PHONY: emulate
-emulate:
-	@python ../scripts/emulate.py
-
 # Include Makefile utilities
 include util.mk
 include ghdl.mk
