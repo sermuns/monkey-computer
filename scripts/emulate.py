@@ -10,12 +10,12 @@ import array_manip as am
 import re
 import utils
 
-os.environ['PYGAME_HIDE_SUPPORT_PROMPT'] = "hide"
+os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 import pygame
 
 # File paths
-PMEM_FILE = 'hardware/pMem.vhd'
-TILE_ROM_FILE = 'hardware/tile_rom.vhd'
+PMEM_FILE = "hardware/pMem.vhd"
+TILE_ROM_FILE = "hardware/tile_rom.vhd"
 
 # Constants
 SURFACE_WIDTH_PX = 640
@@ -30,6 +30,7 @@ TILE_SIZE_PX = MAP_SIZE_PX // MAP_SIZE_TILES
 CONSTANTS = {}
 PALETTE = []
 
+
 def parse_vmem(vmem_lines):
     """
     Parse the VHDL array elements into a 10x10 numpy array.
@@ -41,10 +42,9 @@ def parse_vmem(vmem_lines):
 
     for i, line in enumerate(vmem_lines):
         # Match all fields in the line (e.g. b"000000_000000_000000_000000"
-        fields = re.findall(rf'\d{{{VMEM_FIELD_WIDTH}}}', line)
+        fields = re.findall(rf"\d{{{VMEM_FIELD_WIDTH}}}", line)
         # Parse each field into a 6-bit integer
         flat_vmem += [int(field, 2) for field in fields]
-        
 
     vmem = np.zeros((10, 10), dtype=np.uint8)
     for i, val in enumerate(flat_vmem):
@@ -57,9 +57,12 @@ def read_palette(tile_rom_lines):
     Read the palette from lines of tile_rom.vhd
     """
 
-    palette_array = am.extract_vhdl_array(tile_rom_lines, r'\s*CONSTANT\s*palette_rom.*')
-    palette_elements = am.get_vhdl_array_elements(palette_array,
-                                                  element_pattern=r'\d+ => x"\w+"')
+    palette_array = am.extract_vhdl_array(
+        tile_rom_lines, r"\s*CONSTANT\s*palette_rom.*"
+    )
+    palette_elements = am.get_vhdl_array_elements(
+        palette_array, element_pattern=r'\d+ => x"\w+"'
+    )
 
     palette = []
 
@@ -80,10 +83,10 @@ def init_main_memory(pmem_lines):
     Initialise the main memory with the contents of pMem.vhd
     """
 
-    mem_array = am.extract_vhdl_array(pmem_lines, r'.*:.*p_mem_type.*:=.*')
-    mem_elements = am.get_vhdl_array_elements(lines=mem_array,
-                                              element_pattern=r'[\+\w\s]+\s*=>\s*b"[\d_]+"'
-                                              )
+    mem_array = am.extract_vhdl_array(pmem_lines, r".*:.*p_mem_type.*:=.*")
+    mem_elements = am.get_vhdl_array_elements(
+        lines=mem_array, element_pattern=r'[\+\w\s]+\s*=>\s*b"[\d_]+"'
+    )
 
     global CONSTANTS
     CONSTANTS = am.parse_constants(pmem_lines)
@@ -101,13 +104,15 @@ def init_main_memory(pmem_lines):
             addr = addr.replace(c, str(CONSTANTS[c]))
 
         # Remove leading zeroes from addr
-        addr = re.sub(r'\b0*(\d+)', r'\1', addr)
+        addr = re.sub(r"\b0*(\d+)", r"\1", addr)
 
         # Evaluate arithmetic expressions
         try:
             addr = eval(addr)
         except Exception as e:
-            raise ValueError(f"Unable to evaluate address arithmetically: {addr}") from e
+            raise ValueError(
+                f"Unable to evaluate address arithmetically: {addr}"
+            ) from e
 
         # Convert to integer
         try:
@@ -127,15 +132,17 @@ def read_tile_rom(tile_rom_lines):
     Read the tile ROM from lines of tile_rom.vhd
     """
 
-    tile_rom_array = am.extract_vhdl_array(tile_rom_lines, r'\s*CONSTANT.*tile_rom_type\s*:=')
-    tile_rom_elements = am.get_vhdl_array_elements(lines=tile_rom_array,
-                                                   element_pattern=r'\d+'
-                                                   )
+    tile_rom_array = am.extract_vhdl_array(
+        tile_rom_lines, r"\s*CONSTANT.*tile_rom_type\s*:="
+    )
+    tile_rom_elements = am.get_vhdl_array_elements(
+        lines=tile_rom_array, element_pattern=r"\d+"
+    )
 
     # Flatten the list comprehension to create a flat list of elements
     tile_rom = []
     for elem in tile_rom_elements:
-        tile_rom += [int(re.search(r'\d+', elem).group(0), 2)] 
+        tile_rom += [int(re.search(r"\d+", elem).group(0), 2)]
 
     return np.array(tile_rom, dtype=np.uint8)
 
@@ -146,13 +153,17 @@ def get_tile(tile_type: int, tile_rom: list) -> pygame.Surface:
     real colors from the palette.
     """
 
-    TILE_SIZE_MACROPIXELS = TILE_SIZE_PX // 4 # 12x12 macropixels per tile
+    TILE_SIZE_MACROPIXELS = TILE_SIZE_PX // 4  # 12x12 macropixels per tile
     COLOR_CHANNELS = 3
 
     surface = pygame.Surface((TILE_SIZE_MACROPIXELS, TILE_SIZE_MACROPIXELS))
 
     # Get the tile from the tile ROM
-    tile_data = tile_rom[tile_type * TILE_SIZE_MACROPIXELS**2: (tile_type + 1) * TILE_SIZE_MACROPIXELS**2]
+    tile_data = tile_rom[
+        tile_type
+        * TILE_SIZE_MACROPIXELS**2 : (tile_type + 1)
+        * TILE_SIZE_MACROPIXELS**2
+    ]
 
     # Map the palette indices to colors
     tile_colors = []
@@ -161,7 +172,7 @@ def get_tile(tile_type: int, tile_rom: list) -> pygame.Surface:
 
     for y in range(TILE_SIZE_MACROPIXELS):
         for x in range(TILE_SIZE_MACROPIXELS):
-            color = tile_colors[y*TILE_SIZE_MACROPIXELS + x]
+            color = tile_colors[y * TILE_SIZE_MACROPIXELS + x]
             surface.set_at((x, y), color)
 
     return pygame.transform.scale(surface, (TILE_SIZE_PX, TILE_SIZE_PX))
@@ -172,21 +183,21 @@ def get_map_surface(main_memory, tile_rom):
     Draw the map from video memory to a surface, return it.
     """
 
-    VMEM_START = CONSTANTS['VMEM_START']
+    VMEM_START = CONSTANTS["VMEM_START"]
     VMEM_FIELD_BIT_WIDTH = 6
 
     surface = pygame.Surface((MAP_SIZE_PX, MAP_SIZE_PX))
 
     for y in range(MAP_SIZE_TILES):
         for x in range(MAP_SIZE_TILES):
-            id = y*MAP_SIZE_TILES + x
+            id = y * MAP_SIZE_TILES + x
             vmem_row = bin(main_memory[VMEM_START + id // 4])[2:].zfill(24)
-            vmem_row_fields = re.findall(rf'\d{{{VMEM_FIELD_BIT_WIDTH}}}', vmem_row)
-            current_tile_type = int(vmem_row_fields[id % 4],2)
+            vmem_row_fields = re.findall(rf"\d{{{VMEM_FIELD_BIT_WIDTH}}}", vmem_row)
+            current_tile_type = int(vmem_row_fields[id % 4], 2)
 
             tile = get_tile(current_tile_type, tile_rom)
 
-            surface.blit(tile, (x*TILE_SIZE_PX, y*TILE_SIZE_PX))
+            surface.blit(tile, (x * TILE_SIZE_PX, y * TILE_SIZE_PX))
 
     return surface
 
@@ -206,12 +217,14 @@ if __name__ == "__main__":
 
     # initialise pygame
     pygame.init()
-    screen = pygame.display.set_mode((SCALE*SURFACE_WIDTH_PX, SCALE*SURFACE_HEIGHT_PX))
+    screen = pygame.display.set_mode(
+        (SCALE * SURFACE_WIDTH_PX, SCALE * SURFACE_HEIGHT_PX)
+    )
     clock = pygame.time.Clock()
 
     # Create a surface to draw on
     surface = pygame.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
-    surface.fill((0, 0, 0)) # fill with black
+    surface.fill((0, 0, 0))  # fill with black
 
     # Wait until user closes the window
     while True:
