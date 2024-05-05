@@ -1,7 +1,7 @@
 LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.NUMERIC_STD.ALL;
---USE std.env.stop;
+USE std.env.stop;
 
 ENTITY cpu IS
     PORT (
@@ -40,7 +40,7 @@ ARCHITECTURE func OF cpu IS
 
     SIGNAL K1, K2 : unsigned(7 DOWNTO 0) := (OTHERS => '0');
 
-    SIGNAL data_bus : unsigned(23 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL data_bus : unsigned(23 DOWNTO 0);
 
     -- GENERAL REGISTERS
     TYPE GR_t IS ARRAY(0 TO 7) OF unsigned(23 DOWNTO 0);
@@ -63,13 +63,15 @@ ARCHITECTURE func OF cpu IS
 
     COMPONENT alu IS
         PORT (
+            clk : IN STD_LOGIC;
+            rst : IN STD_LOGIC;
+
             data_bus : IN unsigned(23 DOWNTO 0);
             AR : OUT unsigned(23 DOWNTO 0);
             op : IN unsigned(3 DOWNTO 0);
 
             -- Z, N, C, V
-            flags : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-            rst : IN STD_LOGIC
+            flags : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
         );
     END COMPONENT;
 
@@ -92,11 +94,6 @@ ARCHITECTURE func OF cpu IS
     END COMPONENT;
 
 BEGIN
-
-    -- PROGRAM MEMORY
-    PM_should_store <=
-    '1' WHEN FB = "001" ELSE
-    '0';
     -- MICRO TICKING
     PROCESS (clk, rst)
     BEGIN
@@ -145,7 +142,8 @@ BEGIN
                         uPC <= UNSIGNED(uADR);
                     END IF;
                 WHEN "1111" =>
-                    REPORT "CPU gracefully halting." SEVERITY FAILURE;
+                    REPORT "CPU gracefully halting";
+                    STOP;
                 WHEN OTHERS =>
                     REPORT "Unknown SEQ in uMem address " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
             END CASE;
@@ -166,6 +164,7 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
+
     -- INSTRUCTION REGISTER
     PROCESS (clk, rst)
     BEGIN
@@ -180,7 +179,21 @@ BEGIN
 
     -- GENERAL REGISTERS (GRx) 
     GRx <= GR(TO_INTEGER(unsigned(GRx_num))) WHEN GRx_num /= "---" else (OTHERS => '-');
-    GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus WHEN (FB = "101") else GR(TO_INTEGER(unsigned(GRx_num)));
+
+    process (clk, rst)
+    begin
+        if rst = '1' then
+            for i in GR'range loop
+                GR(i) <= (OTHERS => '0');
+            end loop;
+        elsif rising_edge(clk) then
+            if (FB = "101") then
+                GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus;
+            end if;
+        end if;
+    end process;
+
+
 
     -- ASR
     PROCESS (clk, rst)
@@ -189,7 +202,7 @@ BEGIN
             ASR <= (OTHERS => '0');
             ELSIF rising_edge(clk) THEN
             IF (FB = "000") THEN
-                ASR <= data_bus(11 DOWNTO 0);
+                ASR <= data_bus(ASR'length - 1 DOWNTO 0);
             END IF;
         END IF;
     END PROCESS;
@@ -251,12 +264,18 @@ BEGIN
     -- ALU
     ALU_inst : alu
     PORT MAP(
+        clk => clk,
         data_bus => data_bus,
         AR => AR,
         op => unsigned(ALU_op),
         rst => rst,
         flags => flags
     );
+
+    -- PROGRAM MEMORY
+    PM_should_store <=
+    '1' WHEN FB = "001" ELSE
+    '0';
 
     pMem_inst : pMem
     PORT MAP(
