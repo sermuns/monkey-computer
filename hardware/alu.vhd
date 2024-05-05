@@ -3,13 +3,15 @@ USE ieee.std_logic_1164.ALL;
 USE ieee.NUMERIC_STD.ALL;
 ENTITY alu IS
   PORT (
+    clk : IN STD_LOGIC;
+    rst : IN STD_LOGIC;
+
     data_bus : IN unsigned(23 DOWNTO 0);
     AR : OUT unsigned(23 DOWNTO 0);
     op : IN unsigned(3 DOWNTO 0);
 
     -- Z, N, C, V
-    flags : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
-    rst : IN STD_LOGIC
+    flags : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
   );
 END ENTITY;
 
@@ -31,11 +33,11 @@ ARCHITECTURE func OF alu IS
 
   SIGNAL AR_internal : unsigned(24 DOWNTO 0);
 BEGIN
-  ALU_proc : PROCESS (op, data_bus, rst, AR_internal)
+  ALU_proc : PROCESS (clk)
   BEGIN
     IF rst = '1' THEN
       AR_internal <= (OTHERS => '0');
-    ELSE
+    ELSIF rising_edge(clk) THEN
       CASE op IS
         WHEN noop_op | dont_care => NULL;
         WHEN add_op => AR_internal <= AR_internal + resize(data_bus, AR_internal'length);
