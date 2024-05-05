@@ -16,6 +16,7 @@ ARCHITECTURE func OF cpu IS
     -- ASSEMBLY / MACRO
     SIGNAL PC : unsigned(11 DOWNTO 0) := (OTHERS => '0');
     SIGNAL PM_out : STD_LOGIC_VECTOR(23 DOWNTO 0);
+    SIGNAL PM_we : STD_LOGIC;
 
     -- Instruction register
     SIGNAL IR : STD_LOGIC_VECTOR (23 DOWNTO 0);
@@ -26,7 +27,7 @@ ARCHITECTURE func OF cpu IS
     ALIAS ADR IS IR(11 DOWNTO 0);
 
     -- MICRO
-    SIGNAL uPC : unsigned(7 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL uPC : unsigned(7 DOWNTO 0);
     SIGNAL uPM : STD_LOGIC_VECTOR(24 DOWNTO 0);
     ALIAS TB IS uPM(24 DOWNTO 22);
     ALIAS FB IS uPM(21 DOWNTO 19);
@@ -36,22 +37,21 @@ ARCHITECTURE func OF cpu IS
     ALIAS SEQ IS uPM(11 DOWNTO 8);
     ALIAS uADR IS uPM(7 DOWNTO 0);
 
-    SIGNAL PM_should_store : STD_LOGIC;
 
-    SIGNAL K1, K2 : unsigned(7 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL K1, K2 : unsigned(7 DOWNTO 0);
 
     SIGNAL data_bus : unsigned(23 DOWNTO 0);
 
     -- GENERAL REGISTERS
     TYPE GR_t IS ARRAY(0 TO 7) OF unsigned(23 DOWNTO 0);
-    SIGNAL GR : GR_t := (OTHERS => (OTHERS => '0'));
+    SIGNAL GR : GR_t;
 
     SIGNAL GRx : unsigned(23 DOWNTO 0);
 
-    SIGNAL ASR : unsigned(11 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL ASR : unsigned(11 DOWNTO 0);
 
     -- ALU
-    SIGNAL AR : unsigned(23 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL AR : unsigned(23 DOWNTO 0);
 
     SIGNAL flags : STD_LOGIC_VECTOR(3 DOWNTO 0);
     ALIAS Z IS flags(0);
@@ -93,12 +93,13 @@ ARCHITECTURE func OF cpu IS
         );
     END COMPONENT;
 
+
 BEGIN
     -- MICRO TICKING
     PROCESS (clk, rst)
     BEGIN
         IF rst = '1' THEN
-            uPC <= (OTHERS => '0');
+            uPC <= (others => '0');
             ELSIF rising_edge(clk) THEN
             CASE SEQ IS
                 WHEN "0000" =>
@@ -154,12 +155,11 @@ BEGIN
     PROCESS (clk, rst)
     BEGIN
         IF rst = '1' THEN
-            PC <= (OTHERS => '0');
-            ELSIF rising_edge(clk) THEN
+            PC <= to_unsigned(0, PC'length);
+        ELSIF rising_edge(clk) THEN
             IF (FB = "010") THEN
-                PC <= data_bus(11 DOWNTO 0);
-            END IF;
-            IF (P = '1') THEN
+                PC <= data_bus(11 DOWNTO 0) + 1;
+            ELSIF (P = '1') THEN
                 PC <= PC + 1;
             END IF;
         END IF;
@@ -183,17 +183,13 @@ BEGIN
     process (clk, rst)
     begin
         if rst = '1' then
-            for i in GR'range loop
-                GR(i) <= (OTHERS => '0');
-            end loop;
+            GR <= (Others => (OTHERS => '0'));
         elsif rising_edge(clk) then
             if (FB = "101") then
                 GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus;
             end if;
         end if;
     end process;
-
-
 
     -- ASR
     PROCESS (clk, rst)
@@ -222,44 +218,43 @@ BEGIN
     END PROCESS;
 
     K1 <=
-    b"00001010"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
-    b"00001011"/*STORE.b8*/ WHEN (OP = "00001") ELSE
-    b"00001100"/*ADD.b8*/ WHEN (OP = "00010") ELSE
-    b"00001111"/*SUB.b8*/ WHEN (OP = "00011") ELSE
-    b"00010010"/*CMP.b8*/ WHEN (OP = "00100") ELSE
-    b"00010101"/*AND.b8*/ WHEN (OP = "00101") ELSE
-    b"00011101"/*OR.b8*/ WHEN (OP = "00110") ELSE
-    b"00011000"/*LSR.b8*/ WHEN (OP = "00111") ELSE
-    b"00100111"/*JSR.b8*/ WHEN (OP = "01001") ELSE
-    b"00100000"/*BRA.b8*/ WHEN (OP = "01010") ELSE
-    b"00100011"/*BNE.b8*/ WHEN (OP = "01011") ELSE
-    b"00100101"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
-    b"00101010"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
-    b"00101100"/*POP.b8*/ WHEN (OP = "01110") ELSE
-    b"00011010"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-    b"00101111"/*RET.b8*/ WHEN (OP = "10000") ELSE
-    b"00110001"/*HALT.b8*/ WHEN (OP = "11111") ELSE
-    (OTHERS => '-') WHEN (OP = "-----") ELSE
+    b"00001101"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
+    b"00001110"/*STORE.b8*/ WHEN (OP = "00001") ELSE
+    b"00001111"/*ADD.b8*/ WHEN (OP = "00010") ELSE
+    b"00010010"/*SUB.b8*/ WHEN (OP = "00011") ELSE
+    b"00010101"/*CMP.b8*/ WHEN (OP = "00100") ELSE
+    b"00011000"/*AND.b8*/ WHEN (OP = "00101") ELSE
+    b"00100000"/*OR.b8*/ WHEN (OP = "00110") ELSE
+    b"00011011"/*LSR.b8*/ WHEN (OP = "00111") ELSE
+    b"00101010"/*JSR.b8*/ WHEN (OP = "01001") ELSE
+    b"00100011"/*BRA.b8*/ WHEN (OP = "01010") ELSE
+    b"00100110"/*BNE.b8*/ WHEN (OP = "01011") ELSE
+    b"00101000"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
+    b"00101101"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
+    b"00101111"/*POP.b8*/ WHEN (OP = "01110") ELSE
+    b"00011101"/*MUL.b8*/ WHEN (OP = "01111") ELSE
+    b"00110010"/*RET.b8*/ WHEN (OP = "10000") ELSE
+    b"00110100"/*HALT.b8*/ WHEN (OP = "11111") ELSE
     (OTHERS => 'U'); -- something wrong
 
     K2 <=
-    b"00000011"/*DIREKT.b8*/ WHEN (M = "00" OR M = "--") ELSE
-    b"00000100"/*OMEDELBAR.b8*/ WHEN (M = "01") ELSE
-    b"00000110"/*INDIREKT.b8*/ WHEN (M = "10") ELSE
-    b"00000111"/*INDEXERAD.b8*/ WHEN (M = "11") ELSE
+    b"00000101"/*DIREKT.b8*/ WHEN (M = "00" OR M = "--") ELSE
+    b"00000111"/*OMEDELBAR.b8*/ WHEN (M = "01") ELSE
+    b"00001001"/*INDIREKT.b8*/ WHEN (M = "10") ELSE
+    b"00001010"/*INDEXERAD.b8*/ WHEN (M = "11") ELSE
     (OTHERS => 'U'); -- something wrong
 
-    -- DATA BUS (TO-BUS)
+    -- DATA BUS
     data_bus <=
-    resize(ASR, data_bus'LENGTH) WHEN (TB = "000") ELSE -- Resize ASR
-    resize(unsigned(PM_out), data_bus'LENGTH) WHEN (TB = "001") ELSE
-    resize(PC, data_bus'LENGTH) WHEN (TB = "010") ELSE -- Resize PC
-    resize(AR, data_bus'LENGTH) WHEN (TB = "011") ELSE
-    resize(unsigned(IR(11 DOWNTO 0)), data_bus'LENGTH) WHEN (TB = "100") ELSE
-    resize(SP, data_bus'LENGTH) WHEN (TB = "110") ELSE -- Resize SP
-    resize(GRx, data_bus'LENGTH) WHEN (TB = "101") ELSE
-    (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
-    (OTHERS => 'U'); -- something wrong
+        resize(ASR, data_bus'LENGTH) WHEN (TB = "000") ELSE -- Resize ASR
+        resize(unsigned(PM_out), data_bus'LENGTH) WHEN (TB = "001") ELSE
+        resize(PC, data_bus'LENGTH) WHEN (TB = "010") ELSE -- Resize PC
+        resize(AR, data_bus'LENGTH) WHEN (TB = "011") ELSE
+        resize(unsigned(IR(11 DOWNTO 0)), data_bus'LENGTH) WHEN (TB = "100") ELSE
+        resize(SP, data_bus'LENGTH) WHEN (TB = "110") ELSE -- Resize SP
+        resize(GRx, data_bus'LENGTH) WHEN (TB = "101") ELSE
+        (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
+        (OTHERS => 'U'); -- something wrong
 
     -- ALU
     ALU_inst : alu
@@ -273,9 +268,7 @@ BEGIN
     );
 
     -- PROGRAM MEMORY
-    PM_should_store <=
-    '1' WHEN FB = "001" ELSE
-    '0';
+    PM_we <= '1' WHEN (FB = "001") ELSE '0';
 
     pMem_inst : pMem
     PORT MAP(
@@ -283,7 +276,7 @@ BEGIN
         cpu_address => ASR,
         cpu_data_out => PM_out,
         cpu_data_in => data_bus,
-        cpu_we => PM_should_store,
+        cpu_we => PM_we,
         video_address => v_addr,
         video_data => v_data
     );
