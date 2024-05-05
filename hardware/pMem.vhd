@@ -16,6 +16,8 @@ END pMem;
 
 ARCHITECTURE func OF pMem IS
     CONSTANT VMEM_START : INTEGER := 1500;
+    CONSTANT HEAP_START : INTEGER := VMEM_START + 25;
+
     TYPE p_mem_type IS ARRAY(0 TO 4095) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
 
     -- 00000_000_00_00_000000000000
@@ -23,12 +25,9 @@ ARCHITECTURE func OF pMem IS
     -- 5     3   2  2  12  
     SIGNAL p_mem : p_mem_type := (
         -- PROGRAM MEMORY
-        0 => b"00000_000_01_00_------------", -- LDI GR0, 0xDEAD
-        1 => b"000000001101111010101101",
-        2 => b"00001_000_00_00_010111011100", -- ST 1500, GR0
-        3 => b"11111_---_--_--_------------", -- HALT
-
-
+        0 => b"00000_000_01_00_------------", -- LDI GR0, 1
+        1 => b"000000000000000000000001",
+        2 => b"11111_---_--_--_------------", -- HALT
 
         -- VIDEO MEMORY
         VMEM_START + 00 => b"000001_000000_000000_000000",
@@ -59,7 +58,8 @@ ARCHITECTURE func OF pMem IS
 
         -- HEAP
 
-        -- STACKcpu_we
+        -- STACK
+        p_mem_type'HIGH => b"000000_000000_000000_000000",
 
         OTHERS => (OTHERS => '-')
     );
