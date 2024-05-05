@@ -3,8 +3,19 @@ Parse the given argument file from monkey-assembly to binary code
 """
 
 import re, sys, os
+from pathlib import Path
 
-import os
+# Get the absolute path of the parent directory
+parent_dir = Path(__file__).resolve().parent.parent
+
+# Add the parent directory to sys.path if not already included
+if str(parent_dir) not in sys.path:
+    sys.path.append(str(parent_dir))
+
+from utils import chdir_to_root
+
+# begin by changing dir to root of file
+chdir_to_root()
 
 PROG_DIR = "masm"
 HARDWARE_DIR = "hardware"
@@ -14,7 +25,7 @@ FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
 ADR_WIDTH = 12
 
-DEBUG_ARG = "busywait.s"
+DEBUG_ARG = "directives.s"
 
 # OP GRx, ADR
 IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN", "MUL", "LSR", "LSL"}
@@ -31,6 +42,7 @@ ONE_ADDR_OPERATIONS = {"BRA"}
 
 INSTRUCTION_WIDTH = 24
 
+
 def get_opcodes():
     """
     Get the opcodes from the `fax.md` file
@@ -41,14 +53,14 @@ def get_opcodes():
     if not lines:
         print(f"Error: Could not find/read {FAX_FILE}")
         sys.exit(1)
-    opcodes = {}    
+    opcodes = {}
     # find the opcodes header
     opcodes_start_line = None
     for i, line in enumerate(lines):
         if line.startswith("## OP-koder"):
             opcodes_start_line = i
             break
-    
+
     # no opcodes header found?
     if opcodes_start_line is None:
         print(f"Error: Could not find opcodes header in {FAX_FILE}")
@@ -57,9 +69,9 @@ def get_opcodes():
     # loop through opcodes
     for i in range(opcodes_start_line + 1, len(lines)):
         line = lines[i]
-        if not line: # skip empty lines
+        if not line:  # skip empty lines
             continue
-        if not re.match(r"\d+", line): # stop if not numerical
+        if not re.match(r"\d+", line):  # stop if not numerical
             break
         parts = line.split()
         if len(parts) != 2:
@@ -70,12 +82,56 @@ def get_opcodes():
 
     return opcodes
 
-def assemble_binary_line(line, known_opcodes):
+
+KNOWN_OPCODES = get_opcodes()
+
+
+class Section:
+    """
+    Represents continious portion of the memory
+    """
+
+    def __init__(self, name, start, height):
+        self.name = name
+        self.start = start
+        self.height = height
+
+    def __repr__(self) -> str:
+        return f"{self.name} {self.start} {self.height}"
+
+
+def parse_value(value: str) -> int:
+    """
+    Given string in unknown number base,
+    return
+    """
+    base = re.search(r"(0([bdx])|\$)", value)
+
+    if base is None:
+        base = "d"
+    else:
+        value = value[len(base.group(0)) :]  # slice away the base
+        if base.group(1) == "$":
+            base = "x"
+        else:
+            base = base.group(2)
+
+    if base == "b":
+        value = int(value, 2)
+    elif base == "d":
+        value = int(value, 10)
+    elif base == "x":
+        value = int(value, 16)
+
+    return value
+
+
+def assemble_binary_line(line, label):
     """
     Return binary line from the given assembly line
-    If the instruction is an immediate instruction, the immediate value is 
+    If the instruction is an immediate instruction, the immediate value is
     also returned as a separate line.
-    """ 
+    """
 
     binary_lines = []
 
@@ -83,19 +139,19 @@ def assemble_binary_line(line, known_opcodes):
     parts = re.split(r",\s*|\s+", line)
     op_fullname = parts[0]
 
+    # get base opname
     op_basename = None
     op_address_mode = None
-    # get base opname
-    for known_op_name in known_opcodes:
+    for known_op_name in KNOWN_OPCODES:
         if op_fullname.startswith(known_op_name):
             op_basename = known_op_name
-            op_address_mode = op_fullname[len(op_basename):]
+            op_address_mode = op_fullname[len(op_basename) :]
             break
 
     # unknown op?
     if not op_basename:
         raise ValueError(f"Error: Unknown op: {op_fullname} in {line}")
-    
+
     # initialize variables
     op_adr = "-"
     grx_name = "-"
@@ -112,36 +168,20 @@ def assemble_binary_line(line, known_opcodes):
         pass
     elif op_basename in ONE_ADDR_OPERATIONS:
         op_adr = parts[1]
-        
+
     # figure out number base (hex, decimal, binary)
     if op_adr != "-":
-        base = re.search(r'(0([bdx])|\$)', op_adr)
-
-        if base is None:
-            base = 'd' 
-        else:
-            op_adr = op_adr[len(base.group(0)):] # slice away the base
-            if base.group(1) == '$':
-                base = 'x'
-            else:
-                base = base.group(2)
-
-        if base == 'b':
-            op_adr = int(op_adr, 2)
-        elif base == 'd':
-            op_adr = int(op_adr, 10)
-        elif base == 'x':
-            op_adr = int(op_adr, 16)
+        op_adr = parse_value(op_adr)
 
         # parse the address-mode
-        if op_address_mode == "":       # direct
+        if op_address_mode == "":  # direct
             op_address_mode_code = "00"
-            op_adr_bin = f'{int(op_adr):0{ADR_WIDTH}b}'
-        elif op_address_mode == "I":    # immediate
+            op_adr_bin = f"{int(op_adr):0{ADR_WIDTH}b}"
+        elif op_address_mode == "I":  # immediate
             op_address_mode_code = "01"
-            
-            op_adr_bin = '-' * ADR_WIDTH # dont care
-            immediate_value = f'{int(op_adr):0{INSTRUCTION_WIDTH}b}'
+
+            op_adr_bin = "-" * ADR_WIDTH  # dont care
+            immediate_value = f"{int(op_adr):0{INSTRUCTION_WIDTH}b}"
         else:
             print(f"Error: Unknown address mode {op_address_mode}")
             sys.exit(1)
@@ -151,22 +191,24 @@ def assemble_binary_line(line, known_opcodes):
 
     if grx_name != "-":
         # parse the register
-        grx_num = re.search(r'GR([0-7])', grx_name)
+        grx_num = re.search(r"GR([0-7])", grx_name)
         if not grx_num:
             print(f"Error: Unknown register {grx_name} in {line}")
             sys.exit(1)
-        grx_bin = f'{int(grx_num.group(1)):03b}'
+        grx_bin = f"{int(grx_num.group(1)):03b}"
     else:
         grx_bin = "000"
 
     # create binary code
-    binary_line = f'{known_opcodes[op_basename]}_{grx_bin}_{op_address_mode_code}_00_{op_adr_bin}'
+    binary_line = (
+        f"{KNOWN_OPCODES[op_basename]}_{grx_bin}_{op_address_mode_code}_00_{op_adr_bin}"
+    )
     binary_lines += [(binary_line, line.strip())]
 
     # possible immediate value
     if immediate_value:
         binary_lines += [(immediate_value, "")]
-    
+
     return binary_lines
 
 
@@ -189,7 +231,11 @@ def remove_comments_and_empty_lines(lines):
     Remove comments and empty lines from the given list of lines
     """
     COMMENT_INITIATORS = {"--", "//", "@"}
-    return [line for line in lines if not re.match(rf"({'|'.join(COMMENT_INITIATORS)}).*", line) and line.strip()]
+    return [
+        line
+        for line in lines
+        if not re.match(rf"({'|'.join(COMMENT_INITIATORS)}).*", line) and line.strip()
+    ]
 
 
 def get_arg():
@@ -203,15 +249,31 @@ def get_arg():
     arg = sys.argv[1]
 
     if arg == "--debug":
-        return DEBUG_ARG # hardcoded, can be changed for debugging
+        return DEBUG_ARG  # hardcoded, can be changed for debugging
 
     return sys.argv[1]
 
 
+def get_section(line) -> Section:
+    """
+    Return a section object from the given line
+    """
+    if not re.match(r"%.*", line):
+        raise ValueError(f"Error: Not a directive {line}")
+
+    parts = (line.replace("%", "")).split()
+
+    if len(parts) < 3:
+        raise ValueError(f"Error: Too few parts in directive {line}")
+
+    name, start, end = parts
+
+    section = Section(name, int(start), int(end))
+
+    return section
+
+
 def main():
-    # begin by changing dir to root of file
-    root_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    os.chdir(root_dir)
 
     # find the file containing assembly code
     asm_file_name = get_arg()
@@ -220,7 +282,6 @@ def main():
     # read the program memory file
     mem_lines = read_lines(PMEM_FILE)
 
-    KNOWN_OPCODES = get_opcodes()
     binary_lines = []
 
     # read the assembly file
@@ -229,29 +290,56 @@ def main():
     # remove comments and empty lines
     asm_lines = remove_comments_and_empty_lines(asm_lines)
 
+    sections = []
+    current_label = ""
+
     # assemble the binary code
     for i, line in enumerate(asm_lines):
-        try:
-            binary_lines += assemble_binary_line(line, KNOWN_OPCODES)
-        except ValueError as e:
-            print(f"Unable to parse line {i} in {asm_file_path}:\n{e}")
-            sys.exit(1)
-    
+        if line.startswith("%"):  # section directives
+            try:
+                sections += [get_section(line)]
+            except ValueError as e:
+                print(
+                    f"Unable to parse line {i} as section directive in {asm_file_path}:\n{e}"
+                )
+                sys.exit(1)
+        elif line.endswith(":\n"):  # labels
+            try:
+                current_label = line.strip()[:-1]  # remove the colon
+            except ValueError as e:
+                print(f"Unable to parse line {i} as label in {asm_file_path}:\n{e}")
+                sys.exit(1)
+        elif line.startswith("."):  # data
+            try:
+                binary_lines += [(line.strip(), "")]
+            except ValueError as e:
+                print(f"Unable to parse line {i} as data in {asm_file_path}:\n{e}")
+                sys.exit(1)
+        else:  # handle code
+            try:
+                binary_lines += assemble_binary_line(
+                    line=line.strip(),
+                    label=current_label,
+                )
+            except ValueError as e:
+                print(f"Unable to parse line {i} as code in {asm_file_path}:\n{e}")
+                sys.exit(1)
+
     # assume that HALT needs to be added
     binary_lines += [("11111_---_--_--_------------", "HALT")]
 
     # find start and end of the program memory part of array
     mem_start_linenum = None
-    program_end_linenum = None 
+    program_end_linenum = None
     for i, line in enumerate(mem_lines):
         if mem_start_linenum is None and re.match(r"\s*SIGNAL p_mem.*", line):
-            while re.match(r"\s*--.*", mem_lines[i+1]):
-                i += 1 # skip comments
-            mem_start_linenum = i+1 # found the start
+            while re.match(r"\s*--.*", mem_lines[i + 1]):
+                i += 1  # skip comments
+            mem_start_linenum = i + 1  # found the start
         elif re.match(r"\s*VMEM_START.*=>.*\,.*", line):
-            program_end_linenum = i-2
-            break # found the end
-    
+            program_end_linenum = i - 2
+            break  # found the end
+
     # no program memory array found?
     if mem_start_linenum is None:
         print(f"Error: Could not find program memory array in {PMEM_FILE}")
@@ -260,10 +348,10 @@ def main():
     # remove old content
     for i, line in enumerate(mem_lines[mem_start_linenum:], start=mem_start_linenum):
         if i == program_end_linenum:
-            break # end of program memory part
-        elif not re.match(r'.*b".*",.*', line): 
-            continue # not an array element
-        
+            break  # end of program memory part
+        elif not re.match(r'.*b".*",.*', line):
+            continue  # not an array element
+
         # mark for removal
         mem_lines[i] = ""
 
@@ -276,9 +364,9 @@ def main():
         new_line = f'        {array_index} => b"{binary_line[0]}",'
 
         # add original assembly line as a comment, none if immediate value
-        if binary_line[1] != "": 
-            new_line += f' -- {binary_line[1]}'
-        new_line += '\n'
+        if binary_line[1] != "":
+            new_line += f" -- {binary_line[1]}"
+        new_line += "\n"
 
         mem_lines.insert(mem_start_linenum, new_line)
         array_index -= 1
