@@ -1,12 +1,15 @@
+// macro directives
 _MONKEY0 = %HEAP
 _MONKEY1 = %HEAP + 1
 _MONKEY2 = %HEAP + 2
 
+// program section
 %PROGRAM 0 1499
 main:
     LDI GR0, 1
-    LD GR1,_MONKEY1
+    ST %VMEM, GR0
 
+// vmem section
 %VMEM 1500 25
 0b000000_000000_000000_000000
 0b000000_000000_000000_000000
@@ -34,4 +37,7 @@ main:
 0b000000_000000_000000_000000
 0b000000_000000_000000_000000
 
+// heap section
 %HEAP 1525 100
+
+// rest is stack section
