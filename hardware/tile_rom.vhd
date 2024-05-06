@@ -10,7 +10,7 @@ ENTITY tile_rom IS
     );
 END tile_rom;
 
-ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 to 18) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
+ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 TO 18) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
     CONSTANT palette_rom : palette_rom_type := (
         00 => x"000000",
         01 => x"ffffff",
@@ -34,7 +34,7 @@ ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 to 18) OF STD_
     );
     CONSTANT TILE_SIZE : INTEGER := 12 * 12;
 
-    TYPE tile_rom_type IS ARRAY(0 to 5471) OF unsigned(4 DOWNTO 0);
+    TYPE tile_rom_type IS ARRAY(0 TO 5471) OF unsigned(4 DOWNTO 0);
     CONSTANT tile_rom_data : tile_rom_type := (
         -- 0
         "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001",
@@ -533,20 +533,20 @@ ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 to 18) OF STD_
     );
 
     SIGNAL palette_index : unsigned(4 DOWNTO 0); -- max 32 colors
-    SIGNAL full_color : std_logic_vector(23 DOWNTO 0);
+    SIGNAL full_color : STD_LOGIC_VECTOR(23 DOWNTO 0);
 BEGIN
     -- get palette index from memory
-    process(clk) BEGIN
+    PROCESS (clk) BEGIN
         IF rising_edge(clk) THEN
             palette_index <= tile_rom_data(to_integer(address));
         END IF;
     END PROCESS;
 
-    process(clk) begin
-        if rising_edge(clk) then
+    PROCESS (clk) BEGIN
+        IF rising_edge(clk) THEN
             full_color <= palette_rom(to_integer(palette_index));
-        end if;
-    end process;
+        END IF;
+    END PROCESS;
 
     -- grab the high 4 bits of each color channel
     data_out <= full_color(23 DOWNTO 20) & full_color(15 DOWNTO 12) & full_color(7 DOWNTO 4);
