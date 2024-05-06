@@ -2,6 +2,6 @@
     "recommendations": [
         "hbohlin.vhdl-ls",
         "vinrobot.vhdl-formatter",
-        "dan-c-underwood.arm"
+        "maziac.asm-code-lens"
     ]
 }
