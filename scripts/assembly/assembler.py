@@ -2,6 +2,7 @@
 Parse the given argument file from monkey-assembly to binary code
 """
 
+# standard imports
 import re, sys, os
 from pathlib import Path
 
@@ -12,6 +13,9 @@ parent_dir = Path(__file__).resolve().parent.parent
 if str(parent_dir) not in sys.path:
     sys.path.append(str(parent_dir))
 
+
+# custom imports
+from section import Section
 import utils
 from utils import ERROR
 import array_manip as am
@@ -25,8 +29,8 @@ PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
 FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
 ADR_WIDTH = 12
-
-DEBUG_ARG = "directives.s"
+DEBUG_ARG = "loop.s"
+INSTRUCTION_WIDTH = 24
 
 # OP GRx, ADR
 IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN", "MUL", "LSR", "LSL"}
@@ -36,12 +40,10 @@ OUT_OPERATIONS = {"ST", "OUT"}
 TWO_REG_OPERATIONS = {"MOV", "ADDREG"}
 # OP GRx
 ONE_REG_OPERATIONS = {"POP", "PUSH", "JSR"}
+# OP ADR
+ONE_ADDR_OPERATIONS = {"BRA", "JSR"}
 # OP
 NO_ARGS_OPERATIONS = {"RET"}
-# OP ADR
-ONE_ADDR_OPERATIONS = {"BRA"}
-
-INSTRUCTION_WIDTH = 24
 
 
 def get_opcodes():
@@ -87,35 +89,8 @@ def get_opcodes():
 KNOWN_OPCODES = get_opcodes()
 
 
-class Section:
-    """
-    Represents continious portion of the memory
-    """
-
-    def __init__(self, name, start, height, lines=None):
-        self.name = name
-        self.start = start
-        self.height = height
-        self.lines = lines or []
-
-    def __repr__(self) -> str:
-        return f"{self.name} {self.start} {self.height}"
-
-
-def assemble_binary_line(line, label):
-    """
-    Return binary line from the given assembly line
-    If the instruction is an immediate instruction, the immediate value is
-    also returned as a separate line.
-    """
-
-    binary_lines = []
-
-    # split into parts by comma and whitespace
-    parts = re.split(r",\s*|\s+", line)
+def parse_operation(parts):
     op_fullname = parts[0]
-
-    # get base opname
     op_basename = None
     op_address_mode = None
     for known_op_name in KNOWN_OPCODES:
@@ -123,17 +98,14 @@ def assemble_binary_line(line, label):
             op_basename = known_op_name
             op_address_mode = op_fullname[len(op_basename) :]
             break
-
-    # unknown op?
     if not op_basename:
-        ERROR(f"Unknown operation {op_fullname} in {line}")
+        ERROR(f"Unknown operation {op_fullname} in `{line}`")
+    return op_basename, op_address_mode
 
-    # initialize variables
+
+def parse_register_and_address(op_basename, parts):
     op_adr = "-"
     grx_name = "-"
-    immediate_value = ""
-
-    # get register and address
     if op_basename in IN_OPERATIONS:
         grx_name, op_adr = parts[1], parts[2]
     elif op_basename in OUT_OPERATIONS:
@@ -144,44 +116,98 @@ def assemble_binary_line(line, label):
         pass
     elif op_basename in ONE_ADDR_OPERATIONS:
         op_adr = parts[1]
+    return grx_name, op_adr
 
-    # figure out number base (hex, decimal, binary)
-    if op_adr != "-":
-        op_adr = utils.evaluate_expr(op_adr)
 
-        # parse the address-mode
-        if op_address_mode == "":  # direct
-            op_address_mode_code = "00"
-            op_adr_bin = f"{int(op_adr):0{ADR_WIDTH}b}"
-        elif op_address_mode == "I":  # immediate
-            op_address_mode_code = "01"
+def parse_address_mode(addr, mode):
+    """
+    Parse the address mode and address from the given address and mode
+    
+    Args:
+        addr (str): The address to be parsed.
+        mode (str): The mode to be parsed.
+    
+    Returns:
+        tuple: A tuple containing the binary address mode,
+        the binary address, and the immediate value.
+    """
 
-            op_adr_bin = "-" * ADR_WIDTH  # dont care
-            immediate_value = f"{int(op_adr):0{INSTRUCTION_WIDTH}b}"
-        else:
-            ERROR(f"Unknown address mode {op_address_mode}")
-    else:
-        op_address_mode_code = "--"
-        op_adr_bin = "-" * ADR_WIDTH
+    if re.match(r"[A-z]+", addr):
+        mode_bin = "00"
+        addr_bin = "?" * ADR_WIDTH  # value will be filled in later
+        return mode_bin, addr_bin, ""
 
-    if grx_name != "-":
-        # parse the register
-        grx_num = re.search(r"GR([0-7])", grx_name)
-        if not grx_num:
-            ERROR(f"Unknown register {grx_name} in {line}")
-        grx_bin = f"{int(grx_num.group(1)):03b}"
-    else:
-        grx_bin = "000"
+    mode_bin = "--"
+    addr_bin = "-" * ADR_WIDTH
+    immediate_value = ""
 
-    # create binary code
-    binary_line = (
-        f"{KNOWN_OPCODES[op_basename]}_{grx_bin}_{op_address_mode_code}_00_{op_adr_bin}"
+    if addr == "-":
+        return mode_bin, addr_bin, immediate_value
+
+    addr = utils.evaluate_expr(addr)
+    if mode == "":  # direct
+        mode_bin = "00"
+        addr_bin = f"{int(addr):0{ADR_WIDTH}b}"
+    elif mode == "I":  # immediate
+        mode_bin = "01"
+        addr_bin = "-" * ADR_WIDTH  # dont care
+        immediate_value = f"{int(addr):0{INSTRUCTION_WIDTH}b}"
+
+    return mode_bin, addr_bin, immediate_value
+
+
+def parse_register(grx_name):
+    if grx_name == "-":
+        return "---"
+
+    grx_num = re.search(r"GR([0-7])", grx_name)
+    if not grx_num:
+        ERROR(f"Unknown register {grx_name} in {line}")
+    grx_bin = f"{int(grx_num.group(1)):03b}"
+    return grx_bin
+
+
+def assemble_binary_line(instruction_line: str, label: str) -> list:
+    """
+    Assemble a binary line from the given instruction line and label.
+
+    Args:
+        instruction_line (str): The instruction line to be assembled.
+        label (str): The label associated with the instruction line.
+
+    Returns:
+        list: A list of tuples, each containing a binary line and its corresponding assembly instruction.
+    """
+
+    # Initialize the list to hold the binary lines
+    binary_lines = []
+
+    # Split the instruction line into parts
+    instruction_parts = re.split(r",\s*|\s+", instruction_line)
+
+    # Parse the operation and its address mode from the instruction parts
+    operation, address_mode = parse_operation(instruction_parts)
+
+    # Parse the register and address from the operation
+    register, address = parse_register_and_address(operation, instruction_parts)
+
+    # Parse the address mode code, binary address, and immediate value from the address and address mode
+    address_mode_code, binary_address, immediate_value = parse_address_mode(
+        address, address_mode
     )
-    binary_lines += [(binary_line, line.strip())]
 
-    # possible immediate value
+    # Parse the binary representation of the register
+    binary_register = parse_register(register)
+
+    # Assemble the binary line
+    binary_instruction = f"{KNOWN_OPCODES[operation]}_{binary_register}_{address_mode_code}_00_{binary_address}"
+
+    # Add the binary line and its corresponding assembly instruction to the list of binary lines
+    binary_lines += [(binary_instruction, instruction_line.strip(), label)]
+
+    # If there's an immediate value, add it as a separate binary line
     if immediate_value:
-        binary_lines += [(immediate_value, "")]
+        binary_lines += [(immediate_value, '', '')]
 
     return binary_lines
 
@@ -246,18 +272,18 @@ def get_section(line) -> Section:
     return section
 
 
-def assemble_data(line, section):
+def assemble_data(line):
     """
     Return binary lines from the given data line
     """
 
     # parse the value
-    value = utils.evaluate_expr(line)
+    decimal_data = utils.evaluate_expr(line)
 
     # convert to binary
-    binary_line = f"{int(value):0{INSTRUCTION_WIDTH}b}"
+    binary_data = f"{int(decimal_data):0{INSTRUCTION_WIDTH}b}"
 
-    return (binary_line, value)
+    return (binary_data, decimal_data, "")
 
 
 def use_sections(line, sections):
@@ -302,7 +328,7 @@ def main():
 
     # find all sections beforehand
     for i, line in enumerate(asm_lines):
-        if line.startswith("%"):
+        if line.startswith("%"):  # section
             section = get_section(line)
             sections[section.name] = section
 
@@ -316,34 +342,33 @@ def main():
             continue
         elif line.startswith("%"):  # section directive
             current_section_name = line.split()[0].replace("%", "")
-            continue # already handled
+            continue  # already handled
 
         if "_" in line:  # macro usage
             line = use_macros(line, macros)
 
         if "%" in line:
             line = use_sections(line, sections)
-            
+
         if line.endswith(":\n"):  # label
             current_label = line.strip()[:-1]  # remove the colon
             continue
 
         if re.match(r"\s*[A-z]+.*", line):  # code
             new_line = assemble_binary_line(
-                line=line.strip(),
-                label=current_label,
-            )
+                instruction_line=line.strip(),
+                label=current_label
+                )
         else:  # data
-            new_line = [assemble_data(
-                line=line.strip(),
-                section=sections[current_section_name]
-                )]
+            new_line = [
+                assemble_data(line=line.strip())
+            ]
 
         sections[current_section_name].lines += new_line
 
     # assume that HALT needs to be added
-    HALT = ("11111_---_--_--_------------", "HALT")
-    sections['PROGRAM'].lines.append(HALT)  # add HALT to program section
+    HALT = ("11111_---_--_--_------------", "HALT", "")
+    sections["PROGRAM"].lines.append(HALT)  # add HALT to program section
 
     array_lines = am.extract_vhdl_array(
         lines=mem_lines, array_start_pattern=r".*:.*p_mem_type.*:=.*"
@@ -351,18 +376,61 @@ def main():
 
     cleared_array_lines = [array_lines[0]] + array_lines[-2:]
 
+    # add the sections to the cleared array
     for section_name, section in sections.items():
         cleared_array_lines.insert(-2, f"        -- {section_name}\n")
         for i, line in enumerate(section.lines):
-            binary_line, comment = line
+            binary_line, comment, label = line
             if binary_line == "":
                 continue
             if not re.match(r"\d+.*", binary_line):
                 ERROR(f"Invalid binary line {binary_line}")
 
-            new_array_line = f'        {section.name}+{i} => b"{binary_line}", -- {comment}\n'
+            new_array_line = f'        {section.name}+{i} => b"{binary_line}", -- {comment} : {label}\n'
 
             cleared_array_lines.insert(-2, new_array_line)
+
+    # find all label start addresses
+    labels = {}  # dictionary of label -> start address
+    for i, line in enumerate(cleared_array_lines):
+        if not re.match(r".*=>.*--.*", line):
+            continue  # not an element
+        if not "PROGRAM" in line:
+            break # end of program memory
+
+        element_index = int(re.search(r"PROGRAM\+(\d+)", line).group(1))
+
+        matches = re.search(r".*--.*: (\w+).*", line)
+        if matches:
+            label = matches.group(1)
+            if label in labels:
+                continue  # skip if already found
+
+            labels[label] = element_index  # save the start address of the label
+
+    # fix unknown addresses in the binary code
+    for i, line in enumerate(cleared_array_lines):
+        matches = re.match(r".*(\?+).*", line)
+        if matches:  # found an unknown address
+            # find comment : label
+            comment_label = re.search(r".*--\s*(.*)\n", line)
+            if not comment_label:
+                continue
+
+            comment, label = comment_label.group(1).split(" : ")
+
+            # find the sought address
+            seeked_label = comment.split(" ")[
+                1
+            ]  # should be second word in branch operations
+
+            if seeked_label not in labels:
+                ERROR(f"Label {seeked_label} not found in labels")
+
+            # replace the unknown address with the found address
+            cleared_array_lines[i] = re.sub(
+                r"\?+", f"{labels[seeked_label]:012b}", line
+            )
 
     mem_start, mem_end = am.find_array_start_end_index(
         lines=mem_lines, array_start_pattern=r".*:.*p_mem_type.*:=.*"
