@@ -1,14 +1,10 @@
 %PROGRAM 0 1499
 
-main:
-    LDI GR0, 1
-
-hehe:
-    ADDI GR0, 0
-
-stuff:
-    ADDI GR1, 1
-    BRA hehe
+loop:
+    LD GR0, %VMEM
+    ADDI GR0, 1
+    ST %VMEM, GR0
+    BRA loop
 
 
 %VMEM 1500 25

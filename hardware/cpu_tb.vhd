@@ -9,7 +9,7 @@ END ENTITY;
 ARCHITECTURE testbench OF cpu_tb IS
   -- Constants
   CONSTANT CLK_PERIOD : TIME := 10 ns;
-  CONSTANT MAX_CLK_COUNT : NATURAL := 200;
+  CONSTANT MAX_CLK_COUNT : NATURAL := 1e3;
 
   -- Signals
   SIGNAL clk_tb : STD_LOGIC := '0';
