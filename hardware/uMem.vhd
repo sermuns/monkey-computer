@@ -44,7 +44,7 @@ ARCHITECTURE func OF uMem IS
         b"001_011_1001_0_00_0000_--------",--[22|00010110] AR := GRx AND PM
         b"011_101_0000_0_00_0011_--------",--[23|00010111] GRx := AR
         b"101_011_0100_0_00_0000_--------",--[24|00011000] {AND} AR := GRx
-        b"001_011_0101_0_00_0000_--------",--[25|00011001] AR := GRx AND PM
+        b"001_011_0101_0_00_0000_--------",--[25|00011001] AR &= PM
         b"011_101_0000_0_00_0011_--------",--[26|00011010] GRx := AR
         b"101_011_0000_0_00_0000_--------",--[27|00011011] {LSR} AR := GRx
         b"001_011_0111_0_00_0000_--------",--[28|00011100] AR := GRx >> PM
@@ -73,7 +73,7 @@ ARCHITECTURE func OF uMem IS
         b"110_000_0000_0_00_0000_--------",--[51|00110011] {RET} PM(ASR) := PC,
         b"001_010_0000_0_10_0011_--------",--[52|00110100] PC = PM(SP), sp++, uPC = 0
         b"111_111_0000_0_00_1111_--------",--[53|00110101] {HALT}
-       OTHERS => (OTHERS => '0')
+        OTHERS => (OTHERS => '0')
     );
 BEGIN
     -- PROCESS (clk) IS
@@ -82,5 +82,5 @@ BEGIN
     --         data <= u_mem_array(TO_INTEGER(address));
     --     END IF;
     -- END PROCESS;
-            data <= u_mem_array(TO_INTEGER(address));
+    data <= u_mem_array(TO_INTEGER(address));
 END ARCHITECTURE;
