@@ -43,7 +43,7 @@ BEGIN
         WHEN add_op => AR_internal <= AR_internal + resize(data_bus, AR_internal'length);
         WHEN sub_op => AR_internal <= AR_internal - resize(data_bus, AR_internal'length);
         WHEN mul_op => AR_internal <= resize(('0' & data_bus) * AR_internal, AR_internal'length);
-        WHEN load_op => AR_internal <= ('0' & data_bus);
+        WHEN load_op => AR_internal <= resize(data_bus, AR_internal'length);
         WHEN and_op => AR_internal <= AR_internal AND ('0' & data_bus);
         WHEN or_op => AR_internal <= AR_internal OR ('0' & data_bus);
         WHEN lsr_op => AR_internal <= shift_right(AR_internal, to_integer('0' & data_bus));
@@ -54,7 +54,7 @@ BEGIN
     END IF;
   END PROCESS;
 
-  AR <= AR_internal(23 DOWNTO 0);
+  AR <= AR_internal(AR'length - 1 DOWNTO 0);
 
   -- all zeroes?
   Zc <=
@@ -71,7 +71,7 @@ BEGIN
   Cc <= AR_internal(AR_internal'left);
 
   -- as of now overflow is only implemented for addition
-  Vc <= '1' WHEN AR_internal(AR_internal'length - 1) = '1' 
+  Vc <= '1' WHEN AR_internal(AR_internal'length - 1) = '1'
     ELSE
     '0';
 
