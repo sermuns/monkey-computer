@@ -12,10 +12,12 @@ parent_dir = Path(__file__).resolve().parent.parent
 if str(parent_dir) not in sys.path:
     sys.path.append(str(parent_dir))
 
-from utils import chdir_to_root
+import utils
+from utils import ERROR
+import array_manip as am
 
 # begin by changing dir to root of file
-chdir_to_root()
+utils.chdir_to_root()
 
 PROG_DIR = "masm"
 HARDWARE_DIR = "hardware"
@@ -90,39 +92,14 @@ class Section:
     Represents continious portion of the memory
     """
 
-    def __init__(self, name, start, height):
+    def __init__(self, name, start, height, lines=None):
         self.name = name
         self.start = start
         self.height = height
+        self.lines = lines or []
 
     def __repr__(self) -> str:
         return f"{self.name} {self.start} {self.height}"
-
-
-def parse_value(value: str) -> int:
-    """
-    Given string in unknown number base,
-    return
-    """
-    base = re.search(r"(0([bdx])|\$)", value)
-
-    if base is None:
-        base = "d"
-    else:
-        value = value[len(base.group(0)) :]  # slice away the base
-        if base.group(1) == "$":
-            base = "x"
-        else:
-            base = base.group(2)
-
-    if base == "b":
-        value = int(value, 2)
-    elif base == "d":
-        value = int(value, 10)
-    elif base == "x":
-        value = int(value, 16)
-
-    return value
 
 
 def assemble_binary_line(line, label):
@@ -149,7 +126,7 @@ def assemble_binary_line(line, label):
 
     # unknown op?
     if not op_basename:
-        raise ValueError(f"Error: Unknown op: {op_fullname} in {line}")
+        ERROR(f"Unknown operation {op_fullname} in {line}")
 
     # initialize variables
     op_adr = "-"
@@ -170,7 +147,7 @@ def assemble_binary_line(line, label):
 
     # figure out number base (hex, decimal, binary)
     if op_adr != "-":
-        op_adr = parse_value(op_adr)
+        op_adr = utils.evaluate_expr(op_adr)
 
         # parse the address-mode
         if op_address_mode == "":  # direct
@@ -182,8 +159,7 @@ def assemble_binary_line(line, label):
             op_adr_bin = "-" * ADR_WIDTH  # dont care
             immediate_value = f"{int(op_adr):0{INSTRUCTION_WIDTH}b}"
         else:
-            print(f"Error: Unknown address mode {op_address_mode}")
-            sys.exit(1)
+            ERROR(f"Unknown address mode {op_address_mode}")
     else:
         op_address_mode_code = "--"
         op_adr_bin = "-" * ADR_WIDTH
@@ -192,8 +168,7 @@ def assemble_binary_line(line, label):
         # parse the register
         grx_num = re.search(r"GR([0-7])", grx_name)
         if not grx_num:
-            print(f"Error: Unknown register {grx_name} in {line}")
-            sys.exit(1)
+            ERROR(f"Unknown register {grx_name} in {line}")
         grx_bin = f"{int(grx_num.group(1)):03b}"
     else:
         grx_bin = "000"
@@ -219,8 +194,7 @@ def read_lines(filename):
     lines = open(filename, "r").readlines()
 
     if not lines:
-        print(f"Error: Could not read {filename}")
-        sys.exit(1)
+        ERROR(f"Could not read {filename}")
 
     return lines
 
@@ -258,18 +232,53 @@ def get_section(line) -> Section:
     Return a section object from the given line
     """
     if not re.match(r"%.*", line):
-        raise ValueError(f"Error: Not a directive {line}")
+        ERROR(f"Not a section directive: {line}")
 
     parts = (line.replace("%", "")).split()
 
     if len(parts) < 3:
-        raise ValueError(f"Error: Too few parts in directive {line}")
+        ERROR(f"Directive does not contain 3 parts: {line}")
 
     name, start, end = parts
 
     section = Section(name, int(start), int(end))
 
     return section
+
+
+def assemble_data(line, section):
+    """
+    Return binary lines from the given data line
+    """
+
+    # parse the value
+    value = utils.evaluate_expr(line)
+
+    # convert to binary
+    binary_line = f"{int(value):0{INSTRUCTION_WIDTH}b}"
+
+    return (binary_line, value)
+
+
+def use_sections(line, sections):
+    """
+    Replace all %<section name> in the line with their
+    start linenum
+    """
+    for section_name, section in sections.items():
+        line = line.replace(f"%{section.name}", str(section.start))
+
+    return line
+
+
+def use_macros(line, macros):
+    """
+    Replace all macros in the given line with their values
+    """
+    for macro in macros:
+        line = line.replace(macro, macros[macro])
+
+    return line
 
 
 def main():
@@ -281,94 +290,86 @@ def main():
     # read the program memory file
     mem_lines = read_lines(PMEM_FILE)
 
-    binary_lines = []
-
     # read the assembly file
     asm_lines = read_lines(asm_file_path)
 
     # remove comments and empty lines
     asm_lines = remove_comments_and_empty_lines(asm_lines)
 
-    sections = []
+    current_section_name = ""
     current_label = ""
+    sections = {}
+
+    # find all sections beforehand
+    for i, line in enumerate(asm_lines):
+        if line.startswith("%"):
+            section = get_section(line)
+            sections[section.name] = section
+
+    macros = {}
 
     # assemble the binary code
     for i, line in enumerate(asm_lines):
-        if line.startswith("%"):  # section directives
-            try:
-                sections += [get_section(line)]
-            except ValueError as e:
-                print(
-                    f"Unable to parse line {i} as section directive in {asm_file_path}:\n{e}"
-                )
-                sys.exit(1)
-        elif line.endswith(":\n"):  # labels
-            try:
-                current_label = line.strip()[:-1]  # remove the colon
-            except ValueError as e:
-                print(f"Unable to parse line {i} as label in {asm_file_path}:\n{e}")
-                sys.exit(1)
-        elif line.startswith("."):  # data
-            try:
-                binary_lines += [(line.strip(), "")]
-            except ValueError as e:
-                print(f"Unable to parse line {i} as data in {asm_file_path}:\n{e}")
-                sys.exit(1)
-        else:  # handle code
-            try:
-                binary_lines += assemble_binary_line(
-                    line=line.strip(),
-                    label=current_label,
-                )
-            except ValueError as e:
-                print(f"Unable to parse line {i} as code in {asm_file_path}:\n{e}")
-                sys.exit(1)
+        if line.startswith("_"):  # macro definition
+            macro_name, macro_value = line.replace(" ", "").strip().split("=")
+            macros[macro_name] = macro_value
+            continue
+        elif line.startswith("%"):  # section directive
+            current_section_name = line.split()[0].replace("%", "")
+            continue # already handled
+
+        if "_" in line:  # macro usage
+            line = use_macros(line, macros)
+
+        if "%" in line:
+            line = use_sections(line, sections)
+            
+        if line.endswith(":\n"):  # label
+            current_label = line.strip()[:-1]  # remove the colon
+            continue
+
+        if re.match(r"\s*[A-z]+.*", line):  # code
+            new_line = assemble_binary_line(
+                line=line.strip(),
+                label=current_label,
+            )
+        else:  # data
+            new_line = [assemble_data(
+                line=line.strip(),
+                section=sections[current_section_name]
+                )]
+
+        sections[current_section_name].lines += new_line
 
     # assume that HALT needs to be added
-    binary_lines += [("11111_---_--_--_------------", "HALT")]
+    HALT = ("11111_---_--_--_------------", "HALT")
+    sections['PROGRAM'].lines.append(HALT)  # add HALT to program section
 
-    # find start and end of the program memory part of array
-    mem_start_linenum = None
-    program_end_linenum = None
-    for i, line in enumerate(mem_lines):
-        if mem_start_linenum is None and re.match(r"\s*SIGNAL p_mem.*", line):
-            while re.match(r"\s*--.*", mem_lines[i + 1]):
-                i += 1  # skip comments
-            mem_start_linenum = i + 1  # found the start
-        elif re.match(r"\s*([A-z]|_).*=>.*\,.*", line):
-            program_end_linenum = i - 2
-            break  # found the end
+    array_lines = am.extract_vhdl_array(
+        lines=mem_lines, array_start_pattern=r".*:.*p_mem_type.*:=.*"
+    )
 
-    # no program memory array found?
-    if mem_start_linenum is None:
-        print(f"Error: Could not find program memory array in {PMEM_FILE}")
-        sys.exit(1)
+    cleared_array_lines = [array_lines[0]] + array_lines[-2:]
 
-    # remove old content
-    for i, line in enumerate(mem_lines[mem_start_linenum:], start=mem_start_linenum):
-        if i == program_end_linenum:
-            break  # end of program memory part
-        elif not re.match(r'.*b".*",.*', line):
-            continue  # not an array element
+    for section_name, section in sections.items():
+        cleared_array_lines.insert(-2, f"        -- {section_name}\n")
+        for i, line in enumerate(section.lines):
+            binary_line, comment = line
+            if binary_line == "":
+                continue
+            if not re.match(r"\d+.*", binary_line):
+                ERROR(f"Invalid binary line {binary_line}")
 
-        # mark for removal
-        mem_lines[i] = ""
+            new_array_line = f'        {section.name}+{i} => b"{binary_line}", -- {comment}\n'
 
-    # remove garbage
-    mem_lines = [line for line in mem_lines if line != ""]
+            cleared_array_lines.insert(-2, new_array_line)
 
-    # insert the new content
-    array_index = len(binary_lines) - 1
-    for binary_line in reversed(binary_lines):
-        new_line = f'        {array_index} => b"{binary_line[0]}",'
+    mem_start, mem_end = am.find_array_start_end_index(
+        lines=mem_lines, array_start_pattern=r".*:.*p_mem_type.*:=.*"
+    )
 
-        # add original assembly line as a comment, none if immediate value
-        if binary_line[1] != "":
-            new_line += f" -- {binary_line[1]}"
-        new_line += "\n"
-
-        mem_lines.insert(mem_start_linenum, new_line)
-        array_index -= 1
+    # clear the old program memory array
+    mem_lines[mem_start : mem_end + 1] = cleared_array_lines
 
     # write the new program memory file
     open(PMEM_FILE, "w").writelines(mem_lines)

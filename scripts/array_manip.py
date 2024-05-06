@@ -80,13 +80,15 @@ def clear_vhdl_array(lines: list, element_pattern: str, remove_comments=False) -
     lines = [
         line for line in text.splitlines(keepends=True) if line.strip()
     ]  # ignore empty
-    return lines
+
+    return [line for line in lines if not re.match(r"\s*--.*", line)]
 
 
 def find_array_start_end_index(lines, array_start_pattern):
     """
     Find index of start and end of array declaration in `lines`.
     """
+
     # find start
     for i, line in enumerate(lines):
         if re.match(array_start_pattern, line):

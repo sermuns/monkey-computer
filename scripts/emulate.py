@@ -183,7 +183,7 @@ def get_map_surface(main_memory, tile_rom):
     Draw the map from video memory to a surface, return it.
     """
 
-    VMEM_START = CONSTANTS["VMEM_START"]
+    VMEM = CONSTANTS["VMEM"]
     VMEM_FIELD_BIT_WIDTH = 6
 
     surface = pygame.Surface((MAP_SIZE_PX, MAP_SIZE_PX))
@@ -191,7 +191,7 @@ def get_map_surface(main_memory, tile_rom):
     for y in range(MAP_SIZE_TILES):
         for x in range(MAP_SIZE_TILES):
             id = y * MAP_SIZE_TILES + x
-            vmem_row = bin(main_memory[VMEM_START + id // 4])[2:].zfill(24)
+            vmem_row = bin(main_memory[VMEM + id // 4])[2:].zfill(24)
             vmem_row_fields = re.findall(rf"\d{{{VMEM_FIELD_BIT_WIDTH}}}", vmem_row)
             current_tile_type = int(vmem_row_fields[id % 4], 2)
 
