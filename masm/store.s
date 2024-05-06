@@ -1,2 +1,0 @@
-LDI GR0, 0xFFFFFF
-ST 6, GR0

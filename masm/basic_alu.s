@@ -1,15 +1,15 @@
-// macro directives
-_MONKEY0 = %HEAP
-_MONKEY1 = %HEAP + 1
-_MONKEY2 = %HEAP + 2
-
-// program section
 %PROGRAM 0 1499
 main:
     LDI GR0, 1
-    ST %VMEM, GR0
+    jmp loop
 
-// vmem section
+loop:
+    ADDI GR0, 1
+    CMP GR0, 100
+    beq loop
+    HALT
+
+
 %VMEM 1500 25
 0b000000_000000_000000_000000
 0b000000_000000_000000_000000
@@ -37,7 +37,4 @@ main:
 0b000000_000000_000000_000000
 0b000000_000000_000000_000000
 
-// heap section
-%HEAP 1525 100
-
-// rest is stack section
+%HEAP 1500 100
