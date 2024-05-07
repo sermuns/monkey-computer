@@ -6,16 +6,19 @@ Video memory is visualised using pygame. The VGA output is effectively emulated.
 import sys
 import os
 import numpy as np
-import array_manip as am
 import re
-import utils
 
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 import pygame
 
+import utils
+import array_manip as am
+from machine import Machine
+
 # File paths
-PMEM_FILE = "hardware/pMem.vhd"
 TILE_ROM_FILE = "hardware/tile_rom.vhd"
+MASM_DIR = "masm"
+DEBUG_ASSEMBLY_FILE = "loop.s"  # change this to which file you want to debug
 
 # Constants
 SURFACE_WIDTH_PX = 640
@@ -78,55 +81,6 @@ def read_palette(tile_rom_lines):
     return palette
 
 
-def init_main_memory(pmem_lines):
-    """
-    Initialise the main memory with the contents of pMem.vhd
-    """
-
-    mem_array = am.extract_vhdl_array(pmem_lines, r".*:.*p_mem_type.*:=.*")
-    mem_elements = am.get_vhdl_array_elements(
-        lines=mem_array, element_pattern=r'[\+\w\s]+\s*=>\s*b"[\d_]+"'
-    )
-
-    global CONSTANTS
-    CONSTANTS = am.parse_constants(pmem_lines)
-
-    main_memory = np.zeros(2**16, dtype=np.uint32)
-    for elem in mem_elements:
-        # Extract the 32-bit hex values
-        groups = re.search(r'\s*(.+)\s*=>\s*b"(.*)".*', elem)
-        if not groups:
-            raise ValueError(f"Invalid memory element {elem}")
-
-        addr = groups.group(1)
-        # Replace any constants and resolve arithmetic expressions
-        for c in CONSTANTS:
-            addr = addr.replace(c, str(CONSTANTS[c]))
-
-        # Remove leading zeroes from addr
-        addr = re.sub(r"\b0*(\d+)", r"\1", addr)
-
-        # Evaluate arithmetic expressions
-        try:
-            addr = eval(addr)
-        except Exception as e:
-            raise ValueError(
-                f"Unable to evaluate address arithmetically: {addr}"
-            ) from e
-
-        # Convert to integer
-        try:
-            addr = int(addr)
-        except ValueError as e:
-            raise ValueError(f"Unable to parse address as integer: {addr}") from e
-
-        val = int(groups.group(2), 2)
-
-        main_memory[addr] = val
-
-    return main_memory
-
-
 def read_tile_rom(tile_rom_lines):
     """
     Read the tile ROM from lines of tile_rom.vhd
@@ -178,12 +132,12 @@ def get_tile(tile_type: int, tile_rom: list) -> pygame.Surface:
     return pygame.transform.scale(surface, (TILE_SIZE_PX, TILE_SIZE_PX))
 
 
-def get_map_surface(main_memory, tile_rom):
+def get_map_surface(machine, tile_rom):
     """
     Draw the map from video memory to a surface, return it.
     """
 
-    VMEM = CONSTANTS["VMEM"]
+    VMEM = machine.sections["VMEM"].start
     VMEM_FIELD_BIT_WIDTH = 6
 
     surface = pygame.Surface((MAP_SIZE_PX, MAP_SIZE_PX))
@@ -191,9 +145,12 @@ def get_map_surface(main_memory, tile_rom):
     for y in range(MAP_SIZE_TILES):
         for x in range(MAP_SIZE_TILES):
             id = y * MAP_SIZE_TILES + x
-            vmem_row = bin(main_memory[VMEM + id // 4])[2:].zfill(24)
+            vmem_row = machine.memory[VMEM + id // 4][2:].zfill(24)
             vmem_row_fields = re.findall(rf"\d{{{VMEM_FIELD_BIT_WIDTH}}}", vmem_row)
             current_tile_type = int(vmem_row_fields[id % 4], 2)
+            
+            if current_tile_type > tile_rom.size // 144:
+                utils.ERROR(f"Tile type {current_tile_type} is not defined in the tile ROM")
 
             tile = get_tile(current_tile_type, tile_rom)
 
@@ -202,18 +159,50 @@ def get_map_surface(main_memory, tile_rom):
     return surface
 
 
+def handle_args():
+    """
+    Handle command line arguments
+    """
+
+    if len(sys.argv) != 2:
+        print("Usage: python emulate.py <assembly_file.s>")
+        sys.exit(1)
+
+    if sys.argv[1] == "--debug":
+        sys.argv[1] = DEBUG_ASSEMBLY_FILE
+
+    assembly_file = os.path.join(MASM_DIR, sys.argv[1])
+
+    return assembly_file
+
+
+def update_screen(screen, machine):
+    """
+    Update the screen
+    """
+    # Get grid map surface
+    map_surface = get_map_surface(machine, TILE_ROM)
+    map_surface = pygame.transform.scale_by(map_surface, SCALE)
+    # Update the screen
+    screen.blit(map_surface, (0, 0))
+    pygame.display.flip()
+
+
 if __name__ == "__main__":
     # change the working directory to the root of the project
-    utils.chdir_to_root()
-
-    # initialise main memory from pMem.vhd
-    pmem_lines = open(PMEM_FILE).readlines()
-    main_memory = init_main_memory(pmem_lines)
+    utils.change_dir_to_root()
 
     # get tile_rom and palette from tile_rom.vhd
     tile_rom_lines = open(TILE_ROM_FILE).readlines()
     PALETTE = read_palette(tile_rom_lines)
     TILE_ROM = read_tile_rom(tile_rom_lines)
+
+    # find which assembly file to emulate
+    assembly_file = handle_args()
+
+    # create machine object
+    assembly_lines = open(assembly_file).readlines()
+    machine = Machine(assembly_lines)
 
     # initialise pygame
     pygame.init()
@@ -224,27 +213,18 @@ if __name__ == "__main__":
 
     # Create a surface to draw on
     surface = pygame.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
-    surface.fill((0, 0, 0))  # fill with black
-
-    # Wait until user closes the window
+    update_screen(screen, machine) # update the screen on keypress
     while True:
+        # handle keypresses, etc
         events = pygame.event.get()
         for event in events:
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
+                update_screen(screen, machine) # update the screen on keypress
                 if event.key in {pygame.K_ESCAPE, pygame.K_q}:
                     sys.exit()
-
-        # Get grid map surface
-        map_surface = get_map_surface(main_memory, TILE_ROM)
-
-        # Draw the map surface on the main surface
-        surface.blit(map_surface, (0, 0))
-        final_surface = pygame.transform.scale_by(surface, SCALE)
-
-        # Update the screen
-        screen.blit(final_surface, (0, 0))
-        pygame.display.flip()
-
-        clock.tick(60)
+                elif event.key == pygame.K_SPACE:
+                    machine.execute_next_instruction()
+                elif event.key == pygame.K_r:
+                    machine = Machine(assembly_lines)  # reset the machine
