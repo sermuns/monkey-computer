@@ -65,10 +65,6 @@ surfer: cpu_tb.vhd
 	fi
 
 %.s: ## Assemble, then insert into program memory
-	python $(SCRIPTDIR)/assembly/assembler.py $*.s
+	python $(SCRIPTDIR)/assembler.py $*.s
 
 gsim_video: video_tb.vhd video_tb.ghw ## Simulate the video module
-
-.PHONY: emulate
-emulate:
-	@python $(SCRIPTDIR)/emulate.py &
