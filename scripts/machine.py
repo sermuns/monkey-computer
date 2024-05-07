@@ -142,14 +142,12 @@ class Machine:
         else:
             utils.ERROR(f"Unknown instruction {mnemonic}")
 
-        print("")
-
     def branch(self, mnemonic, destination):
         """
         Perform a branch instruction
         """
 
-        if re.match(r'\d+', destination):
+        if re.match(r"\d+", destination):
             adr = int(destination)
         elif destination in self.labels:
             adr = self.labels[destination]
