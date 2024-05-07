@@ -8,6 +8,7 @@ import os
 import numpy as np
 import re
 
+os.environ["SDL_VIDEO_CENTERED"] = "1"
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
 import pygame
 
@@ -26,12 +27,22 @@ SURFACE_HEIGHT_PX = 480
 MAP_SIZE_PX = SURFACE_HEIGHT_PX
 MAP_SIZE_TILES = 10
 SCALE = 3
-
 TILE_SIZE_PX = MAP_SIZE_PX // MAP_SIZE_TILES
 
 # Global variables
 CONSTANTS = {}
 PALETTE = []
+
+# Pygame constants
+KEYBINDINGS = {
+    pygame.K_SPACE: "step",
+    pygame.K_r: "reset",
+    pygame.K_q: "quit",
+    pygame.K_ESCAPE: "quit",
+    pygame.K_F1: "show_machine_state",
+}
+PYGAME_FLAGS = 0
+WINDOW_TITLE = "monkey-emulator🐒"
 
 
 def parse_vmem(vmem_lines):
@@ -148,9 +159,11 @@ def get_map_surface(machine, tile_rom):
             vmem_row = machine.memory[VMEM + id // 4][2:].zfill(24)
             vmem_row_fields = re.findall(rf"\d{{{VMEM_FIELD_BIT_WIDTH}}}", vmem_row)
             current_tile_type = int(vmem_row_fields[id % 4], 2)
-            
+
             if current_tile_type > tile_rom.size // 144:
-                utils.ERROR(f"Tile type {current_tile_type} is not defined in the tile ROM")
+                utils.ERROR(
+                    f"Tile type {current_tile_type} is not defined in the tile ROM"
+                )
 
             tile = get_tile(current_tile_type, tile_rom)
 
@@ -176,16 +189,54 @@ def handle_args():
     return assembly_file
 
 
-def update_screen(screen, machine):
+def update_screen(screen, machine, show_machine_state):
     """
     Update the screen
     """
-    # Get grid map surface
+
+    temp_surface = pygame.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
+
+    # Draw game map
     map_surface = get_map_surface(machine, TILE_ROM)
-    map_surface = pygame.transform.scale_by(map_surface, SCALE)
-    # Update the screen
-    screen.blit(map_surface, (0, 0))
+    temp_surface.blit(map_surface, (0, 0))
+    scaled_surface = pygame.transform.scale_by(temp_surface, SCALE)
+    screen.blit(scaled_surface, (0, 0))
+
+    # Print machine state
+    if show_machine_state:
+        font_path = os.path.join('scripts','fonts', 'minecraftia.ttf')
+        font = pygame.font.Font(font_path, SCALE*15)
+        text = font.render('SCORE IS CURRENTLY', 0, (255, 255, 255))
+        textpos = text.get_rect()
+        textpos.right = screen.get_size()[0]
+        screen.blit(text, textpos)
+
     pygame.display.flip()
+
+
+def toggle_machine_state_visibility(screen: pygame.Surface, show_machine_state: bool):
+    """
+    Toggle the visibility of the machine state on the screen
+    """
+
+    show_machine_state = not show_machine_state
+
+    if show_machine_state:
+        screen = create_screen(SCALE*SURFACE_WIDTH_PX*1.3, SCALE*SURFACE_HEIGHT_PX)
+    else:
+        screen = create_screen(SCALE*SURFACE_WIDTH_PX, SCALE*SURFACE_HEIGHT_PX)
+
+    return show_machine_state
+
+def create_screen(width: int, height: int) -> pygame.Surface:
+    """
+    Create a pygame screen with the given width and height.
+    Use the global PYGAME_FLAGS constant.
+    """
+
+    screen = pygame.display.set_mode((width, height), PYGAME_FLAGS)
+
+    return screen
 
 
 if __name__ == "__main__":
@@ -203,28 +254,33 @@ if __name__ == "__main__":
     # create machine object
     assembly_lines = open(assembly_file).readlines()
     machine = Machine(assembly_lines)
+    show_machine_state = False  # show machine state on screen
 
     # initialise pygame
     pygame.init()
     screen = pygame.display.set_mode(
-        (SCALE * SURFACE_WIDTH_PX, SCALE * SURFACE_HEIGHT_PX)
+        (SCALE * SURFACE_WIDTH_PX, SCALE * SURFACE_HEIGHT_PX), PYGAME_FLAGS
     )
+    pygame.display.set_caption(WINDOW_TITLE)
+    update_screen(screen, machine, show_machine_state)
+
     clock = pygame.time.Clock()
 
-    # Create a surface to draw on
-    surface = pygame.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
-    update_screen(screen, machine) # update the screen on keypress
     while True:
-        # handle keypresses, etc
-        events = pygame.event.get()
-        for event in events:
+        for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 sys.exit()
             elif event.type == pygame.KEYDOWN:
-                update_screen(screen, machine) # update the screen on keypress
-                if event.key in {pygame.K_ESCAPE, pygame.K_q}:
+                key_event = KEYBINDINGS.get(event.key)
+                if key_event == "quit":
                     sys.exit()
-                elif event.key == pygame.K_SPACE:
+                elif key_event == "step":
                     machine.execute_next_instruction()
-                elif event.key == pygame.K_r:
+                elif key_event == "reset":
                     machine = Machine(assembly_lines)  # reset the machine
+                elif key_event == "show_machine_state":
+                    show_machine_state = toggle_machine_state_visibility(screen, show_machine_state)
+
+                update_screen(
+                    screen, machine, show_machine_state
+                )  # update the screen on keypress
