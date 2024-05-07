@@ -1,8 +1,13 @@
-%PROGRAM 0 1499
+_LOOPCOUNTER = %HEAP
 
+%PROGRAM 0 1499
+main:
+    LDI GR0, 25
+    ST _LOOPCOUNTER, GR0
 loop:
     LD GR0, %VMEM
-    ADDI GR0, 1
+    ADD GR0, _LOOPCOUNTER
+    ADDI GR0, (1<<18)|(1<<12)|(1<<6)|(1<<0)
     ST %VMEM, GR0
     BRA loop
 
