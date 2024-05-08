@@ -1,4 +1,5 @@
 import os, re, sys
+COMMENT_INITIATORS = {"--", "//", "@"}
 
 
 def change_dir_to_root():
@@ -111,13 +112,19 @@ def get_opcodes():
     return opcodes
 
 
-def remove_comments_and_empty_lines(lines):
+def get_clean_lines(lines):
     """
-    Remove comments and empty lines from the given list of lines
+    Return the lines which have no comments and are not empty
     """
-    COMMENT_INITIATORS = {"--", "//", "@"}
     return [
         line
         for line in lines
         if not re.match(rf"({'|'.join(COMMENT_INITIATORS)}).*", line) and line.strip()
     ]
+
+def remove_empty_or_only_comments(lines):
+    """
+    Return lines that are not empty or only contain comments
+    This allows code that has comments at the end of the line
+    """
+    return [line for line in lines if not re.match(rf"^\s*({'|'.join(COMMENT_INITIATORS)}).*", line)]

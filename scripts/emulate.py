@@ -43,6 +43,7 @@ KEYBINDINGS = {
 }
 PYGAME_FLAGS = 0
 WINDOW_TITLE = "monkey-emulator🐒"
+FONT_PATH = os.path.join("scripts", "fonts", "minecraftia.ttf")
 
 
 def parse_vmem(vmem_lines):
@@ -188,28 +189,88 @@ def handle_args():
 
     return assembly_file
 
+def add_text_to_debug_surface(debug_surface, text_lines, font, color=(255, 255, 255)):
+    """
+    Add arbitrary text lines to the debug_surface.
+
+    Parameters:
+    debug_surface (pygame.Surface): The surface to add text to.
+    text_lines (list of str): The lines of text to add.
+    font (pygame.font.Font): The font to use for the text.
+    color (tuple of int): The color of the text (default is white).
+    """
+
+    # Calculate the height of the font
+    font_height = font.get_height()
+
+    for i, line in enumerate(text_lines):
+        # Render the line of text
+        text = font.render(line, True, color)
+
+        # Calculate the position of the text
+        textpos = text.get_rect()
+        textpos.topleft = (0, i * font_height)
+
+        # Blit the text onto the debug_surface
+        debug_surface.blit(text, textpos)
+
+
+def get_debug_info_surface(machine, surface_size):
+    """
+    Return surface with various debug information
+    printed as text
+    """
+
+    debug_surface = pygame.Surface(surface_size).convert_alpha()
+    debug_surface.fill((0, 0, 0, 0))
+
+    # Create a separate surface for the background
+    background_surface = pygame.Surface(surface_size).convert_alpha()
+    # Fill the background surface with white color
+    background_surface.fill((0, 0, 0, 50))
+    font = pygame.font.Font(FONT_PATH, 15*SCALE)
+
+    pc_value = machine.registers['PC']
+    current_assembly_line = machine.get_from_memory(pc_value)
+    
+    # Add the current assembly line to the debug_surface
+    text_lines = [
+        f"PC: {pc_value}",
+        f"{current_assembly_line}"
+    ]
+    add_text_to_debug_surface(debug_surface, text_lines, font)
+
+    # Draw a border around the debug_surface
+    border_color = (255, 255, 255)  # White color
+    border_width = 3  # 3 pixels wide
+    pygame.draw.rect(debug_surface, border_color, debug_surface.get_rect(), border_width)
+
+    return debug_surface
 
 def update_screen(screen, machine, show_machine_state):
     """
     Update the screen
     """
 
-    temp_surface = pygame.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
+    # Clear the screen
+    screen.fill("black")
+
+    small_surface = pygame.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
 
     # Draw game map
     map_surface = get_map_surface(machine, TILE_ROM)
-    temp_surface.blit(map_surface, (0, 0))
-    scaled_surface = pygame.transform.scale_by(temp_surface, SCALE)
+    small_surface.blit(map_surface, (0, 0))
+    scaled_surface = pygame.transform.scale_by(small_surface, SCALE)
     screen.blit(scaled_surface, (0, 0))
 
     # Print machine state
     if show_machine_state:
-        font_path = os.path.join('scripts','fonts', 'minecraftia.ttf')
-        font = pygame.font.Font(font_path, SCALE*15)
-        text = font.render('SCORE IS CURRENTLY', 0, (255, 255, 255))
-        textpos = text.get_rect()
-        textpos.right = screen.get_size()[0]
-        screen.blit(text, textpos)
+        debug_width = SCALE * SURFACE_WIDTH_PX * 0.3
+        debug_height = SCALE * SURFACE_HEIGHT_PX
+        debug_surface = get_debug_info_surface(machine, (debug_width, debug_height))
+        # place at the right side of the screen
+        placement_pos = (screen.get_width()-debug_width, 0)
+        screen.blit(debug_surface, placement_pos)
 
     pygame.display.flip()
 
@@ -221,12 +282,15 @@ def toggle_machine_state_visibility(screen: pygame.Surface, show_machine_state: 
 
     show_machine_state = not show_machine_state
 
-    if show_machine_state:
-        screen = create_screen(SCALE*SURFACE_WIDTH_PX*1.3, SCALE*SURFACE_HEIGHT_PX)
-    else:
-        screen = create_screen(SCALE*SURFACE_WIDTH_PX, SCALE*SURFACE_HEIGHT_PX)
+    # if show_machine_state:
+    #     screen = create_screen(
+    #         SCALE * SURFACE_WIDTH_PX * 1.3, SCALE * SURFACE_HEIGHT_PX
+    #     )
+    # else:
+    #     screen = create_screen(SCALE * SURFACE_WIDTH_PX, SCALE * SURFACE_HEIGHT_PX)
 
     return show_machine_state
+
 
 def create_screen(width: int, height: int) -> pygame.Surface:
     """
@@ -279,8 +343,8 @@ if __name__ == "__main__":
                 elif key_event == "reset":
                     machine = Machine(assembly_lines)  # reset the machine
                 elif key_event == "show_machine_state":
-                    show_machine_state = toggle_machine_state_visibility(screen, show_machine_state)
-
-                update_screen(
-                    screen, machine, show_machine_state
-                )  # update the screen on keypress
+                    show_machine_state = toggle_machine_state_visibility(
+                        screen, show_machine_state
+                    )
+                # update screen regardless of keypress
+                update_screen(screen, machine, show_machine_state)
