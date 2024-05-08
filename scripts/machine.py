@@ -153,7 +153,7 @@ class Machine:
             self.load_value(reg, adr, address_mode)
         elif mnemonic == "ST":
             self.store_value(reg, adr, address_mode)
-        elif mnemonic in {"ADD", "SUB", "AND", "OR", "MUL"}:
+        elif mnemonic in {"ADD", "SUB", "AND", "OR", "MUL", "LSR"}:
             self.perform_alu_operation(mnemonic, reg, adr, address_mode)
         else:
             utils.ERROR(f"Unknown instruction {mnemonic}")
