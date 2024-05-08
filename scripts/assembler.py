@@ -182,7 +182,7 @@ def main():
     asm_lines = read_lines(asm_file_path)
 
     # remove comments and empty lines
-    asm_lines = utils.remove_comments_and_empty_lines(asm_lines)
+    asm_lines = utils.get_clean_lines(asm_lines)
 
     current_section_name = ""
     current_label = ""

@@ -47,8 +47,8 @@ class Machine:
         # init empty memory
         self.memory = [""] * self.MEMORY_HEIGHT
 
-        # remove comments, empty lines
-        clean_lines = utils.remove_comments_and_empty_lines(assembly_lines)
+        # remove lines that are empty or only contain comments
+        clean_lines = utils.remove_empty_or_only_comments(assembly_lines)
 
         # begin by finding all sections
         for i, line in enumerate(clean_lines):
@@ -112,11 +112,27 @@ class Machine:
         """
 
         # Fetch the next instruction
-        instruction = self.memory[self.registers["PC"]]
+        instruction = self.get_from_memory(self.registers["PC"])
         self.registers["PC"] += 1
 
         # Interpret the instruction
         self.execute_instruction(instruction)
+
+    def get_from_memory(self, address):
+        """
+        Get the value at the given address in memory
+        """
+
+        address = utils.parse_value(address)
+
+        return self.memory[address]
+        
+    def at_breakpoint(self):
+        """
+        Check if the current instruction is at a breakpoint
+        """
+
+
 
     def execute_instruction(self, assembly_line):
         """
