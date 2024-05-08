@@ -31,6 +31,7 @@ class Machine:
 
     def __init__(self, assembly_lines):
         self.init_memory(assembly_lines)
+        self.find_all_breakpoints()
         self.init_registers()
         self.init_flags()
 
@@ -126,13 +127,33 @@ class Machine:
         address = utils.parse_value(address)
 
         return self.memory[address]
-        
+
     def at_breakpoint(self):
         """
         Check if the current instruction is at a breakpoint
         """
+        current_line = self.registers["PC"]
+        return current_line in self.breakpoints
 
+    def continue_to_breakpoint(self):
+        """
+        Continue executing instructions until a breakpoint is reached
+        """
 
+        while True:
+            self.execute_next_instruction()
+            if self.at_breakpoint():
+                break
+
+    def find_all_breakpoints(self):
+        """
+        Find all breakpoints in the memory
+        """
+
+        self.breakpoints = []
+        for i, line in enumerate(self.memory):
+            if re.match(r".*;b.*", line):
+                self.breakpoints.append(i)
 
     def execute_instruction(self, assembly_line):
         """

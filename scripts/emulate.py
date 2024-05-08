@@ -1,16 +1,17 @@
 """
 Reads initial state of video memory, then reads each instruction and updates the video memory accordingly.
-Video memory is visualised using pygame. The VGA output is effectively emulated.
+Video memory is visualised using pg. The VGA output is effectively emulated.
 """
 
 import sys
 import os
 import numpy as np
 import re
+from enum import Enum, auto
 
 os.environ["SDL_VIDEO_CENTERED"] = "1"
 os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
-import pygame
+import pygame as pg
 
 import utils
 import array_manip as am
@@ -33,13 +34,23 @@ TILE_SIZE_PX = MAP_SIZE_PX // MAP_SIZE_TILES
 CONSTANTS = {}
 PALETTE = []
 
+
 # Pygame constants
+class EmulationEvent(Enum):
+    step = auto()
+    reset = auto()
+    quit = auto()
+    show_machine_state = auto()
+    continue_to_breakpoint = auto()
+
+
 KEYBINDINGS = {
-    pygame.K_SPACE: "step",
-    pygame.K_r: "reset",
-    pygame.K_q: "quit",
-    pygame.K_ESCAPE: "quit",
-    pygame.K_F1: "show_machine_state",
+    pg.K_SPACE: EmulationEvent.step,
+    pg.K_r: EmulationEvent.reset,
+    pg.K_q: EmulationEvent.quit,
+    pg.K_ESCAPE: EmulationEvent.quit,
+    pg.K_F1: EmulationEvent.show_machine_state,
+    pg.K_c: EmulationEvent.continue_to_breakpoint,
 }
 PYGAME_FLAGS = 0
 WINDOW_TITLE = "monkey-emulator🐒"
@@ -113,7 +124,7 @@ def read_tile_rom(tile_rom_lines):
     return np.array(tile_rom, dtype=np.uint8)
 
 
-def get_tile(tile_type: int, tile_rom: list) -> pygame.Surface:
+def get_tile(tile_type: int, tile_rom: list) -> pg.Surface:
     """
     Get tile appearance from tile ROM, use the values from it to fetch
     real colors from the palette.
@@ -122,7 +133,7 @@ def get_tile(tile_type: int, tile_rom: list) -> pygame.Surface:
     TILE_SIZE_MACROPIXELS = TILE_SIZE_PX // 4  # 12x12 macropixels per tile
     COLOR_CHANNELS = 3
 
-    surface = pygame.Surface((TILE_SIZE_MACROPIXELS, TILE_SIZE_MACROPIXELS))
+    surface = pg.Surface((TILE_SIZE_MACROPIXELS, TILE_SIZE_MACROPIXELS))
 
     # Get the tile from the tile ROM
     tile_data = tile_rom[
@@ -141,7 +152,7 @@ def get_tile(tile_type: int, tile_rom: list) -> pygame.Surface:
             color = tile_colors[y * TILE_SIZE_MACROPIXELS + x]
             surface.set_at((x, y), color)
 
-    return pygame.transform.scale(surface, (TILE_SIZE_PX, TILE_SIZE_PX))
+    return pg.transform.scale(surface, (TILE_SIZE_PX, TILE_SIZE_PX))
 
 
 def get_map_surface(machine, tile_rom):
@@ -152,7 +163,7 @@ def get_map_surface(machine, tile_rom):
     VMEM = machine.sections["VMEM"].start
     VMEM_FIELD_BIT_WIDTH = 6
 
-    surface = pygame.Surface((MAP_SIZE_PX, MAP_SIZE_PX))
+    surface = pg.Surface((MAP_SIZE_PX, MAP_SIZE_PX))
 
     for y in range(MAP_SIZE_TILES):
         for x in range(MAP_SIZE_TILES):
@@ -189,14 +200,15 @@ def handle_args():
 
     return assembly_file
 
+
 def add_text_to_debug_surface(debug_surface, text_lines, font, color=(255, 255, 255)):
     """
     Add arbitrary text lines to the debug_surface.
 
     Parameters:
-    debug_surface (pygame.Surface): The surface to add text to.
+    debug_surface (pg.Surface): The surface to add text to.
     text_lines (list of str): The lines of text to add.
-    font (pygame.font.Font): The font to use for the text.
+    font (pg.font.Font): The font to use for the text.
     color (tuple of int): The color of the text (default is white).
     """
 
@@ -221,31 +233,31 @@ def get_debug_info_surface(machine, surface_size):
     printed as text
     """
 
-    debug_surface = pygame.Surface(surface_size).convert_alpha()
+    debug_surface = pg.Surface(surface_size).convert_alpha()
     debug_surface.fill((0, 0, 0, 0))
 
     # Create a separate surface for the background
-    background_surface = pygame.Surface(surface_size).convert_alpha()
+    background_surface = pg.Surface(surface_size).convert_alpha()
     # Fill the background surface with white color
     background_surface.fill((0, 0, 0, 50))
-    font = pygame.font.Font(FONT_PATH, 15*SCALE)
+    font = pg.font.Font(FONT_PATH, 15 * SCALE)
 
-    pc_value = machine.registers['PC']
+    pc_value = machine.registers["PC"]
     current_assembly_line = machine.get_from_memory(pc_value)
-    
+
     # Add the current assembly line to the debug_surface
-    text_lines = [
-        f"PC: {pc_value}",
-        f"{current_assembly_line}"
-    ]
+    text_lines = [f"PC: {pc_value}", f"{current_assembly_line}"]
     add_text_to_debug_surface(debug_surface, text_lines, font)
 
     # Draw a border around the debug_surface
     border_color = (255, 255, 255)  # White color
     border_width = 3  # 3 pixels wide
-    pygame.draw.rect(debug_surface, border_color, debug_surface.get_rect(), border_width)
+    pg.draw.rect(
+        debug_surface, border_color, debug_surface.get_rect(), border_width
+    )
 
     return debug_surface
+
 
 def update_screen(screen, machine, show_machine_state):
     """
@@ -255,12 +267,12 @@ def update_screen(screen, machine, show_machine_state):
     # Clear the screen
     screen.fill("black")
 
-    small_surface = pygame.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
+    small_surface = pg.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
 
     # Draw game map
     map_surface = get_map_surface(machine, TILE_ROM)
     small_surface.blit(map_surface, (0, 0))
-    scaled_surface = pygame.transform.scale_by(small_surface, SCALE)
+    scaled_surface = pg.transform.scale_by(small_surface, SCALE)
     screen.blit(scaled_surface, (0, 0))
 
     # Print machine state
@@ -269,13 +281,13 @@ def update_screen(screen, machine, show_machine_state):
         debug_height = SCALE * SURFACE_HEIGHT_PX
         debug_surface = get_debug_info_surface(machine, (debug_width, debug_height))
         # place at the right side of the screen
-        placement_pos = (screen.get_width()-debug_width, 0)
+        placement_pos = (screen.get_width() - debug_width, 0)
         screen.blit(debug_surface, placement_pos)
 
-    pygame.display.flip()
+    pg.display.flip()
 
 
-def toggle_machine_state_visibility(screen: pygame.Surface, show_machine_state: bool):
+def toggle_machine_state_visibility(screen: pg.Surface, show_machine_state: bool):
     """
     Toggle the visibility of the machine state on the screen
     """
@@ -292,13 +304,13 @@ def toggle_machine_state_visibility(screen: pygame.Surface, show_machine_state: 
     return show_machine_state
 
 
-def create_screen(width: int, height: int) -> pygame.Surface:
+def create_screen(width: int, height: int) -> pg.Surface:
     """
-    Create a pygame screen with the given width and height.
+    Create a pg screen with the given width and height.
     Use the global PYGAME_FLAGS constant.
     """
 
-    screen = pygame.display.set_mode((width, height), PYGAME_FLAGS)
+    screen = pg.display.set_mode((width, height), PYGAME_FLAGS)
 
     return screen
 
@@ -320,31 +332,36 @@ if __name__ == "__main__":
     machine = Machine(assembly_lines)
     show_machine_state = False  # show machine state on screen
 
-    # initialise pygame
-    pygame.init()
-    screen = pygame.display.set_mode(
+    # initialise pg
+    pg.init()
+    screen = pg.display.set_mode(
         (SCALE * SURFACE_WIDTH_PX, SCALE * SURFACE_HEIGHT_PX), PYGAME_FLAGS
     )
-    pygame.display.set_caption(WINDOW_TITLE)
+    pg.display.set_caption(WINDOW_TITLE)
     update_screen(screen, machine, show_machine_state)
 
-    clock = pygame.time.Clock()
+    clock = pg.time.Clock()
 
     while True:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
+        for event in pg.event.get():
+            if event.type == pg.QUIT:
                 sys.exit()
-            elif event.type == pygame.KEYDOWN:
-                key_event = KEYBINDINGS.get(event.key)
-                if key_event == "quit":
+            elif event.type == pg.KEYDOWN:
+                emulation_event = KEYBINDINGS.get(event.key)
+                if emulation_event is None:
+                    continue
+                if emulation_event == EmulationEvent.quit:
                     sys.exit()
-                elif key_event == "step":
+                elif emulation_event == EmulationEvent.step:
                     machine.execute_next_instruction()
-                elif key_event == "reset":
+                elif emulation_event == EmulationEvent.reset:
                     machine = Machine(assembly_lines)  # reset the machine
-                elif key_event == "show_machine_state":
+                elif emulation_event == EmulationEvent.show_machine_state:
                     show_machine_state = toggle_machine_state_visibility(
                         screen, show_machine_state
                     )
+                elif emulation_event == EmulationEvent.continue_to_breakpoint:
+                    machine.continue_to_breakpoint()
+
                 # update screen regardless of keypress
                 update_screen(screen, machine, show_machine_state)
