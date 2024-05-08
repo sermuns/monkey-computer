@@ -258,9 +258,7 @@ def get_debug_info_surface(machine, surface_size):
     # Draw a border around the debug_surface
     border_color = (255, 255, 255)  # White color
     border_width = 3  # 3 pixels wide
-    pg.draw.rect(
-        debug_surface, border_color, debug_surface.get_rect(), border_width
-    )
+    pg.draw.rect(debug_surface, border_color, debug_surface.get_rect(), border_width)
 
     return debug_surface
 
@@ -341,7 +339,8 @@ if __name__ == "__main__":
     # initialise pg
     pg.init()
     screen = pg.display.set_mode(
-        (window_scale * SURFACE_WIDTH_PX, window_scale * SURFACE_HEIGHT_PX), PYGAME_FLAGS
+        (window_scale * SURFACE_WIDTH_PX, window_scale * SURFACE_HEIGHT_PX),
+        PYGAME_FLAGS,
     )
     pg.display.set_caption(WINDOW_TITLE)
     update_screen(screen, machine, show_machine_state)
