@@ -156,22 +156,22 @@ BEGIN
         END IF;
     END PROCESS;
 
-    vmem_field_counter : PROCESS (clk, rst)
-    BEGIN
-        IF rst = '1' THEN
-            vmem_field <= (OTHERS => '0');
-        ELSIF rising_edge(clk) THEN
-            IF clk25 = '1' THEN
-                IF (x_subpixel < 479) THEN
-                    IF (x_within_tile = 47) THEN
-                        vmem_field <= vmem_field + 1;
-                    END IF;
-                ELSE
-                    vmem_field <= (OTHERS => '0');
-                END IF;
-            END IF;
-        END IF;
-    END PROCESS;
+    -- vmem_field_counter : PROCESS (clk, rst)
+    -- BEGIN
+    --     IF rst = '1' THEN
+    --         vmem_field <= (OTHERS => '0');
+    --     ELSIF rising_edge(clk) THEN
+    --         IF clk25 = '1' THEN
+    --             IF (x_subpixel < 479) THEN
+    --                 IF (x_within_tile = 47) THEN
+    --                     vmem_field <= vmem_field + 1;
+    --                 END IF;
+    --             ELSE
+    --                 vmem_field <= (OTHERS => '0');
+    --             END IF;
+    --         END IF;
+    --     END IF;
+    -- END PROCESS;
 
     vmem_address_counter : PROCESS (clk, rst)
     BEGIN
@@ -202,11 +202,7 @@ BEGIN
     vmem_address_out <= vmem_address;
 
     -- slice out the correct field from the video memory data
-    current_tiletype <=
-        unsigned(vmem_data(23 DOWNTO 18)) WHEN vmem_field = "00" ELSE
-        unsigned(vmem_data(17 DOWNTO 12)) WHEN vmem_field = "01" ELSE
-        unsigned(vmem_data(11 DOWNTO 6)) WHEN vmem_field = "10" ELSE
-        unsigned(vmem_data(5 DOWNTO 0)) WHEN vmem_field = "11";
+    current_tiletype <= unsigned(vmem_data(5 DOWNTO 0)); -- could just make current_tiletype into a alias?
 
     --TODO what does each bit in the tile_rom_address mean? and what else does it affect?
     tile_rom_address <=
