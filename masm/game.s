@@ -1,5 +1,7 @@
 %PROGRAM 0 1499
 main:
+    LDI GR6, 7
+    ST 1501, GR6
     LD GR0, %VMEM+2
     ANDI GR0, 0b111111
 

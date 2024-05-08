@@ -30,11 +30,11 @@ ARCHITECTURE func OF pMem IS
         PROGRAM+0 => b"00000_000_00_00_010111011100", -- LD GR0, 1500 : loop
         PROGRAM+1 => b"00010_000_01_00_------------", -- ADDI GR0, 1 : loop
         PROGRAM+2 => b"000000000000000000000001", --  : 
-        PROGRAM+3 => b"00001_000_00_00_010111011100", -- ST 1500, GR0 : loop
+        PROGRAM+3 => b"00001_000_00_00_010111011100", -- ST 1500, GR0 : loop 
         PROGRAM+4 => b"01010_---_00_00_000000000000", -- BRA loop : loop
         PROGRAM+5 => b"11111_---_--_--_------------", -- HALT : 
         -- VMEM
-        VMEM+0 => b"000000000000000000000000", -- 0 : 
+        VMEM+0 => b"000000000000000000000001", -- 0 : 
         VMEM+1 => b"000000000000000000000000", -- 0 : 
         VMEM+2 => b"000000000000000000011001", -- 25 : 
         VMEM+3 => b"011001011001011001011001", -- 6657625 : 
@@ -70,9 +70,9 @@ BEGIN
     BEGIN
         IF rising_edge(clk) THEN
             cpu_data_out <= p_mem(TO_INTEGER(cpu_address) + PROGRAM);
-            video_data <= b"000001_000001_000000_000001";
+        --    video_data <= b"000001_000001_000000_000001";
             -- TODO: THIS HARDCODED FUCKK 
-            -- video_data <= p_mem(TO_INTEGER(video_address) + VMEM_START);
+             video_data <= p_mem(TO_INTEGER(video_address) + VMEM);
         END IF;
     END PROCESS;
 
