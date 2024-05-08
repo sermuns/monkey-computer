@@ -27,12 +27,12 @@ SURFACE_WIDTH_PX = 640
 SURFACE_HEIGHT_PX = 480
 MAP_SIZE_PX = SURFACE_HEIGHT_PX
 MAP_SIZE_TILES = 10
-SCALE = 2
 TILE_SIZE_PX = MAP_SIZE_PX // MAP_SIZE_TILES
 
 # Global variables
 CONSTANTS = {}
 PALETTE = []
+window_scale = 1
 
 
 # Pygame constants
@@ -189,12 +189,18 @@ def handle_args():
     Handle command line arguments
     """
 
-    if len(sys.argv) != 2:
-        print("Usage: python emulate.py <assembly_file.s>")
+    if len(sys.argv) < 2:
+        print("Usage: python emulate.py <assembly_file.s> <args>")
         sys.exit(1)
 
     if sys.argv[1] == "--debug":
         sys.argv[1] = DEBUG_ASSEMBLY_FILE
+
+    for arg in sys.argv[1:]:
+        groups = re.match(r"--scale=(\d+)", arg)
+        if groups:
+            global window_scale
+            window_scale = int(groups.group(1))
 
     assembly_file = os.path.join(MASM_DIR, sys.argv[1])
 
@@ -240,7 +246,7 @@ def get_debug_info_surface(machine, surface_size):
     background_surface = pg.Surface(surface_size).convert_alpha()
     # Fill the background surface with white color
     background_surface.fill((0, 0, 0, 50))
-    font = pg.font.Font(FONT_PATH, 15 * SCALE)
+    font = pg.font.Font(FONT_PATH, 15 * window_scale)
 
     pc_value = machine.registers["PC"]
     current_assembly_line = machine.get_from_memory(pc_value)
@@ -272,13 +278,13 @@ def update_screen(screen, machine, show_machine_state):
     # Draw game map
     map_surface = get_map_surface(machine, TILE_ROM)
     small_surface.blit(map_surface, (0, 0))
-    scaled_surface = pg.transform.scale_by(small_surface, SCALE)
+    scaled_surface = pg.transform.scale_by(small_surface, window_scale)
     screen.blit(scaled_surface, (0, 0))
 
     # Print machine state
     if show_machine_state:
-        debug_width = SCALE * SURFACE_WIDTH_PX * 0.3
-        debug_height = SCALE * SURFACE_HEIGHT_PX
+        debug_width = window_scale * SURFACE_WIDTH_PX * 0.3
+        debug_height = window_scale * SURFACE_HEIGHT_PX
         debug_surface = get_debug_info_surface(machine, (debug_width, debug_height))
         # place at the right side of the screen
         placement_pos = (screen.get_width() - debug_width, 0)
@@ -335,7 +341,7 @@ if __name__ == "__main__":
     # initialise pg
     pg.init()
     screen = pg.display.set_mode(
-        (SCALE * SURFACE_WIDTH_PX, SCALE * SURFACE_HEIGHT_PX), PYGAME_FLAGS
+        (window_scale * SURFACE_WIDTH_PX, window_scale * SURFACE_HEIGHT_PX), PYGAME_FLAGS
     )
     pg.display.set_caption(WINDOW_TITLE)
     update_screen(screen, machine, show_machine_state)
