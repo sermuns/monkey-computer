@@ -9,7 +9,7 @@ hehe:
     ST %VMEM+3, GR0
     ST %VMEM+4, GR0
     ST %VMEM+5, GR0
-    ST %VMEM+6, GR0
+    ST %VMEM+6, GR0 
     ST %VMEM+7, GR0
     ST %VMEM+8, GR0
     ST %VMEM+9, GR0
