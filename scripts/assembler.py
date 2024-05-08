@@ -30,7 +30,7 @@ DEBUG_ARG = "loop.s"
 INSTRUCTION_WIDTH = 24
 
 
-def parse_address_mode(addr, mode):
+def parse_address_mode(addr: str, mode: str):
     """
     Parse the address mode and address from the given address and mode
 
