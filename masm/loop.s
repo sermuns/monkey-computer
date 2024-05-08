@@ -2,8 +2,32 @@
 start:
     LDI GR1, 18
 hehe:
-    ADDI GR0, 0b000001
+    ADDI GR0, 0b000001 ;b
     ST %VMEM, GR0
+    ST %VMEM+1, GR0
+    ST %VMEM+2, GR0
+    ST %VMEM+3, GR0
+    ST %VMEM+4, GR0
+    ST %VMEM+5, GR0
+    ST %VMEM+6, GR0
+    ST %VMEM+7, GR0
+    ST %VMEM+8, GR0
+    ST %VMEM+9, GR0
+    ST %VMEM+10, GR0
+    ST %VMEM+11, GR0
+    ST %VMEM+12, GR0
+    ST %VMEM+13, GR0
+    ST %VMEM+14, GR0
+    ST %VMEM+15, GR0
+    ST %VMEM+16, GR0
+    ST %VMEM+17, GR0
+    ST %VMEM+18, GR0
+    ST %VMEM+19, GR0
+    ST %VMEM+20, GR0
+    ST %VMEM+21, GR0
+    ST %VMEM+22, GR0
+    ST %VMEM+23, GR0
+    ST %VMEM+24, GR0
     SUBI GR1, 6
     BRA hehe
 
