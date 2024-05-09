@@ -59,7 +59,11 @@
 01110 POP
 01111 MUL
 10000 RE
+10001 SWAP
 11111 HALT
+
+## OP-Notes
+Swap is destructive against AR...
 
 ## Moder (M)
 00 Direkt
