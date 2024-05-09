@@ -217,6 +217,8 @@ class Machine:
             value = self.memory[adr]
         elif address_mode == "I":
             value = adr
+        elif address_mode == "N":
+            value = self.memory[self.registers["GR3"] + adr]
         else:
             utils.ERROR(f"Unknown address mode {address_mode}")
 

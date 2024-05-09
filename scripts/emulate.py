@@ -155,7 +155,7 @@ def get_tile(tile_type: int, tile_rom: list) -> pg.Surface:
     return pg.transform.scale(surface, (TILE_SIZE_PX, TILE_SIZE_PX))
 
 
-def get_map_surface(machine, tile_rom):
+def get_map_surface(machine, tile_rom, cursor_position):
     """
     Draw the map from video memory to a surface, return it.
     """
@@ -177,8 +177,8 @@ def get_map_surface(machine, tile_rom):
                 )
 
             tile = get_tile(current_tile_type, tile_rom)
-
-            surface.blit(tile, (x * TILE_SIZE_PX, y * TILE_SIZE_PX))
+            tile_pos = (x * TILE_SIZE_PX, y * TILE_SIZE_PX)
+            surface.blit(tile, tile_pos)
 
     return surface
 
@@ -262,9 +262,9 @@ def get_debug_info_surface(machine, surface_size):
     return debug_surface
 
 
-def update_screen(screen, machine, show_machine_state):
+def update_screen(screen, machine, show_machine_state, previous_cursor_position):
     """
-    Update the screen
+    Redraw the screen with the current state of the machine
     """
 
     # Clear the screen
@@ -273,7 +273,7 @@ def update_screen(screen, machine, show_machine_state):
     small_surface = pg.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
 
     # Draw game map
-    map_surface = get_map_surface(machine, TILE_ROM)
+    map_surface = get_map_surface(machine, TILE_ROM, previous_cursor_position)
     small_surface.blit(map_surface, (0, 0))
     scaled_surface = pg.transform.scale_by(small_surface, window_scale)
     screen.blit(scaled_surface, (0, 0))
@@ -296,13 +296,6 @@ def toggle_machine_state_visibility(screen: pg.Surface, show_machine_state: bool
     """
 
     show_machine_state = not show_machine_state
-
-    # if show_machine_state:
-    #     screen = create_screen(
-    #         SCALE * SURFACE_WIDTH_PX * 1.3, SCALE * SURFACE_HEIGHT_PX
-    #     )
-    # else:
-    #     screen = create_screen(SCALE * SURFACE_WIDTH_PX, SCALE * SURFACE_HEIGHT_PX)
 
     return show_machine_state
 
@@ -342,7 +335,8 @@ if __name__ == "__main__":
         PYGAME_FLAGS,
     )
     pg.display.set_caption(WINDOW_TITLE)
-    update_screen(screen, machine, show_machine_state)
+    previous_cursor_position = (-1, -1)
+    update_screen(screen, machine, show_machine_state, previous_cursor_position)
 
     clock = pg.time.Clock()
 
@@ -366,6 +360,7 @@ if __name__ == "__main__":
                     )
                 elif emulation_event == EmulationEvent.continue_to_breakpoint:
                     machine.continue_to_breakpoint()
+                elif emulation_event == EmulationEvent.show_tile:
+                    pass
 
-                # update screen regardless of keypress
-                update_screen(screen, machine, show_machine_state)
+                update_screen(screen, machine, show_machine_state, previous_cursor_position)

@@ -64,8 +64,7 @@ def ERROR(msg: str):
     """
     Print error message and exit with code 1
     """
-    print(f"Error: {msg}")
-    sys.exit(1)
+    raise Exception(msg)
 
 
 def get_opcodes():
