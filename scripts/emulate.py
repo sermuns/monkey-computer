@@ -22,17 +22,17 @@ TILE_ROM_FILE = "hardware/tile_rom.vhd"
 MASM_DIR = "masm"
 DEBUG_ASSEMBLY_FILE = "loop.s"  # change this to which file you want to debug
 
+# Global variables
+CONSTANTS = {}
+PALETTE = []
+window_scale = 1
+
 # Constants
 SURFACE_WIDTH_PX = 640
 SURFACE_HEIGHT_PX = 480
 MAP_SIZE_PX = SURFACE_HEIGHT_PX
 MAP_SIZE_TILES = 10
 TILE_SIZE_PX = MAP_SIZE_PX // MAP_SIZE_TILES
-
-# Global variables
-CONSTANTS = {}
-PALETTE = []
-window_scale = 1
 
 
 # Pygame constants
@@ -155,7 +155,7 @@ def get_tile(tile_type: int, tile_rom: list) -> pg.Surface:
     return pg.transform.scale(surface, (TILE_SIZE_PX, TILE_SIZE_PX))
 
 
-def get_map_surface(machine, tile_rom, cursor_position):
+def get_map_surface(machine, tile_rom):
     """
     Draw the map from video memory to a surface, return it.
     """
@@ -206,7 +206,7 @@ def handle_args():
     return assembly_file
 
 
-def add_text_to_debug_surface(debug_surface, text_lines, font, color=(255, 255, 255)):
+def blit_textlines_to_surface(debug_surface, text_lines, font, color=(255, 255, 255)):
     """
     Add arbitrary text lines to the debug_surface.
 
@@ -219,14 +219,18 @@ def add_text_to_debug_surface(debug_surface, text_lines, font, color=(255, 255, 
 
     # Calculate the height of the font
     font_height = font.get_height()
+    padding = 20
 
     for i, line in enumerate(text_lines):
+        if ";b" in line:
+            color = "brown" # format breakpoint
+
         # Render the line of text
         text = font.render(line, True, color)
 
         # Calculate the position of the text
         textpos = text.get_rect()
-        textpos.topleft = (0, i * font_height)
+        textpos.topleft = (padding, padding + i * font_height)
 
         # Blit the text onto the debug_surface
         debug_surface.blit(text, textpos)
@@ -239,30 +243,53 @@ def get_debug_info_surface(machine, surface_size):
     """
 
     debug_surface = pg.Surface(surface_size).convert_alpha()
-    debug_surface.fill((0, 0, 0, 0))
+    debug_surface.fill((0, 0, 0, 150))
 
     # Create a separate surface for the background
     background_surface = pg.Surface(surface_size).convert_alpha()
     # Fill the background surface with white color
     background_surface.fill((0, 0, 0, 50))
-    font = pg.font.Font(FONT_PATH, 15 * window_scale)
-
+    font = pg.font.Font(FONT_PATH, window_scale * FONT_SIZE)
     pc_value = machine.registers["PC"]
-    current_assembly_line = machine.get_from_memory(pc_value)
+
+    # Initialize the list of close lines
+    nearest_lines = []
+
+    # Get 3 lines above the current line
+    for i in range(pc_value - 3, pc_value):
+        if 0 <= i < len(machine.memory):
+            line = machine.memory[i]
+            nearest_lines.append(f"\u3000\u3000{line}")
+        else:
+            nearest_lines.append("")
+
+    # Get the current line and add the "->" marker
+    if 0 <= pc_value < len(machine.memory):
+        line = machine.memory[pc_value]
+        nearest_lines.append(f"-> {line}")
+
+    # Get 3 lines below the current line
+    for i in range(pc_value + 1, pc_value + 4):
+        if 0 <= i < len(machine.memory):
+            line = machine.memory[i]
+            nearest_lines.append(f"\u3000\u3000{line}")
+        else:
+            nearest_lines.append("")
 
     # Add the current assembly line to the debug_surface
-    text_lines = [f"PC: {pc_value}", f"{current_assembly_line}"]
-    add_text_to_debug_surface(debug_surface, text_lines, font)
+    text_lines = [f"PC: {pc_value}", "\u3000\u3000----------"] + nearest_lines
+
+    blit_textlines_to_surface(debug_surface, text_lines, font)
 
     # Draw a border around the debug_surface
     border_color = (255, 255, 255)  # White color
-    border_width = 3  # 3 pixels wide
+    border_width = -1
     pg.draw.rect(debug_surface, border_color, debug_surface.get_rect(), border_width)
 
     return debug_surface
 
 
-def update_screen(screen, machine, show_machine_state, previous_cursor_position):
+def update_screen(screen, machine, show_machine_state, cursor_position):
     """
     Redraw the screen with the current state of the machine
     """
@@ -273,19 +300,37 @@ def update_screen(screen, machine, show_machine_state, previous_cursor_position)
     small_surface = pg.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
 
     # Draw game map
-    map_surface = get_map_surface(machine, TILE_ROM, previous_cursor_position)
+    map_surface = get_map_surface(machine, TILE_ROM)
     small_surface.blit(map_surface, (0, 0))
     scaled_surface = pg.transform.scale_by(small_surface, window_scale)
     screen.blit(scaled_surface, (0, 0))
 
     # Print machine state
     if show_machine_state:
-        debug_width = window_scale * SURFACE_WIDTH_PX * 0.3
+        debug_width = window_scale * SURFACE_WIDTH_PX * 0.6
         debug_height = window_scale * SURFACE_HEIGHT_PX
         debug_surface = get_debug_info_surface(machine, (debug_width, debug_height))
         # place at the right side of the screen
         placement_pos = (screen.get_width() - debug_width, 0)
         screen.blit(debug_surface, placement_pos)
+
+    # Draw cursor
+    tile_size_screen_px = TILE_SIZE_PX * window_scale
+    cursor_tile_x = cursor_position[0] // tile_size_screen_px
+    cursor_tile_y = cursor_position[1] // tile_size_screen_px
+    if 0 <= cursor_tile_x < MAP_SIZE_TILES and 0 <= cursor_tile_y < MAP_SIZE_TILES:
+        cursor_rect = pg.Rect(
+            cursor_tile_x * tile_size_screen_px,
+            cursor_tile_y * tile_size_screen_px,
+            tile_size_screen_px,
+            tile_size_screen_px,
+        )
+        pg.draw.rect(screen, "grey", cursor_rect, 2)
+        tile_pos_text = f"Tile {cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x}  ({cursor_tile_x}, {cursor_tile_y})"
+        tiletype_text = f"Tile type: {utils.parse_value(machine.memory[machine.sections['VMEM'].start + cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x])}"
+        font = pg.font.Font(FONT_PATH, window_scale * FONT_SIZE)
+        text = font.render(tile_pos_text, True, "white")
+        screen.blit(text, (0, 0))
 
     pg.display.flip()
 
@@ -323,6 +368,9 @@ if __name__ == "__main__":
     # find which assembly file to emulate
     assembly_file = handle_args()
 
+    global FONT_SIZE
+    FONT_SIZE = 15
+
     # create machine object
     assembly_lines = open(assembly_file).readlines()
     machine = Machine(assembly_lines)
@@ -335,8 +383,8 @@ if __name__ == "__main__":
         PYGAME_FLAGS,
     )
     pg.display.set_caption(WINDOW_TITLE)
-    previous_cursor_position = (-1, -1)
-    update_screen(screen, machine, show_machine_state, previous_cursor_position)
+    cursor_position = (-1, -1)
+    update_screen(screen, machine, show_machine_state, cursor_position)
 
     clock = pg.time.Clock()
 
@@ -363,4 +411,10 @@ if __name__ == "__main__":
                 elif emulation_event == EmulationEvent.show_tile:
                     pass
 
-                update_screen(screen, machine, show_machine_state, previous_cursor_position)
+                update_screen(screen, machine, show_machine_state, cursor_position)
+
+            elif event.type == pg.MOUSEBUTTONDOWN:
+                if event.button != 1:
+                    continue
+                cursor_position = event.pos
+                update_screen(screen, machine, show_machine_state, cursor_position)
