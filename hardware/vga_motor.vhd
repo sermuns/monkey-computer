@@ -38,7 +38,6 @@ ARCHITECTURE behavioral OF vga_motor IS
 
     -- 100 tiles
     SIGNAL vmem_address : unsigned(6 DOWNTO 0); -- which row of the video memory
-    SIGNAL vmem_field : unsigned(1 DOWNTO 0); -- which field in the row
     SIGNAL current_tiletype : unsigned(5 DOWNTO 0); -- which tiletype is currently being displayed
 
     SIGNAL x_within_tile : unsigned(5 DOWNTO 0); -- value 0-47px
@@ -48,8 +47,6 @@ ARCHITECTURE behavioral OF vga_motor IS
 
     SIGNAL tile_rom_address : unsigned(13 DOWNTO 0); -- Address for tile ROM
     SIGNAL tile_rom_data_out : STD_LOGIC_VECTOR(11 DOWNTO 0); -- Data from tile ROM
-
-    CONSTANT TILE_SUBPIXEL_SIZE : INTEGER := 48; -- 48 subpixels per tile
 
 BEGIN
     -- Clock divisor
@@ -91,7 +88,7 @@ BEGIN
             y_subpixel <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
             IF clk25 = '1' THEN
-                IF (x_subpixel = 799) THEN 
+                IF (x_subpixel = 799) THEN
                     IF (y_subpixel < 521) THEN
                         y_subpixel <= y_subpixel + 1;
                     ELSE
@@ -156,23 +153,6 @@ BEGIN
         END IF;
     END PROCESS;
 
-    -- vmem_field_counter : PROCESS (clk, rst)
-    -- BEGIN
-    --     IF rst = '1' THEN
-    --         vmem_field <= (OTHERS => '0');
-    --     ELSIF rising_edge(clk) THEN
-    --         IF clk25 = '1' THEN
-    --             IF (x_subpixel < 479) THEN
-    --                 IF (x_within_tile = 47) THEN
-    --                     vmem_field <= vmem_field + 1;
-    --                 END IF;
-    --             ELSE
-    --                 vmem_field <= (OTHERS => '0');
-    --             END IF;
-    --         END IF;
-    --     END IF;
-    -- END PROCESS;
-
     vmem_address_counter : PROCESS (clk, rst)
     BEGIN
         IF rst = '1' THEN
@@ -180,7 +160,7 @@ BEGIN
         ELSIF rising_edge(clk) THEN
             IF clk25 = '1' THEN
                 IF (x_subpixel < 479) THEN
-                    IF (vmem_field = 3 AND x_within_tile = 47) THEN
+                    IF x_within_tile = 47 THEN
                         vmem_address <= vmem_address + 1;
                     END IF;
                 END IF;
@@ -235,24 +215,5 @@ BEGIN
         (OTHERS => '0');
     vga_blue <= tile_rom_data_out(3 DOWNTO 0) WHEN blank = '0' ELSE
         (OTHERS => '0');
-
-    -- PROCESS (clk)
-    -- BEGIN
-    --     IF rising_edge(clk) AND clk25 = '1' THEN
-    --         IF blank = '0' THEN
-    --             IF x_subpixel < 480 THEN
-    --                 vga_red <= NOT(vga_red);
-    --             ELSE
-    --                 vga_red <= (OTHERS => '0');
-    --             END IF;
-    --         ELSE
-    --             vga_red <= (OTHERS => '0');
-    --         END IF;
-    --     END IF;
-    -- END PROCESS;
-    -- vga_green <= x"0" WHEN blank = '0' ELSE
-    --     (OTHERS => '0');
-    -- vga_blue <= x"0" WHEN blank = '0' ELSE
-    --     (OTHERS => '0');
 
 END ARCHITECTURE behavioral;

@@ -168,9 +168,8 @@ def get_map_surface(machine, tile_rom):
     for y in range(MAP_SIZE_TILES):
         for x in range(MAP_SIZE_TILES):
             id = y * MAP_SIZE_TILES + x
-            vmem_row = machine.memory[VMEM + id // 4][2:].zfill(24)
-            vmem_row_fields = re.findall(rf"\d{{{VMEM_FIELD_BIT_WIDTH}}}", vmem_row)
-            current_tile_type = int(vmem_row_fields[id % 4], 2)
+            vmem_row = machine.memory[VMEM + id]
+            current_tile_type = utils.parse_value(vmem_row)
 
             if current_tile_type > tile_rom.size // 144:
                 utils.ERROR(
