@@ -33,6 +33,7 @@ SURFACE_HEIGHT_PX = 480
 MAP_SIZE_PX = SURFACE_HEIGHT_PX
 MAP_SIZE_TILES = 10
 TILE_SIZE_PX = MAP_SIZE_PX // MAP_SIZE_TILES
+FONT_PATH = os.path.join("scripts", "fonts", "jetbrainsmono.ttf")
 
 
 # Pygame constants
@@ -54,7 +55,7 @@ KEYBINDINGS = {
 }
 PYGAME_FLAGS = 0
 WINDOW_TITLE = "monkey-emulator🐒"
-FONT_PATH = os.path.join("scripts", "fonts", "minecraftia.ttf")
+FONT_SIZE = 16
 
 
 def parse_vmem(vmem_lines):
@@ -326,11 +327,15 @@ def update_screen(screen, machine, show_machine_state, cursor_position):
             tile_size_screen_px,
         )
         pg.draw.rect(screen, "grey", cursor_rect, 2)
-        tile_pos_text = f"Tile {cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x}  ({cursor_tile_x}, {cursor_tile_y})"
+        tile_pos_text = f"{cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x} ({cursor_tile_x}, {cursor_tile_y})"
         tiletype_text = f"Tile type: {utils.parse_value(machine.memory[machine.sections['VMEM'].start + cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x])}"
+        textlines = [
+            tile_pos_text,
+            tiletype_text
+        ]
+
         font = pg.font.Font(FONT_PATH, window_scale * FONT_SIZE)
-        text = font.render(tile_pos_text, True, "white")
-        screen.blit(text, (0, 0))
+        blit_textlines_to_surface(screen, textlines, font)
 
     pg.display.flip()
 
@@ -341,7 +346,7 @@ def toggle_machine_state_visibility(screen: pg.Surface, show_machine_state: bool
     """
 
     show_machine_state = not show_machine_state
-
+    
     return show_machine_state
 
 
@@ -368,8 +373,6 @@ if __name__ == "__main__":
     # find which assembly file to emulate
     assembly_file = handle_args()
 
-    global FONT_SIZE
-    FONT_SIZE = 15
 
     # create machine object
     assembly_lines = open(assembly_file).readlines()
