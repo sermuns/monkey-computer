@@ -140,6 +140,10 @@ class Machine:
         Continue executing instructions until a breakpoint is reached
         """
 
+        if not self.breakpoints:
+            print("No breakpoints set")
+            return
+
         while True:
             self.execute_next_instruction()
             if self.at_breakpoint():
@@ -222,9 +226,16 @@ class Machine:
         """
         Store the value of register into memory[adr]
         """
+
         # format as 24 bit binary string
         data = f"0b{self.registers[reg]:024b}"
-        self.memory[adr] = data
+
+        if address_mode == "":  # direct
+            self.memory[adr] = data
+            return
+        elif address_mode == "N":  # indexed
+            self.memory[self.registers["GR3"] + adr] = data
+            return
 
     def perform_alu_operation(
         self, mnemonic: str, reg: str, adr: int, address_mode: str
