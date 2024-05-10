@@ -22,7 +22,7 @@ ghelp:
 	@grep -E '^[a-zA-Z_-]+:' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":"}; {printf " \033[36m%-30s\033[0m\n", $$1}'
 
 parse_umem:
-	python $(SCRIPTDIR)/parse_mem.py $(SRC_DIR)/uMem.vhd
+	python $(SCRIPTDIR)/parse_umem.py
  
 preprocess:
 	python $(SCRIPTDIR)/preprocess.py -q

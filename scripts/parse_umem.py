@@ -1,6 +1,5 @@
-#!/usr/bin/env python3
-
-import sys, re
+import sys, re, os
+from utils import change_dir_to_root
 
 def prepend_index(file):
     """
@@ -61,18 +60,20 @@ def prepend_index_in_comment(line, index):
 
 
 def main():
+    change_dir_to_root()
+    print(f'current dir: {os.getcwd()}')
     if not sys.argv[1:]:
         print('Usage: {} <filename>'.format(sys.argv[0]))
         return
     elif sys.argv[1] == '--debug':
-        sys.argv[1] = 'uMem.vhd'
+        sys.argv[1] = os.path.join('hardware', 'uMem.vhd')
 
-    filename = sys.argv[1]
+    umem_file = sys.argv[1]
 
-    with open(filename, 'r') as file:
+    with open(umem_file, 'r') as file:
         new_file_lines = prepend_index(file)
 
-    with open(filename, 'w') as file:
+    with open(umem_file, 'w') as file:
         file.writelines(new_file_lines)
 
 

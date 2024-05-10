@@ -3,9 +3,10 @@
 Preprocess VHDL files by resolving macro-symbols in SOURCE_FILES from comments in MEM_FILES
 """
 
-import re, sys
+import re, sys, os
+from utils import change_dir_to_root
 
-SOURCE_DIR = ""
+SOURCE_DIR = "hardware"
 SOURCE_FILES = ["cpu.vhd", "uMem.vhd"]
 MEM_FILES = ["uMem.vhd"]
 
@@ -104,14 +105,14 @@ def main():
     quiet = len(sys.argv) > 1 and sys.argv[1] == "-q"
 
     # Extract macro-symbols from MEM_FILES
-    mem_paths = [f"{SOURCE_DIR}{file}" for file in MEM_FILES]
+    mem_paths = [os.path.join(SOURCE_DIR, file) for file in MEM_FILES]
     for mem_path in mem_paths:
         with open(mem_path, "r") as mem_file:
             mem_lines = mem_file.readlines()
             symbols = extract_macro_symbols(mem_lines)
 
     # Use macro-symbols in SOURCE_FILES
-    file_paths = [f"{SOURCE_DIR}{file}" for file in SOURCE_FILES]
+    file_paths = [os.path.join(SOURCE_DIR, file) for file in SOURCE_FILES]
     for file_path in file_paths:
         macros_used = use_macro_symbols(file_path, symbols)
         if not quiet and macros_used > 0:
@@ -119,4 +120,5 @@ def main():
 
     
 if __name__ == "__main__":
+    change_dir_to_root()
     main()
