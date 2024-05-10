@@ -10,7 +10,7 @@ build-job:
   stage: build
   script:
     - cd hardware
-    - make gcompile
+    - make ghdl
   only:
     changes:
       - /**/*.vhd
