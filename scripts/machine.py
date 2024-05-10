@@ -167,9 +167,12 @@ class Machine:
         parts = re.split(r"\s*,\s*|\s+", assembly_line)
         mnemonic, address_mode = parse_operation(parts)
 
-        if mnemonic in {"BRA", "JSR", "BNE", "BEQ"}:
+        if mnemonic in {"BRA", "JSR", "BNE", "BEQ"}: # branch instructions
             destination = parts[1]
             self.branch(mnemonic, destination)
+            return
+        elif mnemonic == "MOV":
+            self.perform_move(parts)
             return
 
         reg, adr = parse_register_and_address(mnemonic, parts)
@@ -182,6 +185,13 @@ class Machine:
             self.perform_alu_operation(mnemonic, reg, adr, address_mode)
         else:
             utils.ERROR(f"Unknown instruction {mnemonic}")
+
+    def perform_move(self, parts):
+        """
+        Copy the value of GR[adr] into GR[reg]
+        """
+        destination, source = parts[1], parts[2]
+        self.registers[destination] = self.registers[source]
 
     def branch(self, mnemonic, destination):
         """

@@ -126,4 +126,13 @@ def remove_empty_or_only_comments(lines):
     Return lines that are not empty or only contain comments
     This allows code that has comments at the end of the line
     """
-    return [line for line in lines if not re.match(rf"^\s*({'|'.join(COMMENT_INITIATORS)}).*", line)]
+    result = []
+    for line in lines:
+        # only comment
+        if re.match(rf"^\s*({'|'.join(COMMENT_INITIATORS)}).*", line):
+            continue
+        # empty line
+        if not line.strip():
+            continue
+        result.append(line)
+    return result

@@ -47,6 +47,8 @@ class EmulationEvent(Enum):
 
 KEYBINDINGS = {
     pg.K_SPACE: EmulationEvent.step,
+    pg.K_n: EmulationEvent.step,
+    pg.K_s: EmulationEvent.step,
     pg.K_r: EmulationEvent.reset,
     pg.K_q: EmulationEvent.quit,
     pg.K_ESCAPE: EmulationEvent.quit,
@@ -58,7 +60,7 @@ WINDOW_TITLE = "monkey-emulator🐒"
 FONT_SIZE = 16
 
 
-def parse_vmem(vmem_lines):
+def parse_vmem(vmem_lines: list) -> np.ndarray:
     """
     Parse the VHDL array elements into a 10x10 numpy array.
     """
@@ -79,7 +81,7 @@ def parse_vmem(vmem_lines):
     return vmem
 
 
-def read_palette(tile_rom_lines):
+def read_palette(tile_rom_lines: list) -> list:
     """
     Read the palette from lines of tile_rom.vhd
     """
@@ -105,7 +107,7 @@ def read_palette(tile_rom_lines):
     return palette
 
 
-def read_tile_rom(tile_rom_lines):
+def read_tile_rom(tile_rom_lines: list) -> np.ndarray:
     """
     Read the tile ROM from lines of tile_rom.vhd
     """
@@ -207,44 +209,45 @@ def handle_args():
     return assembly_file
 
 
-def blit_textlines_to_surface(debug_surface, text_lines, font, color=(255, 255, 255)):
+def blit_textlines_to_surface(target_surface, text_lines, font):
     """
-    Add arbitrary text lines to the debug_surface.
+    Blit text lines to a surface
+    """
 
-    Parameters:
-    debug_surface (pg.Surface): The surface to add text to.
-    text_lines (list of str): The lines of text to add.
-    font (pg.font.Font): The font to use for the text.
-    color (tuple of int): The color of the text (default is white).
-    """
+    # If text_lines is a string, convert it to a list with one element
+    if isinstance(text_lines, str):
+        text_lines = [text_lines]
 
     # Calculate the height of the font
     font_height = font.get_height()
-    padding = 20
+    padding_x = 10 * window_scale
+    padding_y = 5 * window_scale
 
     for i, line in enumerate(text_lines):
         if ";b" in line:
-            color = "brown" # format breakpoint
+            color = "brown"  # format breakpoint
+        else:
+            color = 'white'
 
         # Render the line of text
         text = font.render(line, True, color)
 
         # Calculate the position of the text
         textpos = text.get_rect()
-        textpos.topleft = (padding, padding + i * font_height)
+        textpos.topleft = (padding_x, padding_y + i * font_height)
 
         # Blit the text onto the debug_surface
-        debug_surface.blit(text, textpos)
+        target_surface.blit(text, textpos)
 
 
-def get_debug_info_surface(machine, surface_size):
+def get_debug_pane(machine, surface_size):
     """
     Return surface with various debug information
     printed as text
     """
 
     debug_surface = pg.Surface(surface_size).convert_alpha()
-    debug_surface.fill((0, 0, 0, 150))
+    debug_surface.fill((0, 0, 0, 100))
 
     # Create a separate surface for the background
     background_surface = pg.Surface(surface_size).convert_alpha()
@@ -278,19 +281,36 @@ def get_debug_info_surface(machine, surface_size):
             nearest_lines.append("")
 
     # Add the current assembly line to the debug_surface
-    text_lines = [f"PC: {pc_value}", "\u3000\u3000----------"] + nearest_lines
+    debug_text_lines = []
+    # Add the registers to the debug_surface
+    regs_in_line = 0
+    register_line = ""
+    for reg, value in machine.registers.items():
+        register_line += f"{reg}: {value:03}  "
+        regs_in_line += 1
+        if regs_in_line % 4 == 0:
+            debug_text_lines.append(register_line.strip())
+            register_line = ""
 
-    blit_textlines_to_surface(debug_surface, text_lines, font)
+    # Append the last line if it has less than 3 registers
+    if register_line:
+        debug_text_lines.append(register_line.strip())
+
+    debug_text_lines += ["-"*25]
+    debug_text_lines += nearest_lines
+    debug_text_lines += ["-"*25]
+
+    blit_textlines_to_surface(debug_surface, debug_text_lines, font)
 
     # Draw a border around the debug_surface
-    border_color = (255, 255, 255)  # White color
-    border_width = -1
+    border_color = 'white'
+    border_width = -1 # no border
     pg.draw.rect(debug_surface, border_color, debug_surface.get_rect(), border_width)
 
     return debug_surface
 
 
-def update_screen(screen, machine, show_machine_state, cursor_position):
+def update_screen(screen, machine, show_debug_pane, cursor_position):
     """
     Redraw the screen with the current state of the machine
     """
@@ -306,15 +326,6 @@ def update_screen(screen, machine, show_machine_state, cursor_position):
     scaled_surface = pg.transform.scale_by(small_surface, window_scale)
     screen.blit(scaled_surface, (0, 0))
 
-    # Print machine state
-    if show_machine_state:
-        debug_width = window_scale * SURFACE_WIDTH_PX * 0.6
-        debug_height = window_scale * SURFACE_HEIGHT_PX
-        debug_surface = get_debug_info_surface(machine, (debug_width, debug_height))
-        # place at the right side of the screen
-        placement_pos = (screen.get_width() - debug_width, 0)
-        screen.blit(debug_surface, placement_pos)
-
     # Draw cursor
     tile_size_screen_px = TILE_SIZE_PX * window_scale
     cursor_tile_x = cursor_position[0] // tile_size_screen_px
@@ -326,28 +337,25 @@ def update_screen(screen, machine, show_machine_state, cursor_position):
             tile_size_screen_px,
             tile_size_screen_px,
         )
-        pg.draw.rect(screen, "grey", cursor_rect, 2)
-        tile_pos_text = f"{cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x} ({cursor_tile_x}, {cursor_tile_y})"
-        tiletype_text = f"Tile type: {utils.parse_value(machine.memory[machine.sections['VMEM'].start + cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x])}"
-        textlines = [
-            tile_pos_text,
-            tiletype_text
-        ]
+        pg.draw.rect(screen, "grey", cursor_rect, window_scale)
+        tile_pos_text = f"{cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x}({cursor_tile_x}, {cursor_tile_y})"
+        tiletype_text = f"type={utils.parse_value(machine.memory[machine.sections['VMEM'].start + cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x])}"
+        textlines = f"{tile_pos_text}, {tiletype_text}"
 
         font = pg.font.Font(FONT_PATH, window_scale * FONT_SIZE)
         blit_textlines_to_surface(screen, textlines, font)
 
+    # Print machine state
+    if show_debug_pane:
+        debug_width = window_scale * SURFACE_WIDTH_PX 
+        debug_height = window_scale * SURFACE_HEIGHT_PX
+        debug_surface = get_debug_pane(machine, (debug_width, debug_height))
+        # place at the right side of the screen
+        placement_pos = (screen.get_width() - debug_width, 0)
+        screen.blit(debug_surface, placement_pos)
+
+
     pg.display.flip()
-
-
-def toggle_machine_state_visibility(screen: pg.Surface, show_machine_state: bool):
-    """
-    Toggle the visibility of the machine state on the screen
-    """
-
-    show_machine_state = not show_machine_state
-    
-    return show_machine_state
 
 
 def create_screen(width: int, height: int) -> pg.Surface:
@@ -373,11 +381,10 @@ if __name__ == "__main__":
     # find which assembly file to emulate
     assembly_file = handle_args()
 
-
     # create machine object
     assembly_lines = open(assembly_file).readlines()
     machine = Machine(assembly_lines)
-    show_machine_state = False  # show machine state on screen
+    show_debug_pane = False  # show machine state on screen
 
     # initialise pg
     pg.init()
@@ -387,7 +394,7 @@ if __name__ == "__main__":
     )
     pg.display.set_caption(WINDOW_TITLE)
     cursor_position = (-1, -1)
-    update_screen(screen, machine, show_machine_state, cursor_position)
+    update_screen(screen, machine, show_debug_pane, cursor_position)
 
     clock = pg.time.Clock()
 
@@ -406,18 +413,14 @@ if __name__ == "__main__":
                 elif emulation_event == EmulationEvent.reset:
                     machine = Machine(assembly_lines)  # reset the machine
                 elif emulation_event == EmulationEvent.show_machine_state:
-                    show_machine_state = toggle_machine_state_visibility(
-                        screen, show_machine_state
-                    )
+                    show_debug_pane = not show_debug_pane
                 elif emulation_event == EmulationEvent.continue_to_breakpoint:
                     machine.continue_to_breakpoint()
-                elif emulation_event == EmulationEvent.show_tile:
-                    pass
 
-                update_screen(screen, machine, show_machine_state, cursor_position)
+                update_screen(screen, machine, show_debug_pane, cursor_position)
 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button != 1:
                     continue
                 cursor_position = event.pos
-                update_screen(screen, machine, show_machine_state, cursor_position)
+                update_screen(screen, machine, show_debug_pane, cursor_position)
