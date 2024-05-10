@@ -68,3 +68,12 @@ surfer: cpu_tb.vhd
 	python $(SCRIPTDIR)/assembler.py $*.s
 
 gsim_video: video_tb.vhd video_tb.ghw ## Simulate the video module
+
+.PHONY: emulate
+emulate:
+# no prog variable?
+	@if [ -z $(prog) ]; then \
+		echo "Usage: make emulate prog=<program.s>"; \
+		exit 1; \
+	fi
+	python $(SCRIPTDIR)/emulate.py $(prog) --scale=$(scale)
