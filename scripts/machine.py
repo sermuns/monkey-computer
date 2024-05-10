@@ -101,7 +101,7 @@ class Machine:
             "GR6": 0,
             "GR7": 0,
             "PC": 0,
-            "SP": 0,
+            "SP": len(self.memory) - 1,
         }
 
     def init_flags(self):
