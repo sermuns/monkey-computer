@@ -1,26 +1,14 @@
-"""
-Reads initial state of video memory, then reads each instruction and updates the video memory accordingly.
-Video memory is visualised using pg. The VGA output is effectively emulated.
-"""
+# includes pygame and enum
+from emulation_config import *
 
 import sys
-import os
 import numpy as np
 import re
-from enum import Enum, auto
-
-os.environ["SDL_VIDEO_CENTERED"] = "1"
-os.environ["PYGAME_HIDE_SUPPORT_PROMPT"] = "hide"
-import pygame as pg
 
 import utils
 import array_manip as am
 from machine import Machine
 
-# File paths
-TILE_ROM_FILE = "hardware/tile_rom.vhd"
-MASM_DIR = "masm"
-DEBUG_ASSEMBLY_FILE = "loop.s"  # change this to which file you want to debug
 
 # Global variables
 CONSTANTS = {}
@@ -37,27 +25,6 @@ FONT_PATH = os.path.join("scripts", "fonts", "jetbrainsmono.ttf")
 
 
 # Pygame constants
-class EmulationEvent(Enum):
-    step = auto()
-    reset = auto()
-    quit = auto()
-    show_machine_state = auto()
-    continue_to_breakpoint = auto()
-
-
-KEYBINDINGS = {
-    pg.K_SPACE: EmulationEvent.step,
-    pg.K_n: EmulationEvent.step,
-    pg.K_s: EmulationEvent.step,
-    pg.K_r: EmulationEvent.reset,
-    pg.K_q: EmulationEvent.quit,
-    pg.K_ESCAPE: EmulationEvent.quit,
-    pg.K_F1: EmulationEvent.show_machine_state,
-    pg.K_c: EmulationEvent.continue_to_breakpoint,
-}
-PYGAME_FLAGS = 0
-WINDOW_TITLE = "monkey-emulator🐒"
-FONT_SIZE = 16
 
 
 def parse_vmem(vmem_lines: list) -> np.ndarray:
@@ -228,8 +195,11 @@ def blit_textlines_to_surface(target_surface, text_lines, font):
         # horizontal line spanning the width of the screen
         if line == "-":
             color = "white"
-            start_pos = (padding_x, 30+padding_y + i * font_height)
-            end_pos = (target_surface.get_width()-padding_x, 30+padding_y + i * font_height)
+            start_pos = (padding_x, 30 + padding_y + i * font_height)
+            end_pos = (
+                target_surface.get_width() - padding_x,
+                30 + padding_y + i * font_height,
+            )
             line_width = window_scale
 
             pg.draw.line(target_surface, color, start_pos, end_pos, line_width)
@@ -267,7 +237,7 @@ def create_register_lines(machine):
     register_lines = []
     register_line = ""
     for register, value in machine.registers.items():
-        register_line += f"{register:3}: {value:2}  "
+        register_line += f"{register:3}:{value:2}  "
         if len(register_line) > 40:
             register_lines.append(register_line)
             register_line = ""
@@ -279,6 +249,33 @@ def create_register_lines(machine):
     return register_lines
 
 
+def get_nearest_lines(machine, pc_value):
+    """
+    Get lines above and below the current line
+    """
+
+    nearest_lines = []
+    NUM_NEAR_LINES = 4
+
+    # Get lines above, at, and below the current line
+    for i in range(pc_value - NUM_NEAR_LINES, pc_value + NUM_NEAR_LINES + 1):
+        if not 0 <= i < len(machine.memory):
+            nearest_lines.append("")
+            continue
+
+        line = machine.memory[i]
+
+        nearest_line = f"{i}:\u3000{line}"
+        if i == pc_value:
+            # Add the "->" marker for the current line
+            nearest_line = f"->{nearest_line}"
+        else:
+            nearest_line = f"\u3000{nearest_line}"
+        nearest_lines.append(nearest_line)
+
+    return nearest_lines
+
+
 def get_debug_pane(machine, surface_size):
     """
     Return surface with various debug information
@@ -286,10 +283,11 @@ def get_debug_pane(machine, surface_size):
     """
 
     debug_surface = pg.Surface(surface_size).convert_alpha()
-    debug_surface.fill((0, 0, 0, 100))
+    debug_surface.fill((0, 0, 0, 150))  # semi-transparent background
 
     # Create a separate surface for the background
     background_surface = pg.Surface(surface_size).convert_alpha()
+
     # Fill the background surface with white color
     background_surface.fill((0, 0, 0, 50))
     font = pg.font.Font(FONT_PATH, window_scale * FONT_SIZE)
@@ -297,38 +295,18 @@ def get_debug_pane(machine, surface_size):
     # Create a list of text lines to display
     debug_text_lines = []
 
+    # --- REGISTERS ---
     debug_text_lines += ["<b>Registers"]
     debug_text_lines += create_register_lines(machine)
 
-    # Initialize the list of close lines
-    nearest_lines = []
+    # -- NEAREST LINES ---
     pc_value = machine.registers["PC"]
 
-    # Get 3 lines above the current line
-    for i in range(pc_value - 3, pc_value):
-        if 0 <= i < len(machine.memory):
-            line = machine.memory[i]
-            nearest_lines.append(f"\u3000\u3000{line}")
-        else:
-            nearest_lines.append("")
+    debug_text_lines += ["", "<b>Nearest lines", "-"]
+    debug_text_lines += get_nearest_lines(machine, pc_value)
+    debug_text_lines += ["-", ""]
 
-    # Get the current line and add the "->" marker
-    if 0 <= pc_value < len(machine.memory):
-        line = machine.memory[pc_value]
-        nearest_lines.append(f"-> {line}")
-
-    # Get 3 lines below the current line
-    for i in range(pc_value + 1, pc_value + 4):
-        if 0 <= i < len(machine.memory):
-            line = machine.memory[i]
-            nearest_lines.append(f"\u3000\u3000{line}")
-        else:
-            nearest_lines.append("")
-
-    debug_text_lines += ["-"]
-    debug_text_lines += nearest_lines
-    debug_text_lines += ["-"]
-
+    # --- ALU FLAGS ---
     debug_text_lines += ["<b>ALU flags"]
     flags_line = ""
     for flag, value in machine.flags.items():
