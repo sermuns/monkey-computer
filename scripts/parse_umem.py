@@ -1,5 +1,5 @@
 import sys, re, os
-from utils import change_dir_to_root
+from utils import change_dir_to_root, ERROR
 
 def prepend_index(file):
     """
@@ -19,7 +19,7 @@ def prepend_index(file):
     # Find array elements
     element_index = 0
     for i in range(array_start_index, len(lines)):
-        if not re.match(r'\s*b".*".*--.*', lines[i]):
+        if not re.match(r'\s*b.*[,\s]*', lines[i]):
             continue # not an array element WITH comment
 
         lines[i] = prepend_index_in_comment(lines[i], element_index)
@@ -36,39 +36,32 @@ def prepend_index_in_comment(line, index):
     DECIMAL_WIDTH = 2
     BINARY_WIDTH = 8
 
-    if not re.match(r'\s*b".*".*--.*', line):
-        return
-
     # Split line into comment and code
-    groups = re.match(r'(\s*b".*",?)(\s*--.*)', line)
-    if not groups:
-        raise Exception(f"Error: Could not split line into code and comment: {line}")
-    code = groups.group(1)
-    comment = groups.group(2)
+    match = re.match(r'(\s*b".*",?)\s*--(.*)', line)
+    if not match:
+        ERROR(f"Error: Could not split line into code and comment: {line}")
+    code = match.group(1)
+    comment = match.group(2)
+    
+    if "MOV" in comment:
+        pass
 
     # Remove previous index if exists
-    comment = re.sub(r'--\[.+\|.+\]\s*', '', comment) 
+    comment = re.sub(r'\[.{2}\|.{8}\]', '', comment).strip()
 
     # Pad index with whitespaces
     padded_index = str(index).rjust(2)
     binary_index = format(index, f'0{BINARY_WIDTH}b')
 
     # Insert index
-    new_comment = f"--[{padded_index}|{binary_index}] {comment}\n"
+    new_comment = f"[{padded_index}|{binary_index}] {comment}\n"
 
-    return f"{code}{new_comment}"
+    return f"{code}--{new_comment}"
 
 
 def main():
     change_dir_to_root()
-    print(f'current dir: {os.getcwd()}')
-    if not sys.argv[1:]:
-        print('Usage: {} <filename>'.format(sys.argv[0]))
-        return
-    elif sys.argv[1] == '--debug':
-        sys.argv[1] = os.path.join('hardware', 'uMem.vhd')
-
-    umem_file = sys.argv[1]
+    umem_file = os.path.join('hardware','uMem.vhd')
 
     with open(umem_file, 'r') as file:
         new_file_lines = prepend_index(file)
