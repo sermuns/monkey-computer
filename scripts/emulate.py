@@ -220,14 +220,33 @@ def blit_textlines_to_surface(target_surface, text_lines, font):
 
     # Calculate the height of the font
     font_height = font.get_height()
-    padding_x = 10 * window_scale
-    padding_y = 5 * window_scale
+    padding_x = 15 * window_scale
+    padding_y = 10 * window_scale
 
     for i, line in enumerate(text_lines):
+
+        # horizontal line spanning the width of the screen
+        if line == "-":
+            color = "white"
+            start_pos = (padding_x, 30+padding_y + i * font_height)
+            end_pos = (target_surface.get_width()-padding_x, 30+padding_y + i * font_height)
+            line_width = window_scale
+
+            pg.draw.line(target_surface, color, start_pos, end_pos, line_width)
+            continue
+
+        # breakpoint
         if ";b" in line:
-            color = "brown"  # format breakpoint
+            color = "brown"
         else:
             color = "white"
+
+        # bold
+        if line.startswith("<b>"):
+            line = line[3:]
+            font.set_bold(True)
+        else:
+            font.set_bold(False)
 
         # Render the line of text
         text = font.render(line, True, color)
@@ -238,6 +257,26 @@ def blit_textlines_to_surface(target_surface, text_lines, font):
 
         # Blit the text onto the debug_surface
         target_surface.blit(text, textpos)
+
+
+def create_register_lines(machine):
+    """
+    Create a list of lines with the register values
+    """
+
+    register_lines = []
+    register_line = ""
+    for register, value in machine.registers.items():
+        register_line += f"{register:3}: {value:2}  "
+        if len(register_line) > 40:
+            register_lines.append(register_line)
+            register_line = ""
+
+    # Append the last line if it has less than 3 registers
+    if register_line:
+        register_lines.append(register_line)
+
+    return register_lines
 
 
 def get_debug_pane(machine, surface_size):
@@ -258,23 +297,12 @@ def get_debug_pane(machine, surface_size):
     # Create a list of text lines to display
     debug_text_lines = []
 
-    # Add the registers to the debug_surface
-    regs_in_line = 0
-    register_line = ""
-    for reg, value in machine.registers.items():
-        register_line += f"{reg}: {value:2}  "
-        regs_in_line += 1
-        if regs_in_line % 4 == 0:
-            debug_text_lines.append(register_line.strip())
-            register_line = ""
-
-    # Append the last line if it has less than 3 registers
-    if register_line:
-        debug_text_lines.append(register_line.strip())
+    debug_text_lines += ["<b>Registers"]
+    debug_text_lines += create_register_lines(machine)
 
     # Initialize the list of close lines
-    pc_value = machine.registers["PC"]
     nearest_lines = []
+    pc_value = machine.registers["PC"]
 
     # Get 3 lines above the current line
     for i in range(pc_value - 3, pc_value):
@@ -297,15 +325,15 @@ def get_debug_pane(machine, surface_size):
         else:
             nearest_lines.append("")
 
-    debug_text_lines += ["-" * 25]
+    debug_text_lines += ["-"]
     debug_text_lines += nearest_lines
-    debug_text_lines += ["-" * 25]
+    debug_text_lines += ["-"]
 
-    debug_text_lines += ["ALU flags"]
+    debug_text_lines += ["<b>ALU flags"]
     flags_line = ""
     for flag, value in machine.flags.items():
         flags_line += f"{flag}:{value} "
-    
+
     debug_text_lines += [flags_line]
 
     blit_textlines_to_surface(debug_surface, debug_text_lines, font)
