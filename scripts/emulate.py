@@ -227,7 +227,7 @@ def blit_textlines_to_surface(target_surface, text_lines, font):
         if ";b" in line:
             color = "brown"  # format breakpoint
         else:
-            color = 'white'
+            color = "white"
 
         # Render the line of text
         text = font.render(line, True, color)
@@ -254,9 +254,26 @@ def get_debug_pane(machine, surface_size):
     # Fill the background surface with white color
     background_surface.fill((0, 0, 0, 50))
     font = pg.font.Font(FONT_PATH, window_scale * FONT_SIZE)
-    pc_value = machine.registers["PC"]
+
+    # Create a list of text lines to display
+    debug_text_lines = []
+
+    # Add the registers to the debug_surface
+    regs_in_line = 0
+    register_line = ""
+    for reg, value in machine.registers.items():
+        register_line += f"{reg}: {value:2}  "
+        regs_in_line += 1
+        if regs_in_line % 4 == 0:
+            debug_text_lines.append(register_line.strip())
+            register_line = ""
+
+    # Append the last line if it has less than 3 registers
+    if register_line:
+        debug_text_lines.append(register_line.strip())
 
     # Initialize the list of close lines
+    pc_value = machine.registers["PC"]
     nearest_lines = []
 
     # Get 3 lines above the current line
@@ -280,31 +297,22 @@ def get_debug_pane(machine, surface_size):
         else:
             nearest_lines.append("")
 
-    # Add the current assembly line to the debug_surface
-    debug_text_lines = []
-    # Add the registers to the debug_surface
-    regs_in_line = 0
-    register_line = ""
-    for reg, value in machine.registers.items():
-        register_line += f"{reg}: {value:03}  "
-        regs_in_line += 1
-        if regs_in_line % 4 == 0:
-            debug_text_lines.append(register_line.strip())
-            register_line = ""
-
-    # Append the last line if it has less than 3 registers
-    if register_line:
-        debug_text_lines.append(register_line.strip())
-
-    debug_text_lines += ["-"*25]
+    debug_text_lines += ["-" * 25]
     debug_text_lines += nearest_lines
-    debug_text_lines += ["-"*25]
+    debug_text_lines += ["-" * 25]
+
+    debug_text_lines += ["ALU flags"]
+    flags_line = ""
+    for flag, value in machine.flags.items():
+        flags_line += f"{flag}:{value} "
+    
+    debug_text_lines += [flags_line]
 
     blit_textlines_to_surface(debug_surface, debug_text_lines, font)
 
     # Draw a border around the debug_surface
-    border_color = 'white'
-    border_width = -1 # no border
+    border_color = "white"
+    border_width = -1  # no border
     pg.draw.rect(debug_surface, border_color, debug_surface.get_rect(), border_width)
 
     return debug_surface
@@ -345,15 +353,14 @@ def update_screen(screen, machine, show_debug_pane, cursor_position):
         font = pg.font.Font(FONT_PATH, window_scale * FONT_SIZE)
         blit_textlines_to_surface(screen, textlines, font)
 
-    # Print machine state
+    # Debug pane
     if show_debug_pane:
-        debug_width = window_scale * SURFACE_WIDTH_PX 
+        debug_width = window_scale * SURFACE_WIDTH_PX
         debug_height = window_scale * SURFACE_HEIGHT_PX
         debug_surface = get_debug_pane(machine, (debug_width, debug_height))
         # place at the right side of the screen
         placement_pos = (screen.get_width() - debug_width, 0)
         screen.blit(debug_surface, placement_pos)
-
 
     pg.display.flip()
 
@@ -423,4 +430,5 @@ if __name__ == "__main__":
                 if event.button != 1:
                     continue
                 cursor_position = event.pos
+
                 update_screen(screen, machine, show_debug_pane, cursor_position)
