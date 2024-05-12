@@ -97,6 +97,9 @@ ARCHITECTURE func OF cpu IS
 
 
 BEGIN
+
+    ScanCode <= "00000000";
+    make_op <= '0';
     -- MICRO TICKING
     PROCESS (clk, rst)
     BEGIN

@@ -6,7 +6,7 @@ ENTITY tile_rom_menu IS
     PORT (
         clk : IN STD_LOGIC;
         address : IN UNSIGNED(13 DOWNTO 0); -- 14 bit address
-        data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+        menu_data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
 END tile_rom_menu;
 
@@ -69,6 +69,6 @@ BEGIN
     BEGIN
         -- get palette index from memory
         palette_index <= tile_rom_menu_data(to_integer(address));
-        data_out <= palette_rom(to_integer(palette_index));
+        menu_data_out <= palette_rom(to_integer(palette_index));
     END PROCESS;
 END ARCHITECTURE;

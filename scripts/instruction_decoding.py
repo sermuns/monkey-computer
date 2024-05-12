@@ -5,7 +5,7 @@ import utils
 # OP GRx, ADR
 IN_OPERATIONS = {"LD", "ADD", "SUB", "AND", "OR", "IN", "MUL", "LSR", "LSL"}
 # OP ADR, GRx
-OUT_OPERATIONS = {"ST", "OUT"}
+OUT_OPERATIONS = {"ST", "OUT", "SWAP"}
 # OP GRx, GRx
 TWO_REG_OPERATIONS = {"MOV", "ADDREG"}
 # OP GRx

@@ -119,7 +119,7 @@ BEGIN
             IF clk25 = '1' THEN
                 IF (x_subpixel = 799) THEN -- TODO check if 800 or 799
                     x_within_tile <= (OTHERS => '0'); -- time to restart
-                ELSIF (x_subpixel < 479) THEN
+                ELSIF (x_subpixel < 479) THEN 
                     IF (x_within_tile < 47) THEN
                         x_within_tile <= x_within_tile + 1;
                     ELSE

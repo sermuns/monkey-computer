@@ -36,6 +36,8 @@ architecture Behavioral of main is
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
+		ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+		make_op : IN STD_LOGIC;
         v_addr : IN unsigned(6 DOWNTO 0);
         v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
@@ -67,8 +69,8 @@ architecture Behavioral of main is
 	END COMPONENT;
 
 	-- intermediate signals between KBD_ENC and PRETENDED_CPU
-	signal ScanCode : std_logic_vector(7 downto 0);
-	signal make_op : std_logic;
+	signal ScanCode_main : std_logic_vector(7 downto 0);
+	signal make_op_main : std_logic;
 
 begin
 	
@@ -78,8 +80,8 @@ begin
 	U1 : cpu port map (
         clk => clk,
         rst => btnC,
-		ScanCode => ScanCode,
-		make_op => make_op,
+		ScanCode => ScanCode_main,
+		make_op => make_op_main,
         v_addr => video_address,
         v_data => video_data
     );
@@ -101,8 +103,8 @@ begin
 		rst => btnC,
 		PS2KeyboardCLK => PS2Clk,
 		PS2KeyboardData => PS2Data,
-		ScanCode => ScanCode,
-		make_op => make_op
+		ScanCode => ScanCode_main,
+		make_op => make_op_main
 	);
 
 end architecture;
