@@ -6,9 +6,8 @@ loop:
     // find next path position
     MOV GR3, GR5 // GR3 := GR5
     LDN GR4, %PATH // GR4 := PATH[GR3]
-
     MOV GR3, GR4 // GR3 := GR4
-
+                        
     LDN GR1, %VMEM // GR1 := VMEM[GR3]
     STN %VMEM, GR0 // overwrite with balloon
     ADDI GR5, 1 // increment path index

@@ -28,7 +28,7 @@ ARCHITECTURE func OF pMem IS
     SIGNAL p_mem : p_mem_type := (
         -- PROGRAM
         PROGRAM+0 => b"00000_000_00_00_010111011100", -- LD GR0, 1500 : loop
-        PROGRAM+1 => b"00010_000_01_00_------------", -- ADDI GR0, 1 : loop
+        PROGRAM+1 => b"00010_000_01_00_------------", -- ADDI GR0, 1 : loop -> ADDI
         PROGRAM+2 => b"000000000000000000000001", --  : 
         PROGRAM+3 => b"00001_000_00_00_010111011100", -- ST 1500, GR0 : loop 
         PROGRAM+4 => b"01010_---_00_00_000000000000", -- BRA loop : loop

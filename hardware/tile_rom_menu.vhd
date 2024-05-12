@@ -10,7 +10,7 @@ ENTITY tile_rom_menu IS
     );
 END tile_rom_menu;
 
-ARCHITECTURE func_menu OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 TO 18) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
+ARCHITECTURE func_menu OF tile_rom_menu IS TYPE palette_rom_type IS ARRAY(0 TO 18) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
     CONSTANT palette_rom : palette_rom_type := (
         00 => x"000000",
         01 => x"ffffff",
@@ -34,8 +34,8 @@ ARCHITECTURE func_menu OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 TO 18) OF
     );
     CONSTANT TILE_SIZE : INTEGER := 12 * 12;
 
-    TYPE tile_rom_menu_type IS ARRAY(0 TO TILE_SIZE*NUM_TILES) OF unsigned(4 DOWNTO 0);
-    CONSTANT tile_rom_data : tile_rom_menu_type := (
+    TYPE tile_rom_menu_type IS ARRAY(0 TO 4000) OF unsigned(4 DOWNTO 0);
+    CONSTANT tile_rom_menu_data : tile_rom_menu_type := (
         -- 0
         "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000",
         "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000", "00000",
@@ -68,7 +68,7 @@ BEGIN
     PROCESS (address)
     BEGIN
         -- get palette index from memory
-        palette_index <= tile_rom_data(to_integer(address));
+        palette_index <= tile_rom_menu_data(to_integer(address));
         data_out <= palette_rom(to_integer(palette_index));
     END PROCESS;
 END ARCHITECTURE;

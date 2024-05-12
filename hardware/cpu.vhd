@@ -7,6 +7,8 @@ ENTITY cpu IS
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
+        ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+        make_op : in STD_LOGIC;
         v_addr : IN unsigned(6 DOWNTO 0);
         v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
