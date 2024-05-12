@@ -117,7 +117,7 @@ BEGIN
             x_within_tile <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
             IF clk25 = '1' THEN
-                IF (x_subpixel < 800) THEN
+                IF (x_subpixel = 799) THEN -- TODO check if 800 or 799
                     x_within_tile <= (OTHERS => '0'); -- time to restart
                 ELSIF (x_subpixel < 479) THEN
                     IF (x_within_tile < 47) THEN
@@ -138,7 +138,7 @@ BEGIN
             y_within_tile <= (OTHERS => '0');
         ELSIF rising_edge(clk) AND x_subpixel = 800 THEN
             IF clk25 = '1' THEN
-                IF (y_subpixel < 521) THEN
+                IF (y_subpixel = 520) THEN
                     y_within_tile <= (OTHERS => '0'); -- time to restart
                 ELSIF (y_subpixel < 480) THEN
                     IF (y_within_tile < 47) THEN
@@ -182,7 +182,7 @@ BEGIN
     vmem_address_out <= vmem_address;
 
     -- slice out the correct field from the video memory data
-    current_tiletype <= unsigned(vmem_data(5 DOWNTO 0)); -- could just make current_tiletype into a alias?
+    current_tiletype <=  unsigned(vmem_data(5 DOWNTO 0))  ; -- could just make current_tiletype into a alias?
 
     --TODO what does each bit in the tile_rom_address mean? and what else does it affect?
     tile_rom_address <=

@@ -235,6 +235,7 @@ BEGIN
     b"00011111"/*MUL.b8*/ WHEN (OP = "01111") ELSE
     b"00110011"/*RET.b8*/ WHEN (OP = "10000") ELSE
     b"00110101"/*MOV.b8*/ when (OP = "10010") else
+    b"00110111"/*SWAP.b8*/ when (OP = "10001") else
     b"00110111"/*HALT.b8*/ WHEN (OP = "11111") ELSE
     (OTHERS => 'U'); -- something wrong
 
