@@ -11,8 +11,9 @@ class EmulationEvent(Enum):
     step = auto()
     reset = auto()
     quit = auto()
-    show_machine_state = auto()
+    show_debug_pane = auto()
     continue_to_breakpoint = auto()
+    interact_with_memory = auto()
 
 
 KEYBINDINGS = {
@@ -23,9 +24,11 @@ KEYBINDINGS = {
     pg.K_r: EmulationEvent.reset,
     pg.K_q: EmulationEvent.quit,
     pg.K_ESCAPE: EmulationEvent.quit,
-    pg.K_F1: EmulationEvent.show_machine_state,
+    pg.K_F1: EmulationEvent.show_debug_pane,
     pg.K_c: EmulationEvent.continue_to_breakpoint,
     pg.K_F5: EmulationEvent.continue_to_breakpoint,
+    pg.K_p : EmulationEvent.interact_with_memory,
+    pg.K_F2: EmulationEvent.interact_with_memory
 }
 PYGAME_FLAGS = 0
 WINDOW_TITLE = "monkey-emulator🐒"
@@ -34,4 +37,4 @@ FONT_SIZE = 16
 # File paths
 TILE_ROM_FILE = os.path.join("hardware", "tile_rom.vhd")
 MASM_DIR = "masm"
-DEBUG_ASSEMBLY_FILE = "path.s"  # change this to which file you want to debug
+DEBUG_ASSEMBLY_FILE = "stack.s"  # change this to which file you want to debug

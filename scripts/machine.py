@@ -114,6 +114,10 @@ class Machine:
 
         # Fetch the next instruction
         instruction = self.get_from_memory(self.registers["PC"])
+
+        if not instruction:
+            utils.ERROR(f"Empty instruction at line {self.registers['PC']}")
+
         self.registers["PC"] += 1
 
         # Interpret the instruction
@@ -159,7 +163,7 @@ class Machine:
             if re.match(r".*;b.*", line):
                 self.breakpoints.append(i)
 
-    def execute_instruction(self, assembly_line):
+    def execute_instruction(self, assembly_line:str):
         """
         Perform a single instruction
         """
@@ -174,6 +178,9 @@ class Machine:
         elif mnemonic == "MOV":
             self.perform_move(parts)
             return
+        elif mnemonic in {"POP", "PUSH"}:
+            self.perform_stack_operation(parts)
+            return
 
         reg, adr = parse_register_and_address(mnemonic, parts)
 
@@ -185,6 +192,23 @@ class Machine:
             self.perform_alu_operation(mnemonic, reg, adr, address_mode)
         else:
             utils.ERROR(f"Unknown instruction {mnemonic}")
+
+    def perform_stack_operation(self, parts):
+        """
+        Perform a stack operation
+        """
+
+        if len(parts) != 2:
+            utils.ERROR(f"Stack operation needs to have exactly 2 parts: {parts}")
+
+        mnemonic, reg_name = parts
+
+        if mnemonic == "PUSH":
+            self.memory[self.registers["SP"]] = self.registers[reg_name]
+            self.registers["SP"] -= 1
+        elif mnemonic == "POP":
+            self.registers["SP"] += 1
+            self.registers[reg_name] = self.memory[self.registers["SP"]]
 
     def perform_move(self, parts):
         """

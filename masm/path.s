@@ -20,16 +20,16 @@ new_ballon:
     LDN GR1, %VMEM // GR1 := VMEM[GR3]
     STN %VMEM, GR0 // overwrite with balloon
     ADDI GR5, 1 // increment path index
-    BRA loop ;b
+    BRA loop 
 
 
 take_dmg:
     //TODO SUB players health
-    LD GR2, %HEAP
+    LD GR2, %HEAP ;b
     SUBI GR2, 1
     ST %HEAP, GR2
     LDI GR5, 0
-    BRA new_ballon ;b
+    BRA new_ballon
 
 dead:
 BRA dead ;b

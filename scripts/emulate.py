@@ -4,6 +4,7 @@ from emulation_config import *
 import sys
 import numpy as np
 import re
+import easygui
 
 import utils
 import array_manip as am
@@ -166,7 +167,7 @@ def handle_args():
         sys.argv[1] = DEBUG_ASSEMBLY_FILE
 
     for arg in sys.argv[1:]:
-        groups = re.match(r"--scale=([\d.]+)", arg)
+        groups = re.match(r"--scale=(\d+)", arg)
         if groups:
             global window_scale
             window_scale = int(groups.group(1))
@@ -195,10 +196,10 @@ def blit_textlines_to_surface(target_surface, text_lines, font):
         # horizontal line spanning the width of the screen
         if line == "-":
             color = "white"
-            start_pos = (padding_x, 30 + padding_y + i * font_height)
+            start_pos = (padding_x, 10 * window_scale + padding_y + i * font_height)
             end_pos = (
                 target_surface.get_width() - padding_x,
-                30 + padding_y + i * font_height,
+                10 * window_scale + padding_y + i * font_height,
             )
             line_width = window_scale
 
@@ -425,10 +426,23 @@ if __name__ == "__main__":
                     machine.execute_next_instruction()
                 elif emulation_event == EmulationEvent.reset:
                     machine = Machine(assembly_lines)  # reset the machine
-                elif emulation_event == EmulationEvent.show_machine_state:
+                elif emulation_event == EmulationEvent.show_debug_pane:
                     show_debug_pane = not show_debug_pane
                 elif emulation_event == EmulationEvent.continue_to_breakpoint:
                     machine.continue_to_breakpoint()
+                elif emulation_event == EmulationEvent.interact_with_memory:
+                    # show easygui prompt to input desired memory address to show
+                    desired_address = easygui.enterbox("Enter memory address to show:")
+                    if not desired_address:
+                        continue  # user cancelled
+                    try:
+                        desired_address = utils.parse_value(desired_address)
+                        memory_value = machine.get_from_memory(desired_address)
+                        easygui.msgbox(
+                            f"Memory address {desired_address} contains value {memory_value}"
+                        )
+                    except Exception as e:
+                        easygui.msgbox(f"Error: {e}")
 
                 update_screen(screen, machine, show_debug_pane, cursor_position)
 
