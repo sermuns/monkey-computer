@@ -166,7 +166,7 @@ def handle_args():
         sys.argv[1] = DEBUG_ASSEMBLY_FILE
 
     for arg in sys.argv[1:]:
-        groups = re.match(r"--scale=(\d+)", arg)
+        groups = re.match(r"--scale=([\d.]+)", arg)
         if groups:
             global window_scale
             window_scale = int(groups.group(1))
