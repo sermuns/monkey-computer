@@ -49,17 +49,17 @@ BEGIN
     clk_tb <= NOT clk_tb;
   END PROCESS;
 
-  clk_counter : PROCESS (clk_tb)
-  BEGIN
-    IF rising_edge(clk_tb) THEN
-      IF clock_count_tb > MAX_CLK_COUNT THEN
-        REPORT "Simulation has continued for longer than MAX_CLOCK_CYCLES constant: " & INTEGER'image(MAX_CLK_COUNT) & ", stopping!";
-        STOP;
-      ELSE
-        clock_count_tb <= clock_count_tb + 1;
-      END IF;
-    END IF;
-  END PROCESS;
+  -- clk_counter : PROCESS (clk_tb)
+  -- BEGIN
+  --   IF rising_edge(clk_tb) THEN
+  --     IF clock_count_tb > MAX_CLK_COUNT THEN
+  --       REPORT "Simulation has continued for longer than MAX_CLOCK_CYCLES constant: " & INTEGER'image(MAX_CLK_COUNT) & ", stopping!";
+  --       STOP;
+  --     ELSE
+  --       clock_count_tb <= clock_count_tb + 1;
+  --     END IF;
+  --   END IF;
+  -- END PROCESS;
 
   stimulus_process : PROCESS
   BEGIN

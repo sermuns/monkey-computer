@@ -9,4 +9,4 @@ TBF = cpu_tb.vhd
 
 # Include Makefile utilities
 include util.mk
-include ghdl.mk
+#include ghdl.mk

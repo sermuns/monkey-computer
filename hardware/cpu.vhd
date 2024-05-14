@@ -7,8 +7,8 @@ ENTITY cpu IS
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
-        ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-        make_op : in STD_LOGIC;
+     --   ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+     --   make_op : in STD_LOGIC;
         v_addr : IN unsigned(6 DOWNTO 0);
         v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
@@ -98,8 +98,6 @@ ARCHITECTURE func OF cpu IS
 
 BEGIN
 
-    ScanCode <= "00000000";
-    make_op <= '0';
     -- MICRO TICKING
     PROCESS (clk, rst)
     BEGIN
@@ -228,20 +226,20 @@ BEGIN
     b"00010001"/*ADD.b8*/ WHEN (OP = "00010") ELSE
     b"00010100"/*SUB.b8*/ WHEN (OP = "00011") ELSE
     b"00010111"/*CMP.b8*/ WHEN (OP = "00100") ELSE
-    b"00011010"/*AND.b8*/ WHEN (OP = "00101") ELSE
-    b"00100010"/*OR.b8*/ WHEN (OP = "00110") ELSE
-    b"00011101"/*LSR.b8*/ WHEN (OP = "00111") ELSE
-    b"00101010"/*JSR.b8*/ WHEN (OP = "01001") ELSE
-    b"00100101"/*BRA.b8*/ WHEN (OP = "01010") ELSE
-    b"00100110"/*BNE.b8*/ WHEN (OP = "01011") ELSE
-    b"00101000"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
-    b"00101101"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
-    b"00101111"/*POP.b8*/ WHEN (OP = "01110") ELSE
-    b"00011111"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-    b"00110011"/*RET.b8*/ WHEN (OP = "10000") ELSE
-    b"00110101"/*MOV.b8*/ when (OP = "10010") else
-    b"00110111"/*SWAP.b8*/ when (OP = "10001") else
-    b"00110111"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+    b"00011001"/*AND.b8*/ WHEN (OP = "00101") ELSE
+    b"00100001"/*OR.b8*/ WHEN (OP = "00110") ELSE
+    b"00011100"/*LSR.b8*/ WHEN (OP = "00111") ELSE
+    b"00101001"/*JSR.b8*/ WHEN (OP = "01001") ELSE
+    b"00100100"/*BRA.b8*/ WHEN (OP = "01010") ELSE
+    b"00100101"/*BNE.b8*/ WHEN (OP = "01011") ELSE
+    b"00100111"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
+    b"00101100"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
+    b"00101110"/*POP.b8*/ WHEN (OP = "01110") ELSE
+    b"00011110"/*MUL.b8*/ WHEN (OP = "01111") ELSE
+    b"00110010"/*RET.b8*/ WHEN (OP = "10000") ELSE
+    b"00110100"/*MOV.b8*/ when (OP = "10010") else
+    b"00110110"/*SWAP.b8*/ when (OP = "10001") else
+    b"00111111"/*HALT.b8*/ WHEN (OP = "11111") ELSE
     (OTHERS => 'U'); -- something wrong
 
     K2 <=
