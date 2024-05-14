@@ -188,7 +188,7 @@ class Machine:
             self.load_value(reg, adr, address_mode)
         elif mnemonic == "ST":
             self.store_value(reg, adr, address_mode)
-        elif mnemonic in {"ADD", "SUB", "AND", "OR", "MUL", "LSR"}:
+        elif mnemonic in {"ADD", "SUB", "AND", "OR", "MUL", "LSR", "LSL"}:
             self.perform_alu_operation(mnemonic, reg, adr, address_mode)
         else:
             utils.ERROR(f"Unknown instruction {mnemonic}")
@@ -295,6 +295,10 @@ class Machine:
             result = self.registers[reg] | value
         elif mnemonic == "MUL":
             result = self.registers[reg] * value
+        elif mnemonic == "LSR":
+            result = self.registers[reg] >> value
+        elif mnemonic == "LSL":
+            result = self.registers[reg] << value
         else:
             utils.ERROR(f"Unknown mnemonic {mnemonic}")
 

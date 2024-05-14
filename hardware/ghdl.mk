@@ -48,16 +48,6 @@ gcompile: parse_umem preprocess ghdl
 # Allow for simulation to fail
 	-@ghdl -r $(GHDL_FLAGS) $*_tb --wave=$(WAVEDIR)/$*_tb.ghw $(GHDL_RUN_FLAGS)
 
-.PHONY: %.ghw
-%.ghw: ## Launch wave in GTKWave, if not already running
-	@if ! pgrep -x "gtkwave" > /dev/null; then \
-		gtkwave -a $(SAVEDIR)/$*.gtkw $(WAVEDIR)/$*.ghw > /dev/null & \
-	fi
-
-.PHONY: gtkwave
-gtkwave: cpu_tb.vhd cpu_tb.ghw ## Simulate, then launch wave
-
-
 .PHONY: surfer
 surfer: cpu_tb.vhd
 	@if ! pgrep -x "surfer" > /dev/null; then \

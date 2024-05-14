@@ -19,7 +19,7 @@ class Section:
         """
         Construct section object from declaration line
         """
-        parts = (declaration_line.replace("%", "")).split()
+        parts = (declaration_line.replace("%", "")).split()[:3] # ignore comments
         self.name = parts[0]
         self.start = int(parts[1])
         self.height = int(parts[2])

@@ -266,7 +266,7 @@ def get_nearest_lines(machine, pc_value):
 
         line = machine.memory[i]
 
-        nearest_line = f"{i}:\u3000{line}"
+        nearest_line = f"{i:3}:\u3000{line}"
         if i == pc_value:
             # Add the "->" marker for the current line
             nearest_line = f"->{nearest_line}"

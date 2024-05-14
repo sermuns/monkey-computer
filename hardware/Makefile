@@ -8,5 +8,5 @@ XDC = Basys3.xdc
 TBF = cpu_tb.vhd
 
 # Include Makefile utilities
+include ghdl.mk
 include util.mk
-#include ghdl.mk

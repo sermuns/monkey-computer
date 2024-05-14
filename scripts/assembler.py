@@ -25,7 +25,7 @@ PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
 FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
 ADR_WIDTH = 12
-DEBUG_ARG = "loop.s"
+DEBUG_ARG = "path.s"
 
 INSTRUCTION_WIDTH = 24
 
@@ -128,10 +128,13 @@ def read_lines(filename):
     Return the lines from the given file
     """
 
-    lines = open(filename, "r").readlines()
+    try:
+        lines = open(filename, "r").readlines()
+    except FileNotFoundError:
+        ERROR(f"File {filename} not found")
 
     if not lines:
-        ERROR(f"Could not read {filename}")
+        ERROR(f"Empty file {filename}")
 
     return lines
 
@@ -141,7 +144,8 @@ def get_arg():
     Get the filename argument
     """
     if len(sys.argv) != 2:
-        print("Usage: python3 assemblyparser.py <filename>")
+        this_script_name = os.path.basename(__file__)
+        print(f"Usage: python3 {this_script_name} <masm file>.s")
         sys.exit(1)
 
     arg = sys.argv[1]
@@ -174,9 +178,6 @@ def main():
     # find the file containing assembly code
     asm_file_name = get_arg()
     asm_file_path = os.path.join(PROG_DIR, asm_file_name)
-
-    # read the program memory file
-    mem_lines = read_lines(PMEM_FILE)
 
     # read the assembly file
     asm_lines = read_lines(asm_file_path)
@@ -228,6 +229,9 @@ def main():
     # assume that HALT needs to be added
     HALT = ("11111_---_--_--_------------", "HALT", "")
     sections["PROGRAM"].lines.append(HALT)  # add HALT to program section
+
+    # read the program memory file
+    mem_lines = read_lines(PMEM_FILE)
 
     array_lines = am.extract_vhdl_array(
         lines=mem_lines, array_start_pattern=r".*:.*p_mem_type.*:=.*"
