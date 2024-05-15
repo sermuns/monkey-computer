@@ -1,23 +1,11 @@
 %PROGRAM 0 1499
-
+start:
+    LDI GR5, 10
 loop:
-    LDI GR0, 1
-    ST %VMEM, GR0
-
-    LDI GR6, 1
-    wait:
-        SUBI GR6, 1
-        BNE wait
-
-    LDI GR0, 30
-    ST %VMEM, GR0
-
-    BRA loop
-
-
-
-
-
+    SUBI GR5, 1
+    BNE loop
+end:
+    HALT
 
 
 %VMEM 1500 100

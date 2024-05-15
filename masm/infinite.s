@@ -1,11 +1,15 @@
 %PROGRAM 0 1499
 start:
-    LDI GR0, 35 // CONSTANT: balloon tiletype
+    LDI GR0, 1 // CONSTANT: balloon tiletype
     
 loop:
-    STN %VMEM, GR0 // replace tiletype that was overwritten
-    ADDI GR3, 1 // move to next tile
-    BRA loop
+    ST %VMEM, GR0 // replace tiletype that was overwritten
+    ADDI GR0, 1 // move to next tile
+    CMP GR0, 40 // too high tiletype?
+    BNE loop // no, continue
+
+end:
+    HALT
 
 %VMEM 1500 100
 0
