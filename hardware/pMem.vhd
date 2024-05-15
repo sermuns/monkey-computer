@@ -32,9 +32,9 @@ ARCHITECTURE func OF pMem IS
     -- 5     3   2  2  12  
     SIGNAL p_mem : p_mem_type := (
         -- PROGRAM
-        PROGRAM+0 => b"00000_101_01_--_------------", -- start : LDI GR5, 10
-        PROGRAM+1 => b"000000000000000000001010", -- 
-        PROGRAM+2 => b"00011_101_01_--_------------", -- loop : SUBI GR5, 1
+        PROGRAM+0 => b"00000_000_01_--_------------", -- start : LDI GR0, 5000
+        PROGRAM+1 => b"000000000001001110001000", -- 
+        PROGRAM+2 => b"00011_000_01_--_------------", -- loop : SUBI GR0, 1
         PROGRAM+3 => b"000000000000000000000001", -- 
         PROGRAM+4 => b"01011_---_00_--_000000000010", -- BNE loop
         PROGRAM+5 => b"11111_---_--_--_------------", -- end : HALT
@@ -223,7 +223,7 @@ BEGIN
             if rising_edge(clk) then
                 -- store the scan code in the internal memory for polling later on
                 if rising_edge(scancode_pulse)  then
-                    p_mem(HEAP) <=  last_scancode ;
+                    p_mem(HEAP) <= last_scancode ;
                 end if;
             end if;
         end process;

@@ -1,8 +1,8 @@
 %PROGRAM 0 1499
 start:
-    LDI GR5, 10
+    LDI GR0, 5000
 loop:
-    SUBI GR5, 1
+    SUBI GR0, 1
     BNE loop
 end:
     HALT
