@@ -38,12 +38,15 @@
             84,
             73,
             74,
-            77,
             79,
             75,
             78,
             81,
             82,
+            506,
+            507,
+            508,
+            509,
             85,
             86,
             94,
@@ -165,7 +168,7 @@
             505,
         ],
         displayed_items: {
-            341: Variable((
+            499: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -176,48 +179,11 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[1533]",
+                    name: "[4089]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[1533]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            74: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "alu_inst",
-                        ],
-                    ),
-                    name: "ar_internal",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "ar_internal",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            236: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1517]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1517]",
+                display_name: "[4089]",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -240,17 +206,496 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            408: Divider((
+            138: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[23]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[23]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            115: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[0]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[0]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            94: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "k1",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "k1",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            237: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1518]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1518]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            215: Divider((
+                color: None,
+                background_color: None,
+                name: Some("PROGRAM"),
+            )),
+            345: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1537]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1537]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            509: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "alu_inst",
+                        ],
+                    ),
+                    name: "n",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "n",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            222: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1503]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1503]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            82: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "alu_inst",
+                        ],
+                    ),
+                    name: "zc",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "zc",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            324: Divider((
                 color: None,
                 background_color: None,
                 name: Some(" "),
+            )),
+            225: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1506]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1506]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            239: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1520]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1520]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            122: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[7]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[7]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            140: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[25]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[25]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            108: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "pm_out",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "pm_out",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            333: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1525]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1525]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            127: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[12]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[12]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            1: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                        ],
+                    ),
+                    name: "clk_tb",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "clk_tb",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            126: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[11]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[11]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            116: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            86: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" MICRO"),
+            )),
+            129: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[14]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[14]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            66: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[6]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[6]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            83: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" "),
+            )),
+            344: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1536]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1536]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            118: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[3]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[3]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            243: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1524]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1524]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            131: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[16]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[16]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            119: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4]",
+                display_name_type: Local,
+                manual_name: None,
             )),
             84: Divider((
                 color: None,
                 background_color: None,
                 name: Some("ALU"),
             )),
-            503: Variable((
+            487: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -261,15 +706,15 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[4093]",
+                    name: "[4077]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[4093]",
+                display_name: "[4077]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            490: Variable((
+            240: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -280,11 +725,48 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[4080]",
+                    name: "[1521]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[4080]",
+                display_name: "[1521]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            61: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[1]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            481: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4071]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4071]",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -324,7 +806,7 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            135: Variable((
+            121: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -335,437 +817,11 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[20]",
+                    name: "[6]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[20]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            81: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "alu_inst",
-                        ],
-                    ),
-                    name: "vc",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "vc",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            333: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1525]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1525]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            68: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" GRx"),
-            )),
-            220: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1501]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1501]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            127: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[12]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[12]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            344: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1536]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1536]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            345: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1537]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1537]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            83: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" "),
-            )),
-            107: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "ir",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "ir",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            501: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4091]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4091]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            64: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "gr",
-                        ],
-                    ),
-                    name: "[4]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            61: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "gr",
-                        ],
-                    ),
-                    name: "[1]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            243: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1524]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1524]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            481: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4071]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4071]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            240: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1521]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1521]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            82: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "alu_inst",
-                        ],
-                    ),
-                    name: "zc",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "zc",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            491: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4081]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4081]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            239: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1520]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1520]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            86: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" MICRO"),
-            )),
-            336: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1528]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1528]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            122: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[7]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[7]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            221: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1502]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1502]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            241: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1522]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1522]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            139: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[24]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[24]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            79: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "alu_inst",
-                        ],
-                    ),
-                    name: "op",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "op",
+                display_name: "[6]",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -788,444 +844,6 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            497: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4087]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4087]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            231: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1512]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1512]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            228: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1509]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1509]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            126: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[11]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[11]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            111: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "pc",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "pc",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            119: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            320: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                        ],
-                    ),
-                    name: "clock_count_tb",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "clock_count_tb",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            118: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[3]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[3]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            143: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[28]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[28]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            488: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4078]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4078]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            334: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1526]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1526]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            112: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "sp",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "sp",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            142: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[27]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[27]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            230: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1511]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1511]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            238: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1519]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1519]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            66: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "gr",
-                        ],
-                    ),
-                    name: "[6]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[6]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            484: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4074]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4074]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            343: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1535]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1535]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            85: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" "),
-            )),
-            498: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4088]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4088]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            136: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[21]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[21]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            499: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4089]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4089]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            134: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[19]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[19]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            120: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[5]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[5]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            106: Divider((
-                color: None,
-                background_color: None,
-                name: Some("MISC. CPU"),
-            )),
             224: Variable((
                 variable_ref: (
                     path: (
@@ -1245,7 +863,7 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            482: Variable((
+            339: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -1256,15 +874,15 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[4072]",
+                    name: "[1531]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[4072]",
+                display_name: "[1531]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            483: Variable((
+            223: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -1275,34 +893,51 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[4073]",
+                    name: "[1504]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[4073]",
+                display_name: "[1504]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            232: Variable((
+            60: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
                             "uut",
                             "u1",
-                            "pmem_inst",
-                            "p_mem",
+                            "gr",
                         ],
                     ),
-                    name: "[1513]",
+                    name: "[0]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[1513]",
+                display_name: "[0]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            493: Variable((
+            63: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[3]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[3]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            336: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -1313,11 +948,26 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[4083]",
+                    name: "[1528]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[4083]",
+                display_name: "[1528]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            320: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                        ],
+                    ),
+                    name: "clock_count_tb",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "clock_count_tb",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -1340,7 +990,7 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            237: Variable((
+            123: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -1351,15 +1001,15 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[1518]",
+                    name: "[8]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[1518]",
+                display_name: "[8]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            125: Variable((
+            124: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -1370,34 +1020,11 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[10]",
+                    name: "[9]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[10]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            217: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" VMEM"),
-            )),
-            75: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "alu_inst",
-                        ],
-                    ),
-                    name: "cc",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "cc",
+                display_name: "[9]",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -1420,7 +1047,7 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            229: Variable((
+            340: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -1431,26 +1058,295 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[1510]",
+                    name: "[1532]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[1510]",
+                display_name: "[1532]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            1: Variable((
+            341: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
                         ],
                     ),
-                    name: "clk_tb",
+                    name: "[1533]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "clk_tb",
+                display_name: "[1533]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            483: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4073]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4073]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            238: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1519]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1519]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            145: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[30]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[30]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            226: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1507]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1507]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            144: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[29]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[29]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            232: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1513]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1513]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            491: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4081]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4081]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            507: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "alu_inst",
+                        ],
+                    ),
+                    name: "c",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "c",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            233: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1514]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1514]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            482: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4072]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4072]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            143: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[28]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[28]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            501: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4091]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4091]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            120: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[5]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[5]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            335: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1527]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1527]",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -1490,7 +1386,7 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            495: Variable((
+            500: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -1501,48 +1397,18 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[4085]",
+                    name: "[4090]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[4085]",
+                display_name: "[4090]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            78: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "alu_inst",
-                        ],
-                    ),
-                    name: "nc",
-                ),
+            408: Divider((
                 color: None,
                 background_color: None,
-                display_name: "nc",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            101: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "upc",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "upc",
-                display_name_type: Local,
-                manual_name: None,
+                name: Some(" "),
             )),
             133: Variable((
                 variable_ref: (
@@ -1563,61 +1429,21 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            222: Variable((
+            78: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
                             "uut",
                             "u1",
-                            "pmem_inst",
-                            "p_mem",
+                            "alu_inst",
                         ],
                     ),
-                    name: "[1503]",
+                    name: "nc",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[1503]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            409: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" STACK"),
-            )),
-            114: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" "),
-            )),
-            326: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" "),
-            )),
-            324: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" "),
-            )),
-            234: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1515]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1515]",
+                display_name: "nc",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -1640,7 +1466,43 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            130: Variable((
+            62: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[2]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[2]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            506: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "alu_inst",
+                        ],
+                    ),
+                    name: "z",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "z",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            228: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -1651,11 +1513,30 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[15]",
+                    name: "[1509]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[15]",
+                display_name: "[1509]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            235: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1516]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1516]",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -1678,7 +1559,7 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            227: Variable((
+            494: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -1689,373 +1570,29 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[1508]",
+                    name: "[4084]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[1508]",
+                display_name: "[4084]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            223: Variable((
+            75: Variable((
                 variable_ref: (
                     path: (
                         strs: [
                             "cpu_tb",
                             "uut",
                             "u1",
-                            "pmem_inst",
-                            "p_mem",
+                            "alu_inst",
                         ],
                     ),
-                    name: "[1504]",
+                    name: "cc",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[1504]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            59: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" "),
-            )),
-            117: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[2]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[2]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            327: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" HEAP"),
-            )),
-            492: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4082]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4082]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            67: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "gr",
-                        ],
-                    ),
-                    name: "[7]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[7]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            219: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1500]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1500]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            480: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4070]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4070]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            124: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[9]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[9]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            339: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1531]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1531]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            2: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                        ],
-                    ),
-                    name: "rst_tb",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "rst_tb",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            342: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1534]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1534]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            233: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1514]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1514]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            505: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4095]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4095]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            110: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "asr",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "asr",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            128: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[13]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[13]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            108: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "pm_out",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "pm_out",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            340: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1532]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1532]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            131: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[16]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[16]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            141: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[26]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[26]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            500: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[4090]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[4090]",
+                display_name: "cc",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -2073,81 +1610,6 @@
                 color: None,
                 background_color: None,
                 display_name: "pm_we",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            335: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1527]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1527]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            123: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[8]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[8]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            73: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "alu_inst",
-                        ],
-                    ),
-                    name: "ar",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "ar",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            226: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1507]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1507]",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -2170,12 +1632,71 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
+            68: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" GRx"),
+            )),
+            79: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "alu_inst",
+                        ],
+                    ),
+                    name: "op",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "op",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            484: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4074]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4074]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            107: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "ir",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "ir",
+                display_name_type: Local,
+                manual_name: None,
+            )),
             105: Divider((
                 color: None,
                 background_color: None,
                 name: Some(" "),
             )),
-            235: Variable((
+            241: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2186,15 +1707,20 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[1516]",
+                    name: "[1522]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[1516]",
+                display_name: "[1522]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            144: Variable((
+            217: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" VMEM"),
+            )),
+            492: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2205,15 +1731,33 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[29]",
+                    name: "[4082]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[29]",
+                display_name: "[4082]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            138: Variable((
+            74: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "alu_inst",
+                        ],
+                    ),
+                    name: "ar_internal",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "ar_internal",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            334: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2224,15 +1768,15 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[23]",
+                    name: "[1526]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[23]",
+                display_name: "[1526]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            129: Variable((
+            139: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2243,15 +1787,35 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[14]",
+                    name: "[24]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[14]",
+                display_name: "[24]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            489: Variable((
+            59: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" "),
+            )),
+            2: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                        ],
+                    ),
+                    name: "rst_tb",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "rst_tb",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            130: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2262,51 +1826,20 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[4079]",
+                    name: "[15]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[4079]",
+                display_name: "[15]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            60: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "gr",
-                        ],
-                    ),
-                    name: "[0]",
-                ),
+            327: Divider((
                 color: None,
                 background_color: None,
-                display_name: "[0]",
-                display_name_type: Local,
-                manual_name: None,
+                name: Some(" HEAP"),
             )),
-            62: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "gr",
-                        ],
-                    ),
-                    name: "[2]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[2]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            140: Variable((
+            141: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2317,15 +1850,15 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[25]",
+                    name: "[26]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[25]",
+                display_name: "[26]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            116: Variable((
+            342: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2336,15 +1869,15 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[1]",
+                    name: "[1534]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[1]",
+                display_name: "[1534]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            121: Variable((
+            231: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2355,15 +1888,15 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[6]",
+                    name: "[1512]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[6]",
+                display_name: "[1512]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            145: Variable((
+            227: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2374,73 +1907,13 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[30]",
+                    name: "[1508]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[30]",
+                display_name: "[1508]",
                 display_name_type: Local,
                 manual_name: None,
-            )),
-            132: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[17]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[17]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            94: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                        ],
-                    ),
-                    name: "k1",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "k1",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            225: Variable((
-                variable_ref: (
-                    path: (
-                        strs: [
-                            "cpu_tb",
-                            "uut",
-                            "u1",
-                            "pmem_inst",
-                            "p_mem",
-                        ],
-                    ),
-                    name: "[1506]",
-                ),
-                color: None,
-                background_color: None,
-                display_name: "[1506]",
-                display_name_type: Local,
-                manual_name: None,
-            )),
-            215: Divider((
-                color: None,
-                background_color: None,
-                name: Some(" MEMORY"),
             )),
             113: Variable((
                 variable_ref: (
@@ -2456,6 +1929,80 @@
                 color: None,
                 background_color: None,
                 display_name: "data_bus",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            112: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "sp",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "sp",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            229: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1510]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1510]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            142: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[27]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[27]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            490: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4080]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4080]",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -2478,7 +2025,62 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            63: Variable((
+            111: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "pc",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "pc",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            221: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1502]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1502]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            236: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1517]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1517]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            67: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2488,15 +2090,37 @@
                             "gr",
                         ],
                     ),
-                    name: "[3]",
+                    name: "[7]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[3]",
+                display_name: "[7]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            494: Variable((
+            326: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" "),
+            )),
+            110: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "asr",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "asr",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            497: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2507,15 +2131,15 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[4084]",
+                    name: "[4087]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[4084]",
+                display_name: "[4087]",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            115: Variable((
+            488: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2526,11 +2150,360 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[0]",
+                    name: "[4078]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[0]",
+                display_name: "[4078]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            343: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1535]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1535]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            134: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[19]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[19]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            503: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4093]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4093]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            234: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1515]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1515]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            114: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" "),
+            )),
+            125: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[10]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[10]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            480: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4070]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4070]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            495: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4085]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4085]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            136: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[21]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[21]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            81: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "alu_inst",
+                        ],
+                    ),
+                    name: "vc",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "vc",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            117: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[2]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[2]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            230: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1511]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1511]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            135: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[20]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[20]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            409: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" STACK"),
+            )),
+            489: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4079]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4079]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            132: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[17]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[17]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            64: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
+                        ],
+                    ),
+                    name: "[4]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            73: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "alu_inst",
+                        ],
+                    ),
+                    name: "ar",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "ar",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            128: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[13]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[13]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            505: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4095]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4095]",
                 display_name_type: Local,
                 manual_name: None,
             )),
@@ -2552,7 +2525,12 @@
                 display_name_type: Local,
                 manual_name: None,
             )),
-            77: Variable((
+            106: Divider((
+                color: None,
+                background_color: None,
+                name: Some("MISC. CPU"),
+            )),
+            508: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2562,15 +2540,15 @@
                             "alu_inst",
                         ],
                     ),
-                    name: "flags",
+                    name: "v",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "flags",
+                display_name: "v",
                 display_name_type: Local,
                 manual_name: None,
             )),
-            487: Variable((
+            219: Variable((
                 variable_ref: (
                     path: (
                         strs: [
@@ -2581,20 +2559,99 @@
                             "p_mem",
                         ],
                     ),
-                    name: "[4077]",
+                    name: "[1500]",
                 ),
                 color: None,
                 background_color: None,
-                display_name: "[4077]",
+                display_name: "[1500]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            101: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "upc",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "upc",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            85: Divider((
+                color: None,
+                background_color: None,
+                name: Some(" "),
+            )),
+            498: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4088]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4088]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            220: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1501]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[1501]",
+                display_name_type: Local,
+                manual_name: None,
+            )),
+            493: Variable((
+                variable_ref: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[4083]",
+                ),
+                color: None,
+                background_color: None,
+                display_name: "[4083]",
                 display_name_type: Local,
                 manual_name: None,
             )),
         },
-        display_item_ref_counter: 505,
+        display_item_ref_counter: 509,
         viewports: [
             (
-                curr_left: (0.08425825666917444),
-                curr_right: (0.238890414404193),
+                curr_left: (0.08445336974997843),
+                curr_right: (0.25822722904883366),
             ),
         ],
         variable_format: {
@@ -2605,10 +2662,61 @@
                             "cpu_tb",
                             "uut",
                             "u1",
-                            "gr",
                         ],
                     ),
-                    name: "[0]",
+                    name: "asr",
+                ),
+                field: [],
+            ): "Unsigned",
+            (
+                root: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                        ],
+                    ),
+                    name: "clk_tb",
+                ),
+                field: [],
+            ): "Bit",
+            (
+                root: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "ir",
+                ),
+                field: [],
+            ): "Binary",
+            (
+                root: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "pc",
+                ),
+                field: [],
+            ): "Unsigned",
+            (
+                root: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                            "pmem_inst",
+                            "p_mem",
+                        ],
+                    ),
+                    name: "[1500]",
                 ),
                 field: [],
             ): "Unsigned",
@@ -2645,12 +2753,15 @@
                     path: (
                         strs: [
                             "cpu_tb",
+                            "uut",
+                            "u1",
+                            "gr",
                         ],
                     ),
-                    name: "clk_tb",
+                    name: "[0]",
                 ),
                 field: [],
-            ): "Bit",
+            ): "Unsigned",
             (
                 root: (
                     path: (
@@ -2658,12 +2769,13 @@
                             "cpu_tb",
                             "uut",
                             "u1",
+                            "gr",
                         ],
                     ),
-                    name: "pm_out",
+                    name: "[6]",
                 ),
                 field: [],
-            ): "Binary",
+            ): "Unsigned",
             (
                 root: (
                     path: (
@@ -2677,15 +2789,28 @@
                 ),
                 field: [],
             ): "Binary",
+            (
+                root: (
+                    path: (
+                        strs: [
+                            "cpu_tb",
+                            "uut",
+                            "u1",
+                        ],
+                    ),
+                    name: "pm_out",
+                ),
+                field: [],
+            ): "Binary",
         },
         cursor: Some((1, [
-            270566084,
+            1808632101,
         ])),
         right_cursor: None,
         markers: {},
-        focused_item: Some(27),
+        focused_item: Some(25),
         default_variable_name_type: Local,
-        scroll_offset: 2.2560592,
+        scroll_offset: 2.2561035,
     )),
     drag_started: false,
     drag_source_idx: None,
