@@ -9,38 +9,98 @@ END ENTITY;
 ARCHITECTURE testbench OF cpu_tb IS
   -- Constants
   CONSTANT CLK_PERIOD : TIME := 10 ns;
-  CONSTANT MAX_CLK_COUNT : NATURAL := 1e3;
+  -- CONSTANT MAX_CLK_COUNT : NATURAL := 1e9;
+  CONSTANT MAX_SIM_TIME : TIME := 635 us;
+  CONSTANT PS2_CLK_PERIOD : TIME := 60 us;
+  CONSTANT PS2_TIME : TIME := 100 ns;
 
   -- Signals
   SIGNAL clk_tb : STD_LOGIC := '0';
   SIGNAL rst_tb : STD_LOGIC := '1';
   SIGNAL clock_count_tb : NATURAL := 0;
 
+  SIGNAL PS2KeyboardCLK : STD_LOGIC;
+  SIGNAL PS2KeyboardData : STD_LOGIC;
+
   COMPONENT main IS
-    PORT (
+    PORT
+    (
       clk : IN STD_LOGIC; -- system clock
       btnC : IN STD_LOGIC; -- reset
       Hsync : OUT STD_LOGIC; -- horizontal sync
       Vsync : OUT STD_LOGIC; -- vertical sync
       vgaRed : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- VGA red
       vgaGreen : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- VGA green
-      vgaBlue : OUT STD_LOGIC_VECTOR(3 DOWNTO 0) -- VGA blue
-      -- PS2Clk  : in std_logic;                  -- PS2 clock
-      -- PS2Data : in std_logic                 -- PS2 data
+      vgaBlue : OUT STD_LOGIC_VECTOR(3 DOWNTO 0); -- VGA blue
+      PS2Clk : IN STD_LOGIC; -- PS2 clock
+      PS2Data : IN STD_LOGIC -- PS2 data
     );
   END COMPONENT;
 
 BEGIN
   -- Instantiate the Unit Under Test (UUT)
-  UUT : main PORT MAP(
+  UUT : main PORT MAP
+  (
     clk => clk_tb,
     btnC => rst_tb,
     Hsync => OPEN,
     Vsync => OPEN,
     vgaRed => OPEN,
     vgaGreen => OPEN,
-    vgaBlue => OPEN
+    vgaBlue => OPEN,
+    PS2Clk => PS2KeyboardCLK,
+    PS2Data => PS2KeyboardData
   );
+
+  PS2_stimuli_proc : PROCESS
+    TYPE pattern_array IS ARRAY(NATURAL RANGE <>) OF unsigned(7 DOWNTO 0);
+    CONSTANT patterns : pattern_array :=
+    (
+    "00011100", -- x"1C" = Make scancode 'A'
+    "11110000", -- x"F0" = Break ...
+    "00011100", -- x"1C" = ... scancode 'A'
+    "00110010", -- x"32" = Make scancode 'B'
+    "11110000", -- x"F0" = Break ...
+    "00110010", -- x"32" = ... scancode 'B'
+    "00110101", -- x"35" = Make scancode 'Y'
+    "11110000", -- x"F0" = Break ...
+    "00110101" -- x"35" = ... scancode 'Y'
+    );
+  BEGIN
+    PS2KeyboardData <= '1'; -- initial value
+    PS2KeyboardCLK <= '1';
+    -- WAIT FOR PS2_time;
+    FOR i IN patterns'RANGE LOOP
+      PS2KeyboardData <= '0'; -- start bit
+      WAIT FOR PS2_clk_period/2;
+      PS2KeyboardCLK <= '0';
+      FOR j IN 0 TO 7 LOOP
+        WAIT FOR PS2_clk_period/2;
+        PS2KeyboardData <= patterns(i)(j); -- data bit(s)
+        PS2KeyboardCLK <= '1';
+        WAIT FOR PS2_clk_period/2;
+        PS2KeyboardCLK <= '0'; -- data valid on negative flank
+      END LOOP;
+      WAIT FOR PS2_clk_period/2;
+      PS2KeyboardData <= '0'; -- parity bit (bogus value, always '0')
+      PS2KeyboardCLK <= '1';
+      WAIT FOR PS2_clk_period/2;
+      PS2KeyboardCLK <= '0';
+      WAIT FOR PS2_clk_period/2;
+      PS2KeyboardData <= '1'; -- stop bit
+      PS2KeyboardCLK <= '1';
+      WAIT FOR PS2_clk_period/2;
+      PS2KeyboardCLK <= '0';
+      WAIT FOR PS2_clk_period/2;
+      PS2KeyboardCLK <= '1';
+      IF (((i MOD 3) = 0) OR (((i + 1) MOD 3) = 0)) THEN
+        WAIT FOR PS2_time; -- wait between Make and Break
+      ELSE
+        WAIT FOR PS2_clk_period/2;
+      END IF;
+    END LOOP;
+    WAIT; -- for ever
+  END PROCESS;
 
   -- Clock process
   clk_process : PROCESS
@@ -52,8 +112,8 @@ BEGIN
   clk_counter : PROCESS (clk_tb)
   BEGIN
     IF rising_edge(clk_tb) THEN
-      IF clock_count_tb > MAX_CLK_COUNT THEN
-        REPORT "Simulation has continued for longer than MAX_CLOCK_CYCLES constant: " & INTEGER'image(MAX_CLK_COUNT) & ", stopping!";
+      IF now > MAX_SIM_TIME THEN
+        -- REPORT "Simulation continued for longer than MAX_CLOCK_CYCLES: " & INTEGER'image(MAX_CLK_COUNT) & ", stopping!";
         STOP;
       ELSE
         clock_count_tb <= clock_count_tb + 1;
@@ -61,7 +121,7 @@ BEGIN
     END IF;
   END PROCESS;
 
-  stimulus_process : PROCESS
+  rst_stimuli_proc : PROCESS
   BEGIN
     -- reset
     WAIT FOR CLK_PERIOD * 1.6;
