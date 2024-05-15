@@ -46,15 +46,15 @@ def evaluate_expr(expr: str) -> int:
     the integer value of the expression.
     """
 
-    # remove whitespace and underscores
-    expr = re.sub(r"\s+|_", "", expr)
+    # # remove whitespace and underscores
+    # expr = re.sub(r"\s+|_", "", expr)
 
-    # find all numbers in the expression
-    numbers = re.findall(r"[0-9a-fA-F]+", expr)
+    # # find all numbers in the expression
+    # numbers = re.findall(r"[0-9a-fA-F]+", expr)
 
-    # replace the numbers with their decimal values
-    for num in numbers:
-        expr = expr.replace(num, str(get_decimal_int(num)))
+    # # replace the numbers with their decimal values
+    # for num in numbers:
+    #     expr = expr.replace(num, str(get_decimal_int(num)))
 
     # return the decimal value of the expression
     return eval(expr)
