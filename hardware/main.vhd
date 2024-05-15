@@ -19,9 +19,9 @@ entity main is
 		Vsync    : out std_logic;                        -- vertical sync
 		vgaRed   : out std_logic_vector(3 downto 0);     -- VGA red
 		vgaGreen : out std_logic_vector(3 downto 0);     -- VGA green
-		vgaBlue  : out std_logic_vector(3 downto 0)    -- VGA blue
-	--	PS2Clk  : in std_logic;                  -- PS2 clock
-	--	PS2Data : in std_logic                   -- PS2 data
+		vgaBlue  : out std_logic_vector(3 downto 0);    -- VGA blue
+		PS2Clk  : in std_logic;                  -- PS2 clock
+		PS2Data : in std_logic                   -- PS2 data
     );
 end main;
 
@@ -39,8 +39,8 @@ architecture Behavioral of main is
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
-	--	ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-	--	make_op : IN STD_LOGIC;
+		ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+		make_op : IN STD_LOGIC;
         v_addr : IN unsigned(6 DOWNTO 0);
         v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
@@ -60,20 +60,20 @@ architecture Behavioral of main is
 	);
 	end component;
 
-	-- COMPONENT kbd_enc
-	-- PORT (
-	-- 	clk : IN STD_LOGIC;
-	-- 	rst : IN STD_LOGIC;
-	-- 	PS2KeyboardCLK : IN STD_LOGIC;
-	-- 	PS2KeyboardData : IN STD_LOGIC;
-	-- 	ScanCode : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
-	-- 	make_op : OUT STD_LOGIC
-	-- );
-	-- END COMPONENT;
+	COMPONENT kbd_enc
+	PORT (
+		clk : IN STD_LOGIC;
+		rst : IN STD_LOGIC;
+		PS2KeyboardCLK : IN STD_LOGIC;
+		PS2KeyboardData : IN STD_LOGIC;
+		ScanCode : OUT STD_LOGIC_VECTOR(7 DOWNTO 0);
+		make_op : OUT STD_LOGIC
+	);
+	END COMPONENT;
 
-	-- -- intermediate signals between KBD_ENC and PRETENDED_CPU
-	-- signal ScanCode_main : std_logic_vector(7 downto 0);
-	-- signal make_op_main : std_logic;
+	-- intermediate signals between KBD_ENC and PRETENDED_CPU
+	signal ScanCode_main : std_logic_vector(7 downto 0);
+	signal make_op_main : std_logic;
 
 begin
 	
@@ -81,14 +81,12 @@ begin
 	-- U0 : kbd_enc port map(clk=>clk, rst=>btnC, PS2KeyboardCLK=>PS2Clk, PS2KeyboardData=>PS2Data, ScanCode=>ScanCode, make_op=>make_op);
 
 
-
-
 	
 	U1 : cpu port map (
         clk => clk,
         rst => btnC,
-	--	ScanCode => ScanCode_main,
-	--	make_op => make_op_main,
+		ScanCode => ScanCode_main,
+		make_op => make_op_main,
         v_addr => video_address,
         v_data => video_data
     );
@@ -105,13 +103,13 @@ begin
 		vga_blue => vgaBlue
 		);
 	
-	-- U3 : kbd_enc port map (
-	-- 	clk => clk,
-	-- 	rst => btnC,
-	-- 	PS2KeyboardCLK => PS2Clk,
-	-- 	PS2KeyboardData => PS2Data,
-	-- 	ScanCode => ScanCode_main,
-	-- 	make_op => make_op_main
-	-- );
+	U3 : kbd_enc port map (
+		clk => clk,
+		rst => btnC,
+		PS2KeyboardCLK => PS2Clk,
+		PS2KeyboardData => PS2Data,
+		ScanCode => ScanCode_main,
+		make_op => make_op_main
+	);
 
 end architecture;
