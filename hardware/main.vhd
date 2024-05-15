@@ -71,16 +71,11 @@ architecture Behavioral of main is
 	);
 	END COMPONENT;
 
-	-- intermediate signals between KBD_ENC and PRETENDED_CPU
+	-- intermediate signals between KBD_ENC and uCPU
 	signal ScanCode_main : std_logic_vector(7 downto 0);
 	signal make_op_main : std_logic;
 
 begin
-	
-	-- keyboard encoder component connectio n
-	-- U0 : kbd_enc port map(clk=>clk, rst=>btnC, PS2KeyboardCLK=>PS2Clk, PS2KeyboardData=>PS2Data, ScanCode=>ScanCode, make_op=>make_op);
-
-
 	
 	U1 : cpu port map (
         clk => clk,

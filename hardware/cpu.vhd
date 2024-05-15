@@ -7,8 +7,8 @@ ENTITY cpu IS
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
-     --   ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-     --   make_op : in STD_LOGIC;
+        ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
+        make_op : in STD_LOGIC;
         v_addr : IN unsigned(6 DOWNTO 0);
         v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
@@ -62,8 +62,7 @@ ARCHITECTURE func OF cpu IS
     ALIAS V IS flags(3);
 
     SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"111111111111"; -- Bottom of the PM
-
-
+    
     
     COMPONENT alu IS
         PORT (
@@ -102,7 +101,9 @@ ARCHITECTURE func OF cpu IS
 
 BEGIN
 
-    	-- divide the clock by 2^24
+
+
+    -- divide the clock by 2^24
 	process(clk, rst)
 begin
     if rst = '1' then
