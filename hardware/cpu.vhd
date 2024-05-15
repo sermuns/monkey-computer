@@ -55,15 +55,7 @@ ARCHITECTURE func OF cpu IS
     -- ALU
     SIGNAL AR : unsigned(23 DOWNTO 0);
 
-    SIGNAL flags : STD_LOGIC_VECTOR(3 DOWNTO 0);
-    ALIAS Z IS flags(0);
-    ALIAS N IS flags(1);
-    ALIAS C IS flags(2);
-    ALIAS V IS flags(3);
-
     SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"111111111111"; -- Bottom of the PM
-
-
     
     COMPONENT alu IS
         PORT (
@@ -74,10 +66,12 @@ ARCHITECTURE func OF cpu IS
             AR : OUT unsigned(23 DOWNTO 0);
             op : IN unsigned(3 DOWNTO 0);
 
-            -- Z, N, C, V
-            flags : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
+            -- flags
+            Z, N, C, V : OUT STD_LOGIC
         );
     END COMPONENT;
+
+    SIGNAL Z, N, C, V : STD_LOGIC;
 
     COMPONENT pMem IS
         PORT (
@@ -97,23 +91,7 @@ ARCHITECTURE func OF cpu IS
         );
     END COMPONENT;
 
-    signal clk_counter : unsigned(8 downto 0); -- counter for clock division
-	signal clk_div : std_logic; -- divided clock
-
 BEGIN
-
-    	-- divide the clock by 2^24
-	process(clk, rst)
-begin
-    if rst = '1' then
-        clk_counter <= (others => '0');
-    elsif rising_edge(clk) then
-        clk_counter <= clk_counter + 1;
-    end if;
-end process;
-
-    clk_div <= '1' when clk_counter = to_unsigned(0, clk_counter'length) else
-		'0';
 
     -- MICRO TICKING
     PROCESS (clk, rst)
@@ -121,7 +99,6 @@ end process;
         IF rst = '1' THEN
             uPC <= (others => '0');
             ELSIF rising_edge(clk) THEN
-                if clk_div = '1' then
             CASE SEQ IS
                 WHEN "0000" =>
                     -- uPC++
@@ -136,40 +113,29 @@ end process;
                     -- uPC := 0
                     uPC <= (OTHERS => '0');
                 WHEN "0100" =>
-                    -- IF Z = 0 => uPC := uADR
-                    IF (Z = '0') THEN
-                        uPC <= UNSIGNED(uADR);
-                    END IF;
+                    -- IF Z = 0 => uPC := uADR (BNE)
+                    uPC <= UNSIGNED(uADR) WHEN (Z = '0') ELSE uPC + 1;
                 WHEN "0101" =>
                     -- uPC := uADR (BRA)
                     uPC <= UNSIGNED(uADR);
                 WHEN "0110" =>
-                    -- IF Z = 1 => uPC := uADR
-                    IF (Z = '1') THEN
-                        uPC <= UNSIGNED(uADR);
-                    END IF;
+                    -- IF Z = 1 => uPC := uADR (BEQ)
+                    uPC <= UNSIGNED(uADR) WHEN (Z = '1') ELSE uPC + 1;
                 WHEN "0111" =>
                     -- IF N = 1 => uPC := uADR
-                    IF (N = '1') THEN
-                        uPC <= UNSIGNED(uADR);
-                    END IF;
+                    uPC <= UNSIGNED(uADR) WHEN (N = '1') ELSE uPC + 1;
                 WHEN "1000" =>
                     -- IF C = 1 => uPC := uADR
-                    IF (C = '1') THEN
-                        uPC <= UNSIGNED(uADR);
-                    END IF;
+                    uPC <= UNSIGNED(uADR) WHEN (C = '1') ELSE uPC + 1;
                 WHEN "1001" =>
                     -- IF C = 0 => uPC := uADR
-                    IF (C = '0') THEN
-                        uPC <= UNSIGNED(uADR);
-                    END IF;
+                    uPC <= UNSIGNED(uADR) WHEN (C = '0') ELSE uPC + 1;
                 WHEN "1111" =>
-                    REPORT "CPU gracefully halting";
+                    REPORT "CPU gracefully halting :)";
                     STOP;
                 WHEN OTHERS =>
                     REPORT "Unknown SEQ in uMem address " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
             END CASE;
-        end if;
         END IF;
     END PROCESS;
 
@@ -180,7 +146,7 @@ end process;
             PC <= to_unsigned(0, PC'length);
         ELSIF rising_edge(clk) THEN
             IF (FB = "010") THEN
-                PC <= data_bus(11 DOWNTO 0) + 1;
+                PC <= data_bus(PC'length-1 DOWNTO 0);
             ELSIF (P = '1') THEN
                 PC <= PC + 1;
             END IF;
@@ -216,9 +182,9 @@ end process;
     -- ASR
     PROCESS (clk, rst)
     BEGIN
-        IF rst = '1' THEN
+          IF rst = '1' THEN
             ASR <= (OTHERS => '0');
-            ELSIF rising_edge(clk) THEN
+          ELSIF rising_edge(clk) THEN
             IF (FB = "000") THEN
                 ASR <= data_bus(ASR'length - 1 DOWNTO 0);
             END IF;
@@ -248,17 +214,17 @@ end process;
     b"00011001"/*AND.b8*/ WHEN (OP = "00101") ELSE
     b"00100001"/*OR.b8*/ WHEN (OP = "00110") ELSE
     b"00011100"/*LSR.b8*/ WHEN (OP = "00111") ELSE
-    b"00101001"/*JSR.b8*/ WHEN (OP = "01001") ELSE
+    b"00101010"/*JSR.b8*/ WHEN (OP = "01001") ELSE
     b"00100100"/*BRA.b8*/ WHEN (OP = "01010") ELSE
-    b"00100101"/*BNE.b8*/ WHEN (OP = "01011") ELSE
-    b"00100111"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
-    b"00101100"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
-    b"00101110"/*POP.b8*/ WHEN (OP = "01110") ELSE
+    b"00100110"/*BNE.b8*/ WHEN (OP = "01011") ELSE
+    b"00101000"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
+    b"00101101"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
+    b"00101111"/*POP.b8*/ WHEN (OP = "01110") ELSE
     b"00011110"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-    b"00110010"/*RET.b8*/ WHEN (OP = "10000") ELSE
-    b"00110100"/*MOV.b8*/ when (OP = "10010") else
-    b"00110110"/*SWAP.b8*/ when (OP = "10001") else
-    b"00111111"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+    b"00110011"/*RET.b8*/ WHEN (OP = "10000") ELSE
+    b"00110101"/*MOV.b8*/ when (OP = "10010") else
+    b"00110111"/*SWAP.b8*/ when (OP = "10001") else
+    b"01000000"/*HALT.b8*/ WHEN (OP = "11111") ELSE
     (OTHERS => 'U'); -- something wrong
 
     K2 <=
@@ -288,7 +254,10 @@ end process;
         AR => AR,
         op => unsigned(ALU_op),
         rst => rst,
-        flags => flags
+        Z => Z,
+        N => N,
+        C => C,
+        V => V
     );
 
     -- PROGRAM MEMORY

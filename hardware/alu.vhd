@@ -2,7 +2,8 @@ LIBRARY ieee;
 USE ieee.std_logic_1164.ALL;
 USE ieee.NUMERIC_STD.ALL;
 ENTITY alu IS
-  PORT (
+  PORT
+  (
     clk : IN STD_LOGIC;
     rst : IN STD_LOGIC;
 
@@ -10,8 +11,8 @@ ENTITY alu IS
     AR : OUT unsigned(23 DOWNTO 0);
     op : IN unsigned(3 DOWNTO 0);
 
-    -- Z, N, C, V
-    flags : OUT STD_LOGIC_VECTOR(3 DOWNTO 0)
+    -- flags
+    Z, N, C, V : OUT STD_LOGIC
   );
 END ENTITY;
 
@@ -41,14 +42,13 @@ BEGIN
       CASE op IS
         WHEN noop_op | dont_care => NULL;
         WHEN add_op => AR_internal <= AR_internal + resize(data_bus, AR_internal'length);
-        WHEN sub_op => AR_internal <= AR_internal - resize(data_bus, AR_internal'length);
+        WHEN sub_op | cmp_op => AR_internal <= AR_internal - resize(data_bus, AR_internal'length);
         WHEN mul_op => AR_internal <= resize(('0' & data_bus) * AR_internal, AR_internal'length);
         WHEN load_op => AR_internal <= resize(data_bus, AR_internal'length);
         WHEN and_op => AR_internal <= AR_internal AND ('0' & data_bus);
         WHEN or_op => AR_internal <= AR_internal OR ('0' & data_bus);
         WHEN lsr_op => AR_internal <= shift_right(AR_internal, to_integer('0' & data_bus));
         WHEN lsl_op => AR_internal <= shift_left(AR_internal, to_integer('0' & data_bus));
-        WHEN cmp_op => NULL; -- only set flags
         WHEN OTHERS => REPORT "Unknown ALU operation!" & INTEGER'image(to_integer(op)) SEVERITY FAILURE;
       END CASE;
     END IF;
@@ -56,37 +56,29 @@ BEGIN
 
   AR <= AR_internal(AR'length - 1 DOWNTO 0);
 
-  -- all zeroes?
-  Zc <=
-    '1' WHEN AR_internal = (AR_internal'length - 2 DOWNTO 0 => '0')
-    ELSE
-    '0';
+  Z <= '1' WHEN AR_internal = to_unsigned(0, AR_internal'length) ELSE '0';
+  N <= '1' WHEN AR_internal(AR_internal'length - 2) = '1' ELSE '0';
+  C <= AR_internal(AR_internal'left);
+  V <= '1' WHEN AR_internal(AR_internal'length - 1) = '1' ELSE '0';
 
-  -- negative bit set to the most significant bit as "two's complement"
-  Nc <= '1' WHEN AR_internal(AR_internal'length - 2) = '1'
-    ELSE
-    '0';
-
-  -- carry bit gets set when the result of the operation is greater than the maximum value
-  Cc <= AR_internal(AR_internal'left);
-
-  -- as of now overflow is only implemented for addition
-  Vc <= '1' WHEN AR_internal(AR_internal'length - 1) = '1'
-    ELSE
-    '0';
-
-  status_flags_proc : PROCESS (clk)
-  BEGIN
-    IF (rst = '1') THEN
-      flags <= (OTHERS => '0');
-    ELSIF rising_edge(clk) THEN
-      CASE op IS
-        WHEN add_op | sub_op =>
-          flags <= Zc & Nc & Cc & Vc;
-        WHEN mul_op =>
-          flags <= Zc & Nc & Cc & flags(3);
-        WHEN OTHERS => NULL;
-      END CASE;
-    END IF;
-  END PROCESS;
+  -- -- only assign `out` flags under certain conditions
+  -- status_flags_proc : PROCESS (clk, rst)
+  -- BEGIN
+  --   IF (rst = '1') THEN
+  --     Z <= '0';
+  --     N <= '0';
+  --     C <= '0';
+  --     V <= '0';
+  --   ELSIF rising_edge(clk) THEN
+  --     CASE op IS
+  --       WHEN cmp_op | sub_op | add_op =>
+  --         Z <= '1' WHEN AR_internal = to_unsigned(0, AR_internal'length) ELSE '0';
+  --         N <= '1' WHEN AR_internal(AR_internal'length - 2) = '1' ELSE '0';
+  --         C <= AR_internal(AR_internal'left);
+  --         V <= '1' WHEN AR_internal(AR_internal'length - 1) = '1' ELSE '0';
+  --       WHEN OTHERS =>
+  --         NULL;
+  --     END CASE;
+  --   END IF;
+  -- END PROCESS;
 END ARCHITECTURE;
