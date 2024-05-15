@@ -423,6 +423,8 @@ if __name__ == "__main__":
                 if emulation_event == EmulationEvent.quit:
                     sys.exit()
                 elif emulation_event == EmulationEvent.step:
+                    if machine.halted:
+                        continue
                     machine.execute_next_instruction()
                 elif emulation_event == EmulationEvent.reset:
                     machine = Machine(assembly_lines)  # reset the machine

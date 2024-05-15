@@ -34,6 +34,7 @@ class Machine:
         self.find_all_breakpoints()
         self.init_registers()
         self.init_flags()
+        self.halted = False
 
     def init_memory(self, assembly_lines):
         """
@@ -171,7 +172,11 @@ class Machine:
         parts = re.split(r"\s*,\s*|\s+", assembly_line)
         mnemonic, address_mode = parse_operation(parts)
 
-        if mnemonic in {"BRA", "JSR", "BNE", "BEQ"}: # branch instructions
+        if mnemonic == "HALT":
+            print("HALT instruction reached")
+            self.halted = True
+            return # do nothing
+        elif mnemonic in {"BRA", "JSR", "BNE", "BEQ"}: # branch instructions
             destination = parts[1]
             self.branch(mnemonic, destination)
             return
@@ -191,7 +196,7 @@ class Machine:
             self.load_value(reg, adr, address_mode)
         elif mnemonic == "ST":
             self.store_value(reg, adr, address_mode)
-        elif mnemonic in {"ADD", "SUB", "AND", "OR", "MUL", "LSR", "LSL"}:
+        elif mnemonic in {"ADD", "SUB", "AND", "OR", "MUL", "LSR", "LSL", "CMP"}:
             self.perform_alu_operation(mnemonic, reg, adr, address_mode)
         else:
             utils.ERROR(f"Unknown instruction {mnemonic}")
@@ -290,7 +295,7 @@ class Machine:
 
         if mnemonic == "ADD":
             result = self.registers[reg] + value
-        elif mnemonic == "SUB":
+        elif mnemonic in {"SUB", "CMP"}:
             result = self.registers[reg] - value
         elif mnemonic == "AND":
             result = self.registers[reg] & value
@@ -308,4 +313,8 @@ class Machine:
         # TODO: set other flags
         self.flags["Z"] = 1 if result == 0 else 0
 
+        if mnemonic == "CMP":
+            return # do not write result to register
+
+        # write result to register
         self.registers[reg] = result

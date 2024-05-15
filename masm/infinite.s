@@ -5,7 +5,7 @@ start:
 loop:
     ST %VMEM, GR0 // replace tiletype that was overwritten
     ADDI GR0, 1 // move to next tile
-    CMP GR0, 40 // too high tiletype?
+    CMPI GR0, 2 ;b // too high tiletype?
     BNE loop // no, continue
 
 end:
