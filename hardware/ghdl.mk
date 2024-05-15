@@ -41,29 +41,20 @@ $(WORKDIR):
 .PHONY: gcompile
 gcompile: parse_umem preprocess ghdl
 
-%_tb.vhd: gcompile
-	@ghdl -a $(GHDL_FLAGS) $(SRC_DIR)/$@
-	@ghdl -e $(GHDL_FLAGS) $*_tb
+.PHONY: test
+test: gcompile
+	@ghdl -a $(GHDL_FLAGS) $(SRC_DIR)/cpu_tb.vhd
+	@ghdl -e $(GHDL_FLAGS) cpu_tb
 	@mkdir -p $(WAVEDIR)
 # Allow for simulation to fail
-	-@ghdl -r $(GHDL_FLAGS) $*_tb --wave=$(WAVEDIR)/$*_tb.ghw $(GHDL_RUN_FLAGS)
+	-@ghdl -r $(GHDL_FLAGS) cpu_tb --wave=$(WAVEDIR)/cpu_tb.ghw $(GHDL_RUN_FLAGS)
 
 .PHONY: surfer
-surfer: cpu_tb.vhd
+surfer: test
 	@if ! pgrep -x "surfer" > /dev/null; then \
 		surfer wave/cpu_tb.ghw -s save/cpu_tb.ron -c command/qol.surfer > /dev/null & \
 	fi
 
+.PHONY: %.s
 %.s: ## Assemble, then insert into program memory
 	python $(SCRIPTDIR)/assembler.py $*.s
-
-gsim_video: video_tb.vhd video_tb.ghw ## Simulate the video module
-
-.PHONY: emulate
-emulate:
-# no prog variable?
-	@if [ -z $(prog) ]; then \
-		echo "Usage: make emulate prog=<program.s>"; \
-		exit 1; \
-	fi
-	python $(SCRIPTDIR)/emulate.py $(prog) --scale=$(scale)
