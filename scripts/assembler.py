@@ -25,7 +25,7 @@ PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
 FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
 ADR_WIDTH = 12
-DEBUG_ARG = "path.s"
+DEBUG_ARG = "test.s"
 
 INSTRUCTION_WIDTH = 24
 
@@ -116,7 +116,7 @@ def assemble_binary_line(instruction_line: str, label: str) -> list:
     binary_register = parse_register(register)
 
     # Assemble the binary line
-    binary_instruction = f"{KNOWN_OPCODES[mnemonic]}_{binary_register}_{address_mode_code}_00_{binary_address}"
+    binary_instruction = f"{KNOWN_OPCODES[mnemonic]}_{binary_register}_{address_mode_code}_--_{binary_address}"
 
     # Add the binary line and its corresponding assembly instruction to the list of binary lines
     binary_lines += [(binary_instruction, instruction_line.strip(), label)]
@@ -232,9 +232,12 @@ def main():
 
         sections[current_section_name].lines += new_line
 
-    # assume that HALT needs to be added
-    HALT = ("11111_---_--_--_------------", "HALT", "")
-    sections["PROGRAM"].lines.append(HALT)  # add HALT to program section
+    if sections["PROGRAM"].lines[-1][1] != "HALT":
+        print("\033[95mWarning:\033[0m Last instruction in given program is not HALT. This is added automatically.")
+        # assume that HALT needs to be added
+        halt_opcode = KNOWN_OPCODES["HALT"]
+        halt_binary = (f"{halt_opcode}_---_--_--_------------", "HALT", "")
+        sections["PROGRAM"].lines.append(halt_binary)
 
     # read the program memory file
     mem_lines = read_lines(PMEM_FILE)
@@ -281,7 +284,7 @@ def main():
 
     # fix unknown addresses in the binary code
     for i, line in enumerate(cleared_array_lines):
-        if "????????????" not in line:
+        if '?'*12 not in line:
             continue  # not an unknown address
 
         full_comment = re.search(r".*--\s*(.+)\n", line)
@@ -293,10 +296,7 @@ def main():
 
         full_comment_parts = full_comment.group(1).split(":")
 
-        if len(full_comment_parts) < 2:
-            comment = full_comment_parts[0]
-        else:
-            comment = full_comment_parts[1]
+        comment = full_comment_parts[-1].strip()
 
         # get label from the BRANCH instruction
         seeked_label = comment.split()[1].strip()
@@ -305,8 +305,14 @@ def main():
             ERROR(f"Label {seeked_label} not found in labels")
 
         # replace the unknown address with the found address
-        jump_address = labels[seeked_label] - 1 # -1 because of how microcode works
-        cleared_array_lines[i] = re.sub(r"\?+", f"{jump_address:012b}", line)
+        jump_address = labels[seeked_label]
+
+        if jump_address > 2 ** ADR_WIDTH:
+            ERROR(f"Jump address {jump_address} is too large")
+        elif jump_address < 0:
+            ERROR(f"Jump address {jump_address} is negative")
+
+        cleared_array_lines[i] = re.sub(r"\?+", f"{jump_address:0{ADR_WIDTH}b}", line)
 
     mem_start, mem_end = am.find_array_start_end_index(
         lines=mem_lines, array_start_pattern=r".*:.*p_mem_type.*:=.*"
