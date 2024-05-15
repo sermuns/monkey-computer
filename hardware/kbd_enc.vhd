@@ -15,7 +15,8 @@ USE IEEE.NUMERIC_STD.ALL; -- IEEE library for the unsigned type
 
 -- entity
 ENTITY KBD_ENC IS
-	PORT (
+	PORT
+	(
 		clk : IN STD_LOGIC; -- system clock (100 MHz)
 		rst : IN STD_LOGIC; -- reset signal
 		PS2KeyboardCLK : IN STD_LOGIC; -- USB keyboard PS2 clock
@@ -67,12 +68,13 @@ BEGIN
 
 	PS2Clk_op <= (NOT PS2Clk_Q1) AND (NOT PS2Clk_Q2);
 	-- PS2 data shift register
-	PROCESS (clk) BEGIN
-		IF rising_edge(clk) THEN
-			IF (rst = '1') THEN
-				PS2Data_sr <= (OTHERS => '0');
-			ELSIF (PS2Clk_op = '1') THEN
-				PS2Data_sr <= PS2Data & PS2Data_sr(10 DOWNTO 1);
+	PROCESS (clk, rst) BEGIN
+		IF (rst = '1') THEN
+			PS2Data_sr <= (OTHERS => '0');
+		ELSIF rising_edge(clk) THEN
+			IF (PS2Clk_op = '1') THEN
+				-- Shift in new data to the left
+				PS2Data_sr <= PS2Data & PS2Data_sr(PS2Data_sr'left DOWNTO 1);
 			END IF;
 		END IF;
 	END PROCESS;
@@ -102,30 +104,30 @@ BEGIN
 	-- Only single character scan codes are identified
 	-- The behavior of multiple character scan codes is undefined
 
-	PROCESS (clk)
+	PROCESS (clk, rst)
 	BEGIN
-		IF rising_edge(clk) THEN
-			IF rst = '1' THEN
-				PS2state <= IDLE;
-			ELSE
-				CASE(PS2state) IS
-					WHEN IDLE =>
-					IF (BC11 = '1') THEN
-						IF (ScanCode_int = x"F0") THEN
-							PS2state <= BREAK;
-						ELSE
-							PS2state <= MAKE;
-						END IF;
+		IF rst = '1' THEN
+			PS2state <= IDLE;
+		ELSIF rising_edge(clk) THEN
+			CASE(PS2state) IS
+				WHEN IDLE =>
+				IF (BC11 = '1') THEN
+					IF (ScanCode_int = x"F0") THEN
+						PS2state <= BREAK;
+					ELSE
+						PS2state <= MAKE;
 					END IF;
+				END IF;
 
-					WHEN MAKE =>
+				WHEN MAKE =>
+				PS2state <= IDLE;
+
+				WHEN BREAK =>
+				IF (BC11 = '1') THEN
 					PS2state <= IDLE;
-					WHEN BREAK =>
-					IF (BC11 = '1') THEN
-						PS2state <= IDLE;
-					END IF;
-				END CASE;
-			END IF;
+				END IF;
+
+			END CASE;
 		END IF;
 	END PROCESS;
 
