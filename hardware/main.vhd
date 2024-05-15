@@ -25,15 +25,11 @@ entity main is
     );
 end main;
 
-
-
 -- architecture
 architecture Behavioral of main is
 	
 	signal video_data : std_logic_vector(23 downto 0); -- data
 	signal video_address : unsigned(6 downto 0);        -- address
-
-
 
 	component cpu 
     PORT (
