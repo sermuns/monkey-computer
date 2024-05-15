@@ -8,7 +8,7 @@ ENTITY cpu IS
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
         ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-        make_op : in STD_LOGIC;
+        make_op : IN  STD_LOGIC;
         v_addr : IN unsigned(6 DOWNTO 0);
         v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
@@ -62,7 +62,7 @@ ARCHITECTURE func OF cpu IS
     ALIAS V IS flags(3);
 
     SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"111111111111"; -- Bottom of the PM
-    
+    SIGNAL ScanCode_to_pMem : STD_LOGIC_VECTOR(23 DOWNTO 0);
     
     COMPONENT alu IS
         PORT (
@@ -86,7 +86,8 @@ ARCHITECTURE func OF cpu IS
             cpu_data_in : IN unsigned(23 DOWNTO 0);
             cpu_we : IN STD_LOGIC;
             video_address : IN unsigned(6 DOWNTO 0);
-            video_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0));
+            video_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
+            ScanCode_abs : IN STD_LOGIC_VECTOR(7 DOWNTO 0));
     END COMPONENT;
 
     COMPONENT uMem IS
@@ -100,6 +101,7 @@ ARCHITECTURE func OF cpu IS
 	signal clk_div : std_logic; -- divided clock
 
 BEGIN
+
 
 
 
@@ -281,6 +283,20 @@ end process;
         (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
         (OTHERS => 'U'); -- something wrong
 
+    process (make_op)
+    begin
+     if rising_edge(make_op) then
+        ScanCode_to_pMem <= 
+        b"1000000000000000000_00001" when  ScanCode = x"1C" else  -- A (left)
+        b"1000000000000000000_00010" when  ScanCode = x"23" else -- D (right)
+        b"1000000000000000000_00100" when  ScanCode = x"1D" else -- W (up)
+        b"1000000000000000000_01000" when  ScanCode = x"1B" else -- S (down)
+        b"1000000000000000000_00011" when  ScanCode = x"29" -- space (enter)
+        else (others => '0'); 
+     end if;   
+    end process;
+
+
     -- ALU
     ALU_inst : alu
     PORT MAP(
@@ -303,7 +319,8 @@ end process;
         cpu_data_in => data_bus,
         cpu_we => PM_we,
         video_address => v_addr,
-        video_data => v_data
+        video_data => v_data,
+        ScanCode_abs => ScanCode_to_pMem
     );
 
     -- MICRO MEMORY

@@ -10,11 +10,15 @@ ENTITY pMem IS
         cpu_data_in : IN unsigned(23 DOWNTO 0);
         cpu_we : IN STD_LOGIC;
         video_address : IN unsigned(6 DOWNTO 0);
-        video_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+        video_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
+        ScanCode_abs : IN STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
 END pMem;
 
 ARCHITECTURE func OF pMem IS
+
+    SIGNAL last_scancode : STD_LOGIC_VECTOR(23 DOWNTO 0) := (OTHERS => '0');
+    SIGNAL scancode_pulse : STD_LOGIC;
 
     TYPE p_mem_type IS ARRAY(0 TO 4095) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
 
@@ -234,4 +238,26 @@ BEGIN
         END IF;
     END PROCESS;
 
-END ARCHITECTURE;
+    PROCESS (clk)
+    BEGIN
+        IF rising_edge(clk) THEN
+            IF last_scancode /= ScanCode_abs THEN
+                last_scancode <= ScanCode_abs;
+                last_scancode(23) <= '0';
+                scancode_pulse <= '1';
+            ELSE
+                scancode_pulse <= '0';
+            END IF;
+        END IF;
+    END PROCESS;
+
+    process (clk)
+        begin
+            if rising_edge(clk) then
+                -- store the scan code in the internal memory for polling later on
+                if rising_edge(scancode_pulse)  then
+                    p_mem(HEAP) <=  last_scancode ;
+                end if;
+            end if;
+        end process;
+    END ARCHITECTURE;
