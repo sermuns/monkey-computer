@@ -19,17 +19,13 @@ new_ballon:
                         
     LDN GR1, %VMEM // GR1 := VMEM[GR3]
     STN %VMEM, GR0 // overwrite with balloon
-    LDI GR7, 0b111111111111111111111111
-wait:
-    SUBI GR7, 1
-    BNE wait
     ADDI GR5, 1 // increment path index
-    BRA loop 
+    BRA loop ;b
 
 
 take_dmg:
     //TODO SUB players health
-    LD GR2, %HEAP ;b
+    LD GR2, %HEAP
     SUBI GR2, 1
     ST %HEAP, GR2
     LDI GR5, 0
@@ -172,7 +168,7 @@ BRA dead ;b
 84
 85
 75
-65LDI GR7, 0b111111111111111111111111
+65
 55
 56
 57
