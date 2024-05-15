@@ -25,7 +25,7 @@ PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
 FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
 ADR_WIDTH = 12
-DEBUG_ARG = "path.s"
+DEBUG_ARG = "infinite.s"
 
 INSTRUCTION_WIDTH = 24
 
@@ -43,14 +43,15 @@ def parse_address_mode(addr: str, mode: str):
         the binary address, and the immediate value.
     """
 
+    # address is label?
     if re.match(r"[A-z]+", addr):
         mode_bin = "00"
         addr_bin = "?" * ADR_WIDTH  # value will be filled in later
         return mode_bin, addr_bin, ""
 
-    mode_bin = "--"
-    addr_bin = "-" * ADR_WIDTH
-    immediate_value = ""
+    mode_bin = "--" # assume don't care for mode
+    addr_bin = "-" * ADR_WIDTH # assume don't care for address
+    immediate_value = "" # assume no immediate value
 
     if addr == "-":
         return mode_bin, addr_bin, immediate_value
@@ -61,8 +62,12 @@ def parse_address_mode(addr: str, mode: str):
         addr_bin = f"{int(addr):0{ADR_WIDTH}b}"
     elif mode == "I":  # immediate
         mode_bin = "01"
-        addr_bin = "-" * ADR_WIDTH  # dont care
         immediate_value = f"{int(addr):0{INSTRUCTION_WIDTH}b}"
+    elif mode == "N": # indexed
+        mode_bin = "10"
+        addr_bin = f"{int(addr):0{ADR_WIDTH}b}"
+    else:
+        ERROR(f"Unknown address mode {mode}")
 
     return mode_bin, addr_bin, immediate_value
 
@@ -258,42 +263,50 @@ def main():
     # find all label start addresses
     labels = {}  # dictionary of label -> start address
     for i, line in enumerate(cleared_array_lines):
-        if not re.match(r".*=>.*--.*", line):
+        if not re.match(r".*=>.*\n", line):
             continue  # not an element
         if not "PROGRAM" in line:
             break  # end of program memory
 
         element_index = int(re.search(r"PROGRAM\+(\d+)", line).group(1))
 
-        matches = re.search(r".*--.*: (\w+).*", line)
-        if matches:
-            label = matches.group(1)
-            if label in labels:
-                continue  # skip if already found
+        label_match = re.search(r'.*--\s*(\w+)\s*:.*', line)
 
-            labels[label] = element_index  # save the start address of the label
+        if not label_match:
+            continue # no label
+
+        label = label_match.group(1)
+
+        labels[label] = element_index  # save the start address of the label
 
     # fix unknown addresses in the binary code
     for i, line in enumerate(cleared_array_lines):
-        matches = re.match(r".*(\?+).*", line)
-        if matches:  # found an unknown address
-            # find comment : label
-            full_comment = re.search(r".*--\s*(.+)\n", line)
-            if not full_comment:
-                continue # no comment
+        if "????????????" not in line:
+            continue  # not an unknown address
 
-            # find the sought address
-            seeked_label = full_comment.split(" ")[
-                1
-            ]  # should be second word in branch operations
+        full_comment = re.search(r".*--\s*(.+)\n", line)
 
-            if seeked_label not in labels:
-                ERROR(f"Label {seeked_label} not found in labels")
-
-            # replace the unknown address with the found address
-            cleared_array_lines[i] = re.sub(
-                r"\?+", f"{labels[seeked_label]:012b}", line
+        if not full_comment:
+            utils.ERROR(
+                f"Cant resolve symbolic address in line {i + 1} in {PMEM_FILE}, no comment found"
             )
+
+        full_comment_parts = full_comment.group(1).split(":")
+
+        if len(full_comment_parts) < 2:
+            comment = full_comment_parts[0]
+        else:
+            comment = full_comment_parts[1]
+
+        # get label from the BRANCH instruction
+        seeked_label = comment.split()[1].strip()
+
+        if seeked_label not in labels:
+            ERROR(f"Label {seeked_label} not found in labels")
+
+        # replace the unknown address with the found address
+        jump_address = labels[seeked_label] - 1 # -1 because of how microcode works
+        cleared_array_lines[i] = re.sub(r"\?+", f"{jump_address:012b}", line)
 
     mem_start, mem_end = am.find_array_start_end_index(
         lines=mem_lines, array_start_pattern=r".*:.*p_mem_type.*:=.*"

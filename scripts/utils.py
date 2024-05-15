@@ -11,7 +11,7 @@ def change_dir_to_root():
         os.chdir(os.pardir)
 
 
-def parse_number_string(input_number_string: str) -> int:
+def get_decimal_int(input_number_string: str) -> int:
     """
     Parse a single number in binary, decimal or hexadecimal format
     to decimal integer.
@@ -52,9 +52,11 @@ def evaluate_expr(expr: str) -> int:
     # find all numbers in the expression
     numbers = re.findall(r"[0-9a-fA-F]+", expr)
 
+    # replace the numbers with their decimal values
     for num in numbers:
-        expr = expr.replace(num, str(parse_number_string(num)))
+        expr = expr.replace(num, str(get_decimal_int(num)))
 
+    # return the decimal value of the expression
     return eval(expr)
 
 
@@ -137,3 +139,9 @@ def get_lines_without_empty_and_comments(lines):
             continue
         result.append(line)
     return result
+
+
+if __name__ == "__main__":
+    print(get_decimal_int("123"))
+    print(get_decimal_int("0b1010"))
+    print(get_decimal_int("0x1A"))

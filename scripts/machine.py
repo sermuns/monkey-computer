@@ -128,7 +128,7 @@ class Machine:
         Get the value at the given address in memory
         """
 
-        address = utils.parse_number_string(address)
+        address = utils.get_decimal_int(address)
 
         return self.memory[address]
 
@@ -256,7 +256,7 @@ class Machine:
         else:
             utils.ERROR(f"Unknown address mode {address_mode}")
 
-        self.registers[reg] = utils.parse_number_string(value)
+        self.registers[reg] = utils.get_decimal_int(value)
 
     def store_value(self, reg, adr, address_mode):
         """
@@ -281,7 +281,7 @@ class Machine:
         """
 
         if address_mode == "":
-            value = utils.parse_number_string(self.memory[adr])
+            value = utils.get_decimal_int(self.memory[adr])
         elif address_mode == "I":
             value = adr
 

@@ -140,7 +140,7 @@ def get_map_surface(machine, tile_rom):
         for x in range(MAP_SIZE_TILES):
             id = y * MAP_SIZE_TILES + x
             vmem_row = machine.memory[VMEM + id]
-            current_tile_type = utils.parse_number_string(vmem_row)
+            current_tile_type = utils.get_decimal_int(vmem_row)
 
             if current_tile_type > tile_rom.size // 144:
                 utils.ERROR(
@@ -354,7 +354,7 @@ def update_screen(screen, machine, show_debug_pane, cursor_position):
         )
         pg.draw.rect(screen, "grey", cursor_rect, window_scale)
         tile_pos_text = f"{cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x}({cursor_tile_x}, {cursor_tile_y})"
-        tiletype_text = f"type={utils.parse_number_string(machine.memory[machine.sections['VMEM'].start + cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x])}"
+        tiletype_text = f"type={utils.get_decimal_int(machine.memory[machine.sections['VMEM'].start + cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x])}"
         textlines = f"{tile_pos_text}, {tiletype_text}"
 
         font = pg.font.Font(FONT_PATH, window_scale * FONT_SIZE)
@@ -436,7 +436,7 @@ if __name__ == "__main__":
                     if not desired_address:
                         continue  # user cancelled
                     try:
-                        desired_address = utils.parse_number_string(desired_address)
+                        desired_address = utils.get_decimal_int(desired_address)
                         memory_value = machine.get_from_memory(desired_address)
                         easygui.msgbox(
                             f"Memory address {desired_address} contains value {memory_value}"
