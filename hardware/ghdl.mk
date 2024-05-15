@@ -2,13 +2,13 @@ WORKDIR = work
 WAVEDIR = wave
 SAVEDIR = save
 SCRIPTDIR = ../scripts
-GHDL_FLAGS = --std=08 --workdir=$(WORKDIR) 
+GHDL_FLAGS = --std=08 --workdir=$(WORKDIR)
 GHDL_RUN_FLAGS = --ieee-asserts=disable-at-0 --assert-level=error
 
 SRC_DIR=.
 
 # can be compiled in any order
-STANDALONE_MODULES = alu.vhd uMem.vhd pMem.vhd tile_rom.vhd
+STANDALONE_MODULES = alu.vhd uMem.vhd pMem.vhd tile_rom.vhd kbd_enc.vhd
 # these rely on other modules, and must be compiled in this order
 DEPENDENT_MODULES = vga_motor.vhd cpu.vhd main.vhd
 
