@@ -19,10 +19,10 @@ new_ballon:
                         
     LDN GR1, %VMEM // GR1 := VMEM[GR3]
     STN %VMEM, GR0 // overwrite with balloon
-    LDI GR7, 0b1111111111111111111111111
+    LDI GR7, 0b111111111111111111111111
 wait:
     SUBI GR7, 1
-    BRNE wait
+    BNE wait
     ADDI GR5, 1 // increment path index
     BRA loop 
 
