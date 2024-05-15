@@ -184,6 +184,9 @@ class Machine:
 
         reg, adr = parse_register_and_address(mnemonic, parts)
 
+        if isinstance(adr, str):
+            adr = eval(adr)
+
         if mnemonic == "LD":
             self.load_value(reg, adr, address_mode)
         elif mnemonic == "ST":
@@ -258,7 +261,7 @@ class Machine:
 
         self.registers[reg] = utils.get_decimal_int(value)
 
-    def store_value(self, reg, adr, address_mode):
+    def store_value(self, reg, adr: int, address_mode):
         """
         Store the value of register into memory[adr]
         """

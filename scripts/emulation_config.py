@@ -37,4 +37,4 @@ FONT_SIZE = 16
 # File paths
 TILE_ROM_FILE = os.path.join("hardware", "tile_rom.vhd")
 MASM_DIR = "masm"
-DEBUG_ASSEMBLY_FILE = "stack.s"  # change this to which file you want to debug
+DEBUG_ASSEMBLY_FILE = "path.s"  # change this to which file you want to debug
