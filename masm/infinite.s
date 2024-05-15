@@ -1,8 +1,11 @@
 %PROGRAM 0 1499
 start:
-    LDI GR2, 1 // hehe
-    LSLI GR2, 1 // should mulitply by 2
-    LSRI GR2, 1 // should divide by 2
+    LDI GR0, 35 // CONSTANT: balloon tiletype
+    
+loop:
+    STN %VMEM, GR0 // replace tiletype that was overwritten
+    ADDI GR3, 1 // move to next tile
+    BRA loop
 
 %VMEM 1500 100
 0
