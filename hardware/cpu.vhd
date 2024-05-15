@@ -8,7 +8,7 @@ ENTITY cpu IS
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
         ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
-        make_op : IN  STD_LOGIC;
+        make_op : in STD_LOGIC;
         v_addr : IN unsigned(6 DOWNTO 0);
         v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
@@ -57,6 +57,7 @@ ARCHITECTURE func OF cpu IS
 
     SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"111111111111"; -- Bottom of the PM
     SIGNAL ScanCode_to_pMem : STD_LOGIC_VECTOR(23 DOWNTO 0);
+    
     
     COMPONENT alu IS
         PORT (
