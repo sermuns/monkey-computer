@@ -3,12 +3,12 @@ import utils
 from typing import Sequence
 
 
-REG_ADR_OPS = {"LD", "ADD", "SUB", "AND", "OR", "MUL", "LSR", "LSL"}
+REG_ADR_OPS = {"LD", "ADD", "SUB", "AND", "OR", "MUL", "LSR", "LSL", "CMP"}
 ADR_REG_OPS = {"ST", "OUT", "SWAP"}
 REG_REG_OPS = {"MOV", "ADDREG"}
 REG_OPS = {"POP", "PUSH", "JSR"}
-ADDR_OPS = {"BRA", "JSR"}
-NO_ARGS_OPS = {"RET"}
+ADDR_OPS = {"BRA", "JSR", "BNE", "BEQ"}
+NO_ARGS_OPS = {"RET", "HALT"}
 
 KNOWN_MNEMONICS = utils.get_mnemonics()
 
@@ -44,8 +44,10 @@ def parse_register_and_address(mnemonic_base: str, parts: Sequence) -> tuple[str
     elif mnemonic_base in REG_OPS:
         grx_name = parts[1]
     elif mnemonic_base in NO_ARGS_OPS:
-        pass
+        pass # no arguments
     elif mnemonic_base in ADDR_OPS:
         op_adr = parts[1]
+    else:
+        ERROR(f"Unknown operation {mnemonic_base} in `{parts}`")
 
     return grx_name, op_adr
