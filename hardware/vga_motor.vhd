@@ -202,14 +202,10 @@ BEGIN
     vmem_address_out <= resize(col_counter + (13 * row_counter), 7);
 
     -- slice out the correct field from the video memory data
-    current_tiletype <= unsigned(vmem_data(5 DOWNTO 0)) WHEN x_subpixel < 479 ELSE
+    current_tiletype <= unsigned(vmem_data(5 DOWNTO 0)) WHEN x_subpixel < 479 ELSE -- MAP
         --"000000"; -- could just make current_tiletype into a alias?
-    
-                    unsigned(vmem_data(5 DOWNTO 0)) WHEN (479 < x_subpixel AND x_subpixel < 623) else -- MENU START
-                    "100110"; --(38) black between menu and playing field
-        
-        -- TODO add 30 lines to VMEM (menu tile numbers), increase col counter to reset when it's 639 (end of screen)
-        -- TODO add 10 tiles(one per monkey) with colored outline and one black tile(#38). ARRAY(0 TO 7055). TO TEST JUST COPY PASTE MONKEYS AND ADD A SINGLE YELLOW LINE
+                    unsigned(vmem_data(5 DOWNTO 0)) WHEN (479 < x_subpixel AND x_subpixel < 623) else -- MENU
+                    "100110"; -- Black to fill between last tile and end of screen
 
     --TODO what does each bit in the tile_rom_address mean? and what else does it affect?
 
