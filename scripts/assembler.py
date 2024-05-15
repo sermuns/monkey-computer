@@ -17,7 +17,7 @@ import array_manip as am
 from macros import use_macros
 from instruction_decoding import parse_operation, parse_register_and_address
 
-KNOWN_OPCODES = utils.get_opcodes()
+KNOWN_OPCODES = utils.get_mnemonics()
 
 PROG_DIR = "masm"
 HARDWARE_DIR = "hardware"
@@ -97,10 +97,10 @@ def assemble_binary_line(instruction_line: str, label: str) -> list:
     instruction_parts = re.split(r",\s*|\s+", instruction_line)
 
     # Parse the operation and its address mode from the instruction parts
-    operation, address_mode = parse_operation(instruction_parts)
+    mnemonic, address_mode = parse_operation(instruction_parts)
 
     # Parse the register and address from the operation
-    register, address = parse_register_and_address(operation, instruction_parts)
+    register, address = parse_register_and_address(mnemonic, instruction_parts)
 
     # Parse the address mode code, binary address, and immediate value from the address and address mode
     address_mode_code, binary_address, immediate_value = parse_address_mode(
@@ -111,7 +111,7 @@ def assemble_binary_line(instruction_line: str, label: str) -> list:
     binary_register = parse_register(register)
 
     # Assemble the binary line
-    binary_instruction = f"{KNOWN_OPCODES[operation]}_{binary_register}_{address_mode_code}_00_{binary_address}"
+    binary_instruction = f"{KNOWN_OPCODES[mnemonic]}_{binary_register}_{address_mode_code}_00_{binary_address}"
 
     # Add the binary line and its corresponding assembly instruction to the list of binary lines
     binary_lines += [(binary_instruction, instruction_line.strip(), label)]
@@ -183,10 +183,10 @@ def main():
     asm_lines = read_lines(asm_file_path)
 
     # remove comments and empty lines
-    asm_lines = utils.get_clean_lines(asm_lines)
+    asm_lines = utils.get_lines_without_empty_and_comments(asm_lines)
 
     current_section_name = ""
-    current_label = ""
+    new_label = ""
     sections = {}
 
     # find all sections beforehand
@@ -214,13 +214,14 @@ def main():
         line = use_sections(line, sections)
 
         if line.endswith(":\n"):  # label
-            current_label = line.strip()[:-1]  # remove the colon
+            new_label = line.strip()[:-1]  # remove the colon
             continue
 
         if re.match(r"\s*[A-z]+.*", line):  # code
             new_line = assemble_binary_line(
-                instruction_line=line.strip(), label=current_label
+                instruction_line=line.strip(), label=new_label
             )
+            new_label = ""  # reset label
         else:  # data
             new_line = [assemble_data(line=line.strip())]
 
@@ -243,13 +244,14 @@ def main():
     for section_name, this_section in sections.items():
         cleared_array_lines.insert(-2, f"        -- {section_name}\n")
         for i, line in enumerate(this_section.lines):
-            binary_line, comment, label = line
+            binary_line, full_comment, label = line
             if binary_line == "":
                 continue
             if not re.match(r"\d+.*", binary_line):
                 ERROR(f"Invalid binary line {binary_line}")
 
-            new_array_line = f'        {this_section.name}+{i} => b"{binary_line}", -- {comment} : {label}\n'
+            label_string = f"{label} : " if label else ""
+            new_array_line = f'        {this_section.name}+{i} => b"{binary_line}", -- {label_string}{full_comment}\n'
 
             cleared_array_lines.insert(-2, new_array_line)
 
@@ -276,14 +278,12 @@ def main():
         matches = re.match(r".*(\?+).*", line)
         if matches:  # found an unknown address
             # find comment : label
-            comment_label = re.search(r".*--\s*(.*)\n", line)
-            if not comment_label:
-                continue
-
-            comment, label = comment_label.group(1).split(" : ")
+            full_comment = re.search(r".*--\s*(.+)\n", line)
+            if not full_comment:
+                continue # no comment
 
             # find the sought address
-            seeked_label = comment.split(" ")[
+            seeked_label = full_comment.split(" ")[
                 1
             ]  # should be second word in branch operations
 

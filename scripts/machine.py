@@ -49,7 +49,7 @@ class Machine:
         self.memory = [""] * self.MEMORY_HEIGHT
 
         # remove lines that are empty or only contain comments
-        clean_lines = utils.remove_empty_or_only_comments(assembly_lines)
+        clean_lines = utils.get_lines_without_empty_and_comments(assembly_lines)
 
         # begin by finding all sections
         for i, line in enumerate(clean_lines):
@@ -128,7 +128,7 @@ class Machine:
         Get the value at the given address in memory
         """
 
-        address = utils.parse_value(address)
+        address = utils.parse_number_string(address)
 
         return self.memory[address]
 
@@ -256,7 +256,7 @@ class Machine:
         else:
             utils.ERROR(f"Unknown address mode {address_mode}")
 
-        self.registers[reg] = utils.parse_value(value)
+        self.registers[reg] = utils.parse_number_string(value)
 
     def store_value(self, reg, adr, address_mode):
         """
@@ -281,7 +281,7 @@ class Machine:
         """
 
         if address_mode == "":
-            value = utils.parse_value(self.memory[adr])
+            value = utils.parse_number_string(self.memory[adr])
         elif address_mode == "I":
             value = adr
 

@@ -1,4 +1,5 @@
 import os, re, sys
+
 COMMENT_INITIATORS = {"--", "//", "@"}
 
 
@@ -10,35 +11,32 @@ def change_dir_to_root():
         os.chdir(os.pardir)
 
 
-def parse_value(value: str) -> int:
+def parse_number_string(input_number_string: str) -> int:
     """
     Parse a single number in binary, decimal or hexadecimal format
     to decimal integer.
     """
 
-    if isinstance(value, int):
-        return value # nothing to do
+    # If the input is already an integer, return it as is
+    if isinstance(input_number_string, int):
+        return input_number_string
 
-    # find the base of the number
-    base = re.search(r"(0([bdx])|\$)", value)
+    # Find the base of the number and the number itself
+    match = re.match(r"(0([bdx])|\$)?([0-9A-Fa-f]+)", input_number_string)
 
-    if base is None:
-        base = "d"
-    else:
-        value = value[len(base.group(0)) :]  # slice away the base
-        if base.group(1) == "$":
-            base = "x"
-        else:
-            base = base.group(2)
+    if not match:
+        ERROR(f"Could not parse number string {input_number_string}")
 
-    if base == "b":
-        value = int(value, 2)
-    elif base == "d":
-        value = int(value, 10)
-    elif base == "x":
-        value = int(value, 16)
+    number_base = match.group(2) or "d"  # default to decimal
+    number = match.group(3)
 
-    return value
+    # Convert the number to an integer based on its base
+    if number_base == "b":
+        return int(number, 2)
+    elif number_base == "d":
+        return int(number, 10)
+    elif number_base == "x":
+        return int(number, 16)
 
 
 def evaluate_expr(expr: str) -> int:
@@ -55,7 +53,7 @@ def evaluate_expr(expr: str) -> int:
     numbers = re.findall(r"[0-9a-fA-F]+", expr)
 
     for num in numbers:
-        expr = expr.replace(num, str(parse_value(num)))
+        expr = expr.replace(num, str(parse_number_string(num)))
 
     return eval(expr)
 
@@ -67,9 +65,9 @@ def ERROR(msg: str):
     raise Exception(msg)
 
 
-def get_opcodes():
+def get_mnemonics():
     """
-    Get the opcodes from the `fax.md` file
+    Get all the mnemonics from the hardware/fax.md file
     """
 
     FAX_FILE = "hardware/fax.md"
@@ -81,34 +79,35 @@ def get_opcodes():
     if not lines:
         print(f"Error: Could not find/read {FAX_FILE}")
         sys.exit(1)
-    opcodes = {}
+    mnemonics = {}
     # find the opcodes header
-    opcodes_start_line = None
+    mnemonics_start_line = None
     for i, line in enumerate(lines):
         if line.startswith("## OP-koder"):
-            opcodes_start_line = i
+            mnemonics_start_line = i
             break
 
     # no opcodes header found?
-    if opcodes_start_line is None:
+    if mnemonics_start_line is None:
         print(f"Error: Could not find opcodes header in {FAX_FILE}")
         sys.exit(1)
 
     # loop through opcodes
-    for i in range(opcodes_start_line + 1, len(lines)):
+    for i in range(mnemonics_start_line + 1, len(lines)):
         line = lines[i]
         if not line:  # skip empty lines
             continue
-        if not re.match(r"\d+", line):  # stop if not numerical
+        if not re.match(r"\d+", line):  # stop if not numerical, because we are done
             break
+
         parts = line.split()
         if len(parts) != 2:
             print(f"Error: Could not parse opcode line {i + 1} in {FAX_FILE}")
             sys.exit(1)
-        opcode, name = parts
-        opcodes[name] = opcode
+        opcode_binary, mnemonic = parts
+        mnemonics[mnemonic] = opcode_binary
 
-    return opcodes
+    return mnemonics
 
 
 def get_clean_lines(lines):
@@ -121,17 +120,19 @@ def get_clean_lines(lines):
         if not re.match(rf"({'|'.join(COMMENT_INITIATORS)}).*", line) and line.strip()
     ]
 
-def remove_empty_or_only_comments(lines):
+
+def get_lines_without_empty_and_comments(lines):
     """
     Return lines that are not empty or only contain comments
     This allows code that has comments at the end of the line
     """
+
     result = []
     for line in lines:
-        # only comment
+        # only comment -> skip
         if re.match(rf"^\s*({'|'.join(COMMENT_INITIATORS)}).*", line):
             continue
-        # empty line
+        # empty line -> skip
         if not line.strip():
             continue
         result.append(line)
