@@ -90,7 +90,7 @@ begin
 	end process;
 
 	clk_div <= '1' when clk_counter(clk_counter'high) = '1' else
-		'0'; -- 2^24
+		'0';
 	
 	U1 : cpu port map (
         clk => clk_div,
