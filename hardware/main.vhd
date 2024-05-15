@@ -33,8 +33,7 @@ architecture Behavioral of main is
 	signal video_data : std_logic_vector(23 downto 0); -- data
 	signal video_address : unsigned(6 downto 0);        -- address
 
-	signal clk_counter : unsigned(26 downto 0); -- counter for clock division
-	signal clk_div : std_logic; -- divided clock
+
 
 	component cpu 
     PORT (
@@ -81,19 +80,12 @@ begin
 	-- keyboard encoder component connectio n
 	-- U0 : kbd_enc port map(clk=>clk, rst=>btnC, PS2KeyboardCLK=>PS2Clk, PS2KeyboardData=>PS2Data, ScanCode=>ScanCode, make_op=>make_op);
 
-	-- divide the clock by 2^24
-	process(clk)
-	begin
-		if rising_edge(clk) then
-			clk_counter <= clk_counter + 1;
-		end if;
-	end process;
 
-	clk_div <= '1' when clk_counter(clk_counter'high) = '1' else
-		'0';
+
+
 	
 	U1 : cpu port map (
-        clk => clk_div,
+        clk => clk,
         rst => btnC,
 	--	ScanCode => ScanCode_main,
 	--	make_op => make_op_main,
@@ -102,7 +94,7 @@ begin
     );
 
 	U2 : VGA_MOTOR port map (
-		clk => clk_div,
+		clk => clk,
 		rst => btnC,
 		vmem_address_out => video_address,
 		vmem_data => video_data,

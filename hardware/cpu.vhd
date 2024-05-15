@@ -63,6 +63,8 @@ ARCHITECTURE func OF cpu IS
 
     SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"111111111111"; -- Bottom of the PM
 
+
+    
     COMPONENT alu IS
         PORT (
             clk : IN STD_LOGIC;
@@ -95,8 +97,23 @@ ARCHITECTURE func OF cpu IS
         );
     END COMPONENT;
 
+    signal clk_counter : unsigned(8 downto 0); -- counter for clock division
+	signal clk_div : std_logic; -- divided clock
 
 BEGIN
+
+    	-- divide the clock by 2^24
+	process(clk, rst)
+begin
+    if rst = '1' then
+        clk_counter <= (others => '0');
+    elsif rising_edge(clk) then
+        clk_counter <= clk_counter + 1;
+    end if;
+end process;
+
+    clk_div <= '1' when clk_counter = to_unsigned(0, clk_counter'length) else
+		'0';
 
     -- MICRO TICKING
     PROCESS (clk, rst)
@@ -104,6 +121,7 @@ BEGIN
         IF rst = '1' THEN
             uPC <= (others => '0');
             ELSIF rising_edge(clk) THEN
+                if clk_div = '1' then
             CASE SEQ IS
                 WHEN "0000" =>
                     -- uPC++
@@ -151,6 +169,7 @@ BEGIN
                 WHEN OTHERS =>
                     REPORT "Unknown SEQ in uMem address " & INTEGER'image(to_integer(uPC)) SEVERITY FAILURE;
             END CASE;
+        end if;
         END IF;
     END PROCESS;
 
