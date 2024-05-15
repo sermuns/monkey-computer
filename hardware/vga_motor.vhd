@@ -120,7 +120,7 @@ BEGIN
             IF clk25 = '1' THEN
                 IF (x_subpixel = 799) THEN -- TODO check if 800 or 799
                     x_within_tile <= (OTHERS => '0'); -- time to restart
-                ELSIF (x_subpixel < 479) THEN -- change to 639
+                ELSIF (x_subpixel < 639) THEN -- change to 639
                     IF (x_within_tile = 47) THEN
                         x_within_tile <= (OTHERS => '0'); -- right edge of tile
                     ELSE
@@ -160,7 +160,7 @@ BEGIN
             row_counter <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
             IF clk25 = '1' THEN
-                IF (x_subpixel = 479) THEN  --change to 639
+                IF (x_subpixel = 639) THEN  --change to 639
                     IF (y_within_tile = 47) THEN
                         IF (y_subpixel = 479) THEN
                             row_counter <= (OTHERS => '0');
@@ -179,7 +179,7 @@ BEGIN
             col_counter <= (OTHERS => '0');
         ELSIF rising_edge(clk) THEN
             IF clk25 = '1' THEN
-                IF (x_subpixel = 479) THEN
+                IF (x_subpixel = 639) THEN
                     col_counter <= (OTHERS => '0');
                 ELSIF (x_within_tile = 47) THEN
                     col_counter <= col_counter + 1;
@@ -199,15 +199,14 @@ BEGIN
         END IF;
     END PROCESS;
 
-    vmem_address_out <= resize(col_counter + (10 * row_counter), 7);
+    vmem_address_out <= resize(col_counter + (13 * row_counter), 7);
 
     -- slice out the correct field from the video memory data
     current_tiletype <= unsigned(vmem_data(5 DOWNTO 0)) WHEN x_subpixel < 479 ELSE
-        "000000"; -- could just make current_tiletype into a alias?
+        --"000000"; -- could just make current_tiletype into a alias?
     
-        -- TODO uncomment 2 rows below and change 123 and 163
-        -- <= unsigned(vmem_data(5 DOWNTO 0)) WHEN x_subpixel > 495  -- MENU START
-        -- ELSE "100110" --(38) black between menu and playing field
+                    unsigned(vmem_data(5 DOWNTO 0)) WHEN (479 < x_subpixel AND x_subpixel < 623) else -- MENU START
+                    "100110"; --(38) black between menu and playing field
         
         -- TODO add 30 lines to VMEM (menu tile numbers), increase col counter to reset when it's 639 (end of screen)
         -- TODO add 10 tiles(one per monkey) with colored outline and one black tile(#38). ARRAY(0 TO 7055). TO TEST JUST COPY PASTE MONKEYS AND ADD A SINGLE YELLOW LINE
