@@ -83,7 +83,7 @@ balloon_dead:
     BRA push_balloon_hp
 
 monke_animation:
-    CMPI GR6, 4 //BEHÖVS DELAYS, BYTER ANNARS FÖR SNABBT
+    CMPI GR6, 4
     BEQ balloon_dmg
     ADDI GR6, 1
     STN %VMEM, GR6
@@ -92,7 +92,6 @@ monke_animation:
 wait1:
     SUBI GR7, 1
     BNE wait1
-    BRA loop 
 
     BRA monke_animation ;b
 
@@ -104,7 +103,6 @@ reset_anim_state:
 wait2:
     SUBI GR7, 1
     BNE wait2
-    BRA loop
 
     SUBI GR0, 1 ;b
     BRA check_monke
