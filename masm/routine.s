@@ -9,13 +9,13 @@ end:
     HALT
 
 delay:
-    LDI GR7, 0xFFFFFF    
+    LDI GR7, 0xF
 delay_loop:
     SUBI GR7, 1
-    CMP GR7, 0
+    CMPI GR7, 0
     BNE delay_loop
 delay_end:
-    RET
+    RET ;b
 
 
 

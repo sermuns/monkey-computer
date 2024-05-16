@@ -188,6 +188,9 @@ class Machine:
             print("HALT instruction reached")
             self.halted = True
             return # do nothing
+        elif mnemonic == "RET":
+            self.perform_stack_operation(["POP", "PC"])
+            return
         elif mnemonic in {"BRA", "JSR", "BNE", "BEQ"}: # branch instructions
             destination = parts[1]
             self.branch(mnemonic, destination)
@@ -251,13 +254,15 @@ class Machine:
 
         if mnemonic == "BRA":
             self.registers["PC"] = adr
-        # TODO: implement JSR
         elif mnemonic == "BNE":
             if self.flags["Z"] == 0:
                 self.registers["PC"] = adr
         elif mnemonic == "BEQ":
             if self.flags["Z"] == 1:
                 self.registers["PC"] = adr
+        elif mnemonic == "JSR":
+            self.perform_stack_operation(["PUSH", "PC"])
+            self.registers["PC"] = adr
         else:
             utils.ERROR(f"Unknown branch mnemonic {mnemonic}")
 
