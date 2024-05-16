@@ -1,21 +1,13 @@
 %PROGRAM 0 1499
 start:
-    LDI GR0, 2
-    LDI GR3, 20
+    LDI GR0, 1
+    LDI GR3, 3
 loop:
-    JSR delay
-    LDI GR1, 0
+    SUBI GR3, 1
+    STN %VMEM, GR0
+    BNE loop ;b
 end:
     HALT
-
-delay:
-    LDI GR7, 0xF
-delay_loop:
-    SUBI GR7, 1
-    CMPI GR7, 0
-    BNE delay_loop
-delay_end:
-    RET ;b
 
 
 
@@ -30,9 +22,9 @@ delay_end:
 0
 0
 0
-39
+1
 38
-40
+5
 0
 25
 25
@@ -56,9 +48,9 @@ delay_end:
 0
 25
 0
-41
+9
 38
-42
+13
 0
 25
 0
@@ -68,35 +60,35 @@ delay_end:
 25
 25
 25
-0
-38
-38
-38
-25
-25
-0
-25
-0
-0
-0
-0
-0
-0
-43
-38
-44
-0
-0
-0
-25
-0
-25
-25
-25
-0
 0
 38
 38
+38
+25
+25
+0
+25
+0
+0
+0
+0
+0
+0
+17
+38
+21
+0
+0
+0
+25
+0
+25
+25
+25
+0
+0
+38
+51
 38
 0
 25
@@ -189,6 +181,10 @@ delay_end:
 72
 85
 98
+111
+112
+113
+114
 
 
 %HEAP 1700 10 // Health?

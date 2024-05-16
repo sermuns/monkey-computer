@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 # includes pygame and enum
 from emulation_config import *
 
@@ -29,8 +31,7 @@ TILE_SIZE_PX = 48   # Commented out (MAP_SIZE_PX // MAP_SIZE_TILES) because it s
 FONT_PATH = os.path.join("scripts", "fonts", "jetbrainsmono.ttf")
 
 
-# Pygame constants
-
+DEBUG_ASSEMBLY_FILE = "routine.s"  # change this to which file you want to debug
 
 def parse_vmem(vmem_lines: list) -> np.ndarray:
     """
@@ -424,18 +425,10 @@ if __name__ == "__main__":
                 emulation_event = KEYBINDINGS.get(event.key)
                 if emulation_event is None:
                     continue
-                if emulation_event == EmulationEvent.quit:
-                    sys.exit()
-                elif emulation_event == EmulationEvent.step:
-                    if machine.halted:
-                        continue
-                    machine.execute_next_instruction()
                 elif emulation_event == EmulationEvent.reset:
                     machine = Machine(assembly_lines)  # reset the machine
-                elif emulation_event == EmulationEvent.show_debug_pane:
-                    show_debug_pane = not show_debug_pane
-                elif emulation_event == EmulationEvent.continue_to_breakpoint:
-                    machine.continue_to_breakpoint()
+                elif emulation_event == EmulationEvent.quit:
+                    sys.exit()
                 elif emulation_event == EmulationEvent.interact_with_memory:
                     # show easygui prompt to input desired memory address to show
                     desired_address = easygui.enterbox("Enter memory address to show:")
@@ -449,6 +442,12 @@ if __name__ == "__main__":
                         )
                     except Exception as e:
                         easygui.msgbox(f"Error: {e}")
+                elif emulation_event == EmulationEvent.show_debug_pane:
+                    show_debug_pane = not show_debug_pane
+                elif emulation_event == EmulationEvent.step:
+                    machine.execute_next_instruction()
+                elif emulation_event == EmulationEvent.continue_to_breakpoint:
+                    machine.continue_to_breakpoint()
 
                 update_screen(screen, machine, show_debug_pane, cursor_position)
 

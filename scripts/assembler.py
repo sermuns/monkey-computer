@@ -49,9 +49,9 @@ def parse_address_mode(addr: str, mode: str):
         addr_bin = "?" * ADR_WIDTH  # value will be filled in later
         return mode_bin, addr_bin, ""
 
-    mode_bin = "--" # assume don't care for mode
-    addr_bin = "-" * ADR_WIDTH # assume don't care for address
-    immediate_value = "" # assume no immediate value
+    mode_bin = "--"  # assume don't care for mode
+    addr_bin = "-" * ADR_WIDTH  # assume don't care for address
+    immediate_value = ""  # assume no immediate value
 
     if addr == "-":
         return mode_bin, addr_bin, immediate_value
@@ -66,7 +66,7 @@ def parse_address_mode(addr: str, mode: str):
     elif mode == "X":  # indirect
         mode_bin = "10"
         addr_bin = f"{int(addr):0{ADR_WIDTH}b}"
-    elif mode == "N": # indexed
+    elif mode == "N":  # indexed
         mode_bin = "11"
         addr_bin = f"{int(addr):0{ADR_WIDTH}b}"
     else:
@@ -77,7 +77,7 @@ def parse_address_mode(addr: str, mode: str):
 
 def parse_register(grx_name):
     if grx_name == "-":
-        return "-"*4
+        return "-" * 4
 
     grx_num = re.search(r"GR([\d+])", grx_name)
 
@@ -121,11 +121,11 @@ def assemble_binary_line(instruction_line: str, label: str) -> list:
 
     # Parse the binary representation of the register
     binary_register = parse_register(register)
-    
+
     # Check for special case for keyboard access.
     key = "0"
     if binary_register == "1111":
-        key = "1"    
+        key = "1"
 
     # Assemble the binary line
     binary_instruction = f"{KNOWN_OPCODES[mnemonic]}_{binary_register}_{address_mode_code}_{key}_{binary_address}"
@@ -186,6 +186,29 @@ def assemble_data(line):
 
     return (binary_data, decimal_data, "")
 
+def replace_mov_with_ld_st(asm_lines):
+    """
+    Replace all MOV instructions with LD and ST instructions
+    """
+
+    for i, line in enumerate(asm_lines):
+        if "MOV" not in line:
+            continue
+
+        # store source register value on %HEAP
+        source_register = re.findall(r"GR\d+", line)
+        st_line = f"ST %HEAP, {source_register[-1]}"
+
+        # load source register value from %HEAP
+        destination_register = re.findall(r"GR\d+", line)
+        ld_line = f"LD {destination_register[0]}, %HEAP"
+
+        # remove original line, add new lines
+        asm_lines[i] = st_line
+        asm_lines.insert(i + 1, ld_line)
+
+    return asm_lines
+
 
 def main():
 
@@ -207,22 +230,7 @@ def main():
     sections = {}
 
     # replace MOV with LD and ST
-    for i, line in enumerate(asm_lines):
-        if "MOV" not in line:
-            continue
-
-        # store source register value on %HEAP
-        source_register = re.findall(r"GR\d+", line)
-        st_line = f"ST %HEAP, {source_register[-1]}"
-        
-        # load source register value from %HEAP
-        destination_register = re.findall(r"GR\d+", line)
-        ld_line = f"LD {destination_register[0]}, %HEAP"
-
-        # remove original line, add new lines
-        asm_lines[i] = st_line
-        asm_lines.insert(i+1, ld_line)
-
+    asm_lines = replace_mov_with_ld_st(asm_lines)
 
     # find all sections beforehand
     for i, line in enumerate(asm_lines):
@@ -263,7 +271,9 @@ def main():
         sections[current_section_name].lines += new_line
 
     if sections["PROGRAM"].lines[-1][1] != "HALT":
-        print("\033[95mWarning:\033[0m Last instruction in given program is not HALT. This is added automatically.")
+        print(
+            "\033[95mWarning:\033[0m Last instruction in given program is not HALT. This is added automatically."
+        )
         # assume that HALT needs to be added
         halt_opcode = KNOWN_OPCODES["HALT"]
         halt_binary = (f"{halt_opcode}_---_--_--_------------", "HALT", "")
@@ -303,10 +313,10 @@ def main():
 
         element_index = int(re.search(r"PROGRAM\+(\d+)", line).group(1))
 
-        label_match = re.search(r'.*--\s*(\w+)\s*:.*', line)
+        label_match = re.search(r".*--\s*(\w+)\s*:.*", line)
 
         if not label_match:
-            continue # no label
+            continue  # no label
 
         label = label_match.group(1)
 
@@ -314,7 +324,7 @@ def main():
 
     # fix unknown addresses in the binary code
     for i, line in enumerate(cleared_array_lines):
-        if '?'*12 not in line:
+        if "?" * 12 not in line:
             continue  # not an unknown address
 
         full_comment = re.search(r".*--\s*(.+)\n", line)
@@ -337,7 +347,7 @@ def main():
         # replace the unknown address with the found address
         jump_address = labels[seeked_label]
 
-        if jump_address > 2 ** ADR_WIDTH:
+        if jump_address > 2**ADR_WIDTH:
             ERROR(f"Jump address {jump_address} is too large")
         elif jump_address < 0:
             ERROR(f"Jump address {jump_address} is negative")
