@@ -121,6 +121,10 @@ class Machine:
         Perform the next instruction in the memory
         """
 
+        if self.halted:
+            print("Machine is halted!")
+            return
+
         # Fetch the next instruction
         instruction = self.get_from_memory(self.registers["PC"])
 
@@ -159,7 +163,7 @@ class Machine:
 
         while True:
             self.execute_next_instruction()
-            if self.at_breakpoint():
+            if self.at_breakpoint() or self.halted:
                 break
 
     def find_all_breakpoints(self):

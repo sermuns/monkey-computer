@@ -6,6 +6,14 @@ import pygame as pg
 
 from enum import Enum, auto
 
+PYGAME_FLAGS = 0
+WINDOW_TITLE = "monkey-emulator🐒"
+FONT_SIZE = 16
+
+# File paths
+TILE_ROM_FILE = os.path.join("hardware", "tile_rom.vhd")
+MASM_DIR = "masm"
+
 
 class EmulationEvent(Enum):
     step = auto()
@@ -13,6 +21,7 @@ class EmulationEvent(Enum):
     quit = auto()
     show_debug_pane = auto()
     continue_to_breakpoint = auto()
+    safe_continue_to_breakpoint = auto()
     interact_with_memory = auto()
 
 
@@ -27,14 +36,8 @@ KEYBINDINGS = {
     pg.K_F1: EmulationEvent.show_debug_pane,
     pg.K_c: EmulationEvent.continue_to_breakpoint,
     pg.K_F5: EmulationEvent.continue_to_breakpoint,
-    pg.K_p : EmulationEvent.interact_with_memory,
-    pg.K_F2: EmulationEvent.interact_with_memory
+    pg.K_s: EmulationEvent.safe_continue_to_breakpoint,
+    pg.K_F6: EmulationEvent.safe_continue_to_breakpoint,
+    pg.K_p: EmulationEvent.interact_with_memory,
+    pg.K_F2: EmulationEvent.interact_with_memory,
 }
-PYGAME_FLAGS = 0
-WINDOW_TITLE = "monkey-emulator🐒"
-FONT_SIZE = 16
-
-# File paths
-TILE_ROM_FILE = os.path.join("hardware", "tile_rom.vhd")
-MASM_DIR = "masm"
-DEBUG_ASSEMBLY_FILE = "infinite.s"  # change this to which file you want to debug
