@@ -89,9 +89,9 @@ monke_animation:
     STN %VMEM, GR6
 
     LDI GR7, 0x0FFFFF
-wait:
+wait1:
     SUBI GR7, 1
-    BNE wait
+    BNE wait1
     BRA loop 
 
     BRA monke_animation ;b
@@ -99,6 +99,13 @@ wait:
 reset_anim_state:
     SUBI GR0, 3
     STN %VMEM, GR0
+
+    LDI GR7, 0x0FFFFF
+wait2:
+    SUBI GR7, 1
+    BNE wait2
+    BRA loop
+
     SUBI GR0, 1 ;b
     BRA check_monke
 balloon_animation:
@@ -108,9 +115,9 @@ balloon_animation:
     STN %VMEM, GR0
 
     LDI GR7, 0x0FFFFF
-wait:
+wait3:
     SUBI GR7, 1
-    BNE wait
+    BNE wait3
 
     BRA balloon_animation ;b
     
