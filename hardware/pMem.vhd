@@ -9,7 +9,7 @@ ENTITY pMem IS
         cpu_data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
         cpu_data_in : IN unsigned(23 DOWNTO 0);
         cpu_we : IN STD_LOGIC;
-        video_address : IN unsigned(6 DOWNTO 0);
+        video_address : IN unsigned(7 DOWNTO 0);
         video_data_out : OUT unsigned(5 DOWNTO 0)
     );
 END pMem;
@@ -22,22 +22,50 @@ ARCHITECTURE func OF pMem IS
     CONSTANT PROGRAM : INTEGER := 0;
     CONSTANT VMEM : INTEGER := 1500;
     CONSTANT PATH : INTEGER := 1630;
-    CONSTANT HEAP : INTEGER := 3000;
 
     -- 00000_0000_00_0_000000000000
     -- OP    GRx  M  K   ADR 
     -- 5     4    2  1   12  
     SIGNAL p_mem : p_mem_type := (
         -- PROGRAM
-        PROGRAM+0 => b"00000_0000_01_0_------------", -- start : LDI GR0, 2
-        PROGRAM+1 => b"000000000000000000000010", -- 
-        PROGRAM+2 => b"00000_0011_01_0_------------", -- LDI GR3, 20
-        PROGRAM+3 => b"000000000000000000010100", -- 
-        PROGRAM+4 => b"00001_0000_11_0_010111011100", -- loop : STN 1500, GR0
-        PROGRAM+5 => b"00011_0011_01_0_------------", -- SUBI GR3, 1
-        PROGRAM+6 => b"000000000000000000000001", -- 
-        PROGRAM+7 => b"01010_----_00_0_000000000100", -- BRA loop
-        PROGRAM+8 => b"11111_----_--_0_------------", -- end : HALT
+        PROGRAM+0 => b"00000_0010_01_0_------------", -- start : LDI GR2, 1
+        PROGRAM+1 => b"000000000000000000000001", -- 
+        PROGRAM+2 => b"00001_0010_11_0_011010100100", -- STN 1700, GR2 // baloon spawn amount
+        PROGRAM+3 => b"00000_0000_01_0_------------", -- LDI GR0, 35 // CONSTANT: balloon tiletype
+        PROGRAM+4 => b"000000000000000000100011", -- 
+        PROGRAM+5 => b"00001_0001_11_0_010111011100", -- loop : STN 1500, GR1 // replace tiletype that was overwritten
+        PROGRAM+6 => b"00001_0101_00_0_011010100100", -- ST 1700, GR5
+        PROGRAM+7 => b"00000_0110_00_0_011010100100", -- LD GR6, 1700
+        PROGRAM+8 => b"00011_0110_01_0_------------", -- SUBI GR6, 40
+        PROGRAM+9 => b"000000000000000000101000", -- 
+        PROGRAM+10 => b"01100_----_00_0_000000011101", -- BEQ take_dmg
+        PROGRAM+11 => b"00011_0010_01_0_------------", -- new_ballon : SUBI GR2, 0
+        PROGRAM+12 => b"000000000000000000000000", -- 
+        PROGRAM+13 => b"01100_----_00_0_000000100100", -- BEQ dead
+        PROGRAM+14 => b"00001_0101_00_0_011010100100", -- ST 1700, GR5
+        PROGRAM+15 => b"00000_0011_00_0_011010100100", -- LD GR3, 1700
+        PROGRAM+16 => b"00000_0100_11_0_011001011110", -- LDN GR4, 1630 // GR4 := PATH[GR3]
+        PROGRAM+17 => b"00001_0100_00_0_011010100100", -- ST 1700, GR4
+        PROGRAM+18 => b"00000_0011_00_0_011010100100", -- LD GR3, 1700
+        PROGRAM+19 => b"00000_0001_11_0_010111011100", -- LDN GR1, 1500 // GR1 := VMEM[GR3]
+        PROGRAM+20 => b"00001_0000_11_0_010111011100", -- STN 1500, GR0 // overwrite with balloon
+        PROGRAM+21 => b"00000_0111_01_0_------------", -- LDI GR7, 0x1FFFFF
+        PROGRAM+22 => b"000111111111111111111111", -- 
+        PROGRAM+23 => b"00011_0111_01_0_------------", -- wait : SUBI GR7, 1
+        PROGRAM+24 => b"000000000000000000000001", -- 
+        PROGRAM+25 => b"01011_----_00_0_000000010111", -- BNE wait
+        PROGRAM+26 => b"00010_0101_01_0_------------", -- ADDI GR5, 1 // increment path index
+        PROGRAM+27 => b"000000000000000000000001", -- 
+        PROGRAM+28 => b"01010_----_00_0_000000000101", -- BRA loop
+        PROGRAM+29 => b"00000_0010_00_0_011010100100", -- take_dmg : LD GR2, 1700 ;b
+        PROGRAM+30 => b"00011_0010_01_0_------------", -- SUBI GR2, 1
+        PROGRAM+31 => b"000000000000000000000001", -- 
+        PROGRAM+32 => b"00001_0010_00_0_011010100100", -- ST 1700, GR2
+        PROGRAM+33 => b"00000_0101_01_0_------------", -- LDI GR5, 0
+        PROGRAM+34 => b"000000000000000000000000", -- 
+        PROGRAM+35 => b"01010_----_00_0_000000001011", -- BRA new_ballon
+        PROGRAM+36 => b"01010_----_00_0_000000100100", -- dead : BRA dead ;b
+        PROGRAM+37 => b"11111_---_--_--_------------", -- HALT
         -- VMEM
         VMEM+0 => b"000000000000000000000000", -- 0
         VMEM+1 => b"000000000000000000000000", -- 0
@@ -207,6 +235,11 @@ ARCHITECTURE func OF pMem IS
         PATH+34 => b"000000000000000001001000", -- 72
         PATH+35 => b"000000000000000001010101", -- 85
         PATH+36 => b"000000000000000001100010", -- 98
+        PATH+37 => b"000000000000000001101101", -- 109
+        PATH+38 => b"000000000000000001101111", -- 111
+        PATH+39 => b"000000000000000001110000", -- 112
+        PATH+40 => b"000000000000000001110001", -- 113
+        PATH+41 => b"000000000000000001110010", -- 114
         -- HEAP
         OTHERS => (OTHERS => '-')
     );

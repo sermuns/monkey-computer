@@ -58,27 +58,8 @@ BEGIN
 
   Z <= '1' WHEN AR_internal = to_unsigned(0, AR_internal'length) ELSE '0';
   N <= '1' WHEN AR_internal(AR_internal'length - 2) = '1' ELSE '0';
-  C <= AR_internal(AR_internal'left);
+  C <= '1' WHEN AR_internal(AR_internal'left) ELSE '0';
   V <= '1' WHEN AR_internal(AR_internal'length - 1) = '1' ELSE '0';
 
-  -- -- only assign `out` flags under certain conditions
-  -- status_flags_proc : PROCESS (clk, rst)
-  -- BEGIN
-  --   IF (rst = '1') THEN
-  --     Z <= '0';
-  --     N <= '0';
-  --     C <= '0';
-  --     V <= '0';
-  --   ELSIF rising_edge(clk) THEN
-  --     CASE op IS
-  --       WHEN cmp_op | sub_op | add_op =>
-  --         Z <= '1' WHEN AR_internal = to_unsigned(0, AR_internal'length) ELSE '0';
-  --         N <= '1' WHEN AR_internal(AR_internal'length - 2) = '1' ELSE '0';
-  --         C <= AR_internal(AR_internal'left);
-  --         V <= '1' WHEN AR_internal(AR_internal'length - 1) = '1' ELSE '0';
-  --       WHEN OTHERS =>
-  --         NULL;
-  --     END CASE;
-  --   END IF;
-  -- END PROCESS;
+
 END ARCHITECTURE;

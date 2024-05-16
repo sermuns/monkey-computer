@@ -95,7 +95,7 @@ reset_anim_state:
     STN %VMEM, GR0
 
 delay:
-    LDI GR7, 0xFFFFFF    
+    LDI GR7, 0x1FFFFF    
 delay1:
     SUBI GR7, 1
     CMP GR7, 0
@@ -110,7 +110,7 @@ balloon_animation:
     STN %VMEM, GR0
 
 delay:
-    LDI GR7, 0xFFFFFF    
+    LDI GR7, 0x1FFFFF    
 delay1:
     SUBI GR7, 1
     CMP GR7, 0
@@ -293,6 +293,11 @@ dead:
 72
 85
 98
+109
+111
+112
+113
+114
 
 
 %HEAP 1700 10 // Health?

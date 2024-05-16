@@ -1,15 +1,43 @@
 %PROGRAM 0 1499
 start:
-    LDI GR0, 2
-    LDI GR3, 20
-loop:
-    STN %VMEM, GR0
-    SUBI GR3, 1
-    BRA loop
-end:
-    HALT
-
+    LDI GR2, 1
+    STN %HEAP, GR2 // baloon spawn amount
+    LDI GR0, 35 // CONSTANT: balloon tiletype
     
+loop:
+    STN %VMEM, GR1 // replace tiletype that was overwritten
+    // find next path position
+    MOV GR6, GR5
+    SUBI GR6, 40
+    BEQ take_dmg
+new_ballon:
+    SUBI GR2, 0
+    BEQ dead
+    MOV GR3, GR5 // GR3 := GR5
+    LDN GR4, %PATH // GR4 := PATH[GR3]
+    MOV GR3, GR4 // GR3 := GR4
+                        
+    LDN GR1, %VMEM // GR1 := VMEM[GR3]
+    STN %VMEM, GR0 // overwrite with balloon
+    LDI GR7, 0x1FFFFF
+wait:
+    SUBI GR7, 1
+    BNE wait
+    ADDI GR5, 1 // increment path index
+    BRA loop 
+
+
+take_dmg:
+    //TODO SUB players health
+    LD GR2, %HEAP ;b
+    SUBI GR2, 1
+    ST %HEAP, GR2
+    LDI GR5, 0
+    BRA new_ballon
+
+dead:
+BRA dead ;b
+
 
 
 %VMEM 1500 130
@@ -182,6 +210,10 @@ end:
 72
 85
 98
-
+109
+111
+112
+113
+114
 
 %HEAP 1700 10 // Health?

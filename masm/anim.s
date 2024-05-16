@@ -2,6 +2,7 @@
 start:
 LDI GR0, 4
 STN 30, GR0
+
 loop:
     STN %VMEM, GR0 
     ADDI GR3, 1

@@ -29,7 +29,7 @@ end main;
 architecture Behavioral of main is
 	
 	signal video_data : unsigned(5 downto 0); -- data
-	signal video_address : unsigned(6 downto 0);        -- address
+	signal video_address : unsigned(7 downto 0);        -- address
 
 	component cpu 
     PORT (
@@ -37,7 +37,7 @@ architecture Behavioral of main is
         rst : IN STD_LOGIC;
 		ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
 		make_op : IN STD_LOGIC;
-        v_addr : IN unsigned(6 DOWNTO 0);
+        v_addr : IN unsigned(7 DOWNTO 0);
         v_data : OUT unsigned(5 DOWNTO 0)
     );
 	end component;
@@ -46,7 +46,7 @@ architecture Behavioral of main is
 	PORT (
 		clk : IN STD_LOGIC;
 		rst : IN STD_LOGIC;
-		vmem_address_out : OUT unsigned(6 DOWNTO 0);
+		vmem_address_out : OUT unsigned(7 DOWNTO 0);
 		vmem_data : IN unsigned(5 DOWNTO 0);
 		vga_hsync : OUT STD_LOGIC;
 		vga_vsync : OUT STD_LOGIC;
