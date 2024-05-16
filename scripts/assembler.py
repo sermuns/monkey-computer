@@ -79,9 +79,13 @@ def parse_register(grx_name):
     if grx_name == "-":
         return "-"*4
 
-    grx_num = re.search(r"GR([0-15])", grx_name)
+    grx_num = re.search(r"GR([\d+])", grx_name)
+
     if not grx_num:
         ERROR(f"Unknown register {grx_name}")
+    if int(grx_num.group(1)) > 15:
+        ERROR(f"Register number {grx_num.group(1)} is too large")
+
     grx_bin = f"{int(grx_num.group(1)):04b}"
     return grx_bin
 

@@ -3,10 +3,7 @@ start:
     LDI GR0, 1
     LDI GR3, 10
     STN %VMEM, GR0
-
-
-
-
+    HALT
 
     
 
