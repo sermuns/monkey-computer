@@ -74,12 +74,12 @@ def parse_address_mode(addr: str, mode: str):
 
 def parse_register(grx_name):
     if grx_name == "-":
-        return "---"
+        return "-"*4
 
-    grx_num = re.search(r"GR([0-7])", grx_name)
+    grx_num = re.search(r"GR([0-15])", grx_name)
     if not grx_num:
         ERROR(f"Unknown register {grx_name}")
-    grx_bin = f"{int(grx_num.group(1)):03b}"
+    grx_bin = f"{int(grx_num.group(1)):04b}"
     return grx_bin
 
 
@@ -114,9 +114,14 @@ def assemble_binary_line(instruction_line: str, label: str) -> list:
 
     # Parse the binary representation of the register
     binary_register = parse_register(register)
+    
+    # Check for special case for keyboard access.
+    key = "0"
+    if binary_register == "1111":
+        key = "1"    
 
     # Assemble the binary line
-    binary_instruction = f"{KNOWN_OPCODES[mnemonic]}_{binary_register}_{address_mode_code}_--_{binary_address}"
+    binary_instruction = f"{KNOWN_OPCODES[mnemonic]}_{binary_register}_{address_mode_code}_{key}_{binary_address}"
 
     # Add the binary line and its corresponding assembly instruction to the list of binary lines
     binary_lines += [(binary_instruction, instruction_line.strip(), label)]

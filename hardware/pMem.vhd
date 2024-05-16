@@ -25,8 +25,8 @@ ARCHITECTURE func OF pMem IS
     CONSTANT HEAP : INTEGER := 3000;
 
     -- 00000_0000_00_0_000000000000
-    -- OP    GRx M  K   ADR 
-    -- 5     4   2  1  12  
+    -- OP    GRx  M  K   ADR 
+    -- 5     4    2  1   12  
     SIGNAL p_mem : p_mem_type := (
         -- PROGRAM
         PROGRAM + 0 => b"00000_000_01_10_------------", -- start : LDI GR0, 5000

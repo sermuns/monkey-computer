@@ -185,7 +185,7 @@ BEGIN
             b"1000000000000000000_00011" when  ScanCode = x"29"else -- Space (confirm) 
             (others => '-'); 
             end if;
-            if (FB = "101") then
+            else if (FB = "101") then
                 GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus;
             end if;
         end if;
