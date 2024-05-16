@@ -9,8 +9,6 @@ END ENTITY;
 ARCHITECTURE testbench OF cpu_tb IS
   -- Constants
   CONSTANT CLK_PERIOD : TIME := 10 ns;
-  -- CONSTANT MAX_CLK_COUNT : NATURAL := 1e9;
-  CONSTANT MAX_SIM_TIME : TIME := 635 us;
   CONSTANT PS2_CLK_PERIOD : TIME := 60 us;
   CONSTANT PS2_TIME : TIME := 100 ns;
 
@@ -23,8 +21,7 @@ ARCHITECTURE testbench OF cpu_tb IS
   SIGNAL PS2KeyboardData : STD_LOGIC;
 
   COMPONENT main IS
-    PORT
-    (
+    PORT (
       clk : IN STD_LOGIC; -- system clock
       btnC : IN STD_LOGIC; -- reset
       Hsync : OUT STD_LOGIC; -- horizontal sync
@@ -112,12 +109,7 @@ BEGIN
   clk_counter : PROCESS (clk_tb)
   BEGIN
     IF rising_edge(clk_tb) THEN
-      IF now > MAX_SIM_TIME THEN
-        -- REPORT "Simulation continued for longer than MAX_CLOCK_CYCLES: " & INTEGER'image(MAX_CLK_COUNT) & ", stopping!";
-        STOP;
-      ELSE
-        clock_count_tb <= clock_count_tb + 1;
-      END IF;
+      clock_count_tb <= clock_count_tb + 1;
     END IF;
   END PROCESS;
 

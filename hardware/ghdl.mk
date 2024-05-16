@@ -3,7 +3,7 @@ WAVEDIR = wave
 SAVEDIR = save
 SCRIPTDIR = ../scripts
 GHDL_FLAGS = --std=08 --workdir=$(WORKDIR)
-GHDL_RUN_FLAGS = --ieee-asserts=disable-at-0 --assert-level=error
+GHDL_RUN_FLAGS = --ieee-asserts=disable-at-0 --assert-level=error 
 
 SRC_DIR=.
 
@@ -47,7 +47,7 @@ test: gcompile
 	@ghdl -e $(GHDL_FLAGS) cpu_tb
 	@mkdir -p $(WAVEDIR)
 # Allow for simulation to fail
-	-@ghdl -r $(GHDL_FLAGS) cpu_tb --wave=$(WAVEDIR)/cpu_tb.ghw $(GHDL_RUN_FLAGS)
+	-@ghdl -r $(GHDL_FLAGS) cpu_tb --wave=$(WAVEDIR)/cpu_tb.ghw $(GHDL_RUN_FLAGS) --stop-time=$(stime)
 
 .PHONY: surfer
 surfer:
