@@ -6,7 +6,7 @@ from typing import Sequence
 REG_ADR_OPS = {"LD", "ADD", "SUB", "AND", "OR", "MUL", "LSR", "LSL", "CMP"}
 ADR_REG_OPS = {"ST", "OUT", "SWAP"}
 REG_REG_OPS = {"MOV", "ADDREG"}
-REG_OPS = {"POP", "PUSH", "JSR"}
+REG_OPS = {"POP", "PUSH"}
 ADDR_OPS = {"BRA", "JSR", "BNE", "BEQ"}
 NO_ARGS_OPS = {"RET", "HALT"}
 

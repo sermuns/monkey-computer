@@ -25,7 +25,7 @@ PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
 FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
 ADR_WIDTH = 12
-DEBUG_ARG = "path.s"
+DEBUG_ARG = "routine.s"
 
 INSTRUCTION_WIDTH = 24
 
