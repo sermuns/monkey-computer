@@ -202,7 +202,7 @@ BEGIN
     -- slice out the correct field from the video memory data
     current_tiletype <= vmem_data WHEN x_subpixel < 479 ELSE -- MAP
         --"000000"; -- could just make current_tiletype into a alias?
-                    vmem_data WHEN (479 <= x_subpixel AND x_subpixel < 623) else -- MENU
+                    vmem_data WHEN (479 < x_subpixel AND x_subpixel < 623) else -- MENU
                     "100110"; -- Black to fill between last tile and end of screen
 
     --TODO what does each bit in the tile_rom_address mean? and what else does it affect?

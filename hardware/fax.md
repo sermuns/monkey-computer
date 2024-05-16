@@ -105,8 +105,15 @@ eller
 42: apa 4 highlighted
 43: apa 5 highlighted
 44: apa 6 highlighted
-45-47: RESET text
-48-50: QUIT text
-51: Cursor
-
+45: R
+46: R highlighted
+47: Q
+48: Q highlighted
+49: HP 
+50: HP highlighted
+51: G
+52: G highlighted
+53: Cursor
+54-63: Numbers 0-9
+64: NOTHING ATM
 
