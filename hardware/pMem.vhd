@@ -11,14 +11,11 @@ ENTITY pMem IS
         cpu_we : IN STD_LOGIC;
         video_address : IN unsigned(6 DOWNTO 0);
         video_data_out : OUT unsigned(5 DOWNTO 0);
-        ScanCode_abs : IN STD_LOGIC_VECTOR(23 DOWNTO 0)
     );
 END pMem;
 
 ARCHITECTURE func OF pMem IS
 
-    SIGNAL last_scancode : STD_LOGIC_VECTOR(23 DOWNTO 0) := (OTHERS => '0');
-    SIGNAL scancode_pulse : STD_LOGIC;
 
     TYPE p_mem_type IS ARRAY(0 TO 4095) OF STD_LOGIC_VECTOR(23 DOWNTO 0);
 
@@ -27,11 +24,17 @@ ARCHITECTURE func OF pMem IS
     CONSTANT PATH : INTEGER := 1630;
     CONSTANT HEAP : INTEGER := 3000;
 
-    -- 00000_000_00_--_000000000000
-    -- OP    GRx M     ADR 
-    -- 5     3   2  2  12  
+    -- 00000_0000_00_0_000000000000
+    -- OP    GRx M  K   ADR 
+    -- 5     4   2  1  12  
     SIGNAL p_mem : p_mem_type := (
         -- PROGRAM
+        PROGRAM + 0 => b"00000_000_01_10_------------", -- start : LDI GR0, 5000
+        PROGRAM + 1 => b"000000000001001110001000", -- 
+        PROGRAM + 2 => b"00011_000_01_00_------------", -- loop : SUBI GR0, 1
+        PROGRAM + 3 => b"000000000000000000000001", -- 
+        PROGRAM + 4 => b"01011_---_00_00_000000000010", -- BNE loop
+        PROGRAM + 5 => b"11111_---_--_00_------------", -- end : HALT
         PROGRAM+0 => b"00000_010_01_--_------------", -- start : LDI GR2, 2
         PROGRAM+1 => b"000000000000000000000010", -- 
         PROGRAM+2 => b"00001_010_10_--_011010100100", -- STN 1700, GR2 // baloon spawn amount
@@ -332,28 +335,5 @@ BEGIN
             END IF;
         END IF;
     END PROCESS;
-
-    PROCESS (clk)
-    BEGIN
-        IF rising_edge(clk) THEN
-            IF last_scancode /= ScanCode_abs THEN
-                last_scancode <= ScanCode_abs;
-                last_scancode(23) <= '0';
-                scancode_pulse <= '1';
-            ELSE
-                scancode_pulse <= '0';
-            END IF;
-        END IF;
-    END PROCESS;
-
-    --    process (clk)
-    --        begin
-    --            if rising_edge(clk) then
-    --                -- store the scan code in the internal memory for polling later on
-    --                if scancode_pulse then
-    --                    p_mem(HEAP) <= last_scancode ;
-    --                end if;
-    --            end if;
-    --        end process;
 
 END ARCHITECTURE;

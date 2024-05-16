@@ -24,10 +24,12 @@ ARCHITECTURE func OF cpu IS
     SIGNAL IR : STD_LOGIC_VECTOR (23 DOWNTO 0);
     -- Field of the assembly instruction
     ALIAS OP IS IR(23 DOWNTO 19);
-    ALIAS GRx_num IS IR(18 DOWNTO 16);
-    ALIAS M IS IR(15 DOWNTO 14);
+    ALIAS GRx_num IS IR(18 DOWNTO 15);
+    ALIAS M IS IR(14 DOWNTO 13);
+    alias KEY is IR(12);
     ALIAS ADR IS IR(11 DOWNTO 0);
 
+    
     -- MICRO
     SIGNAL uPC : unsigned(7 DOWNTO 0);
     SIGNAL uPM : STD_LOGIC_VECTOR(24 DOWNTO 0);
@@ -39,13 +41,11 @@ ARCHITECTURE func OF cpu IS
     ALIAS SEQ IS uPM(11 DOWNTO 8);
     ALIAS uADR IS uPM(7 DOWNTO 0);
 
-
     SIGNAL K1, K2 : unsigned(7 DOWNTO 0);
 
     SIGNAL data_bus : unsigned(23 DOWNTO 0);
-
     -- GENERAL REGISTERS
-    TYPE GR_t IS ARRAY(0 TO 7) OF unsigned(23 DOWNTO 0);
+    TYPE GR_t IS ARRAY(0 TO 15) OF unsigned(23 DOWNTO 0);
     SIGNAL GR : GR_t;
 
     SIGNAL GRx : unsigned(23 DOWNTO 0);
@@ -56,7 +56,6 @@ ARCHITECTURE func OF cpu IS
     SIGNAL AR : unsigned(23 DOWNTO 0);
 
     SIGNAL SP : UNSIGNED(11 DOWNTO 0) := b"111111111111"; -- Bottom of the PM
-    SIGNAL ScanCode_to_pMem : STD_LOGIC_VECTOR(23 DOWNTO 0);
     
     
     COMPONENT alu IS
@@ -83,8 +82,7 @@ ARCHITECTURE func OF cpu IS
             cpu_data_in : IN unsigned(23 DOWNTO 0);
             cpu_we : IN STD_LOGIC;
             video_address : IN unsigned(6 DOWNTO 0);
-            video_data_out : OUT unsigned(5 DOWNTO 0);
-            ScanCode_abs : IN STD_LOGIC_VECTOR(23 DOWNTO 0));
+            video_data_out : OUT unsigned(5 DOWNTO 0));
     END COMPONENT;
 
     COMPONENT uMem IS
@@ -168,14 +166,25 @@ BEGIN
         END IF;
     END PROCESS;
 
+
+
     -- GENERAL REGISTERS (GRx) 
-    GRx <= GR(TO_INTEGER(unsigned(GRx_num))) WHEN GRx_num /= "---" else (OTHERS => '-');
+    GRx <= GR(TO_INTEGER(unsigned(GRx_num))) WHEN GRx_num /= "---" and key  = '0' else (OTHERS => '-');
 
     process (clk, rst)
     begin
         if rst = '1' then
             GR <= (Others => (OTHERS => '0'));
         elsif rising_edge(clk) then
+            if key = '1' then
+            GR(15) <=  
+            b"1000000000000000000_00001" when  ScanCode = x"1C" else  -- A (left)
+            b"1000000000000000000_00010" when  ScanCode = x"23" else -- D (right)
+            b"1000000000000000000_00100" when  ScanCode = x"1D" else -- W (up)
+            b"1000000000000000000_01000" when  ScanCode = x"1B" else -- S (down)
+            b"1000000000000000000_00011" when  ScanCode = x"29"else -- Space (confirm) 
+            (others => '-'); 
+            end if;
             if (FB = "101") then
                 GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus;
             end if;
@@ -249,19 +258,6 @@ BEGIN
         (OTHERS => '-') WHEN (TB = "111") ELSE -- NOOP
         (OTHERS => 'U'); -- something wrong
 
-    process (make_op)
-    begin
-     if rising_edge(make_op) then
-        ScanCode_to_pMem <= 
-        b"1000000000000000000_00001" when  ScanCode = x"1C" else  -- A (left)
-        b"1000000000000000000_00010" when  ScanCode = x"23" else -- D (right)
-        b"1000000000000000000_00100" when  ScanCode = x"1D" else -- W (up)
-        b"1000000000000000000_01000" when  ScanCode = x"1B" else -- S (down)
-        b"1000000000000000000_00011" when  ScanCode = x"29" -- space (enter)
-        else (others => '0'); 
-     end if;   
-    end process;
-
 
     -- ALU
     ALU_inst : alu
@@ -288,8 +284,7 @@ BEGIN
         cpu_data_in => data_bus,
         cpu_we => PM_we,
         video_address => v_addr,
-        video_data_out => v_data,
-        ScanCode_abs => ScanCode_to_pMem
+        video_data_out => v_data
     );
 
     -- MICRO MEMORY
