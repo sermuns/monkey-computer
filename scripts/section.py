@@ -6,13 +6,12 @@ class Section:
     Represents continious portion of the memory
     """
 
-    def __init__(self, name: str, start: int, height: int, lines: list = None):
+    def __init__(self, name: str, start: int, lines: list = None):
         """
         Construct section object from given parameters
         """
         self.name = name
         self.start = start
-        self.height = height
         self.lines = lines or []
 
     def __init__(self, declaration_line: str, lines: list = None):
@@ -21,12 +20,14 @@ class Section:
         """
         parts = (declaration_line.replace("%", "")).split()[:3] # ignore comments
         self.name = parts[0]
-        self.start = int(parts[1])
-        self.height = int(parts[2])
+        try:
+            self.start = int(parts[1])
+        except IndexError:
+            self.start = 0
         self.lines = lines or []
 
     def __repr__(self) -> str:
-        return f"{self.name} {self.start} {self.height}"
+        return f"Section({self.name}, {self.start}, {self.lines})"
 
 
 def use_sections(line, sections):

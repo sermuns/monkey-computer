@@ -1,3 +1,5 @@
+#!/usr/bin/env python3
+
 """
 Parse the given argument file from monkey-assembly to binary code
 """
@@ -19,13 +21,13 @@ from instruction_decoding import parse_operation, parse_register_and_address
 
 KNOWN_OPCODES = utils.get_mnemonics()
 
-PROG_DIR = "masm"
+MASM_DIR = "masm"
 HARDWARE_DIR = "hardware"
 PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
 FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
 ADR_WIDTH = 12
-DEBUG_ARG = "routine.s"
+DEBUG_ARG = "key.s"
 
 INSTRUCTION_WIDTH = 24
 
@@ -161,8 +163,7 @@ def get_arg():
     Get the filename argument
     """
     if len(sys.argv) != 2:
-        this_script_name = os.path.basename(__file__)
-        print(f"Usage: python3 {this_script_name} <masm file>.s")
+        print("Usage: python3 assembler.py <filename>")
         sys.exit(1)
 
     arg = sys.argv[1]
@@ -207,8 +208,6 @@ def replace_mov_with_ld_st(asm_lines):
         asm_lines[i] = st_line
         asm_lines.insert(i + 1, ld_line)
 
-    return asm_lines
-
 
 def main():
 
@@ -217,20 +216,24 @@ def main():
 
     # find the file containing assembly code
     asm_file_name = get_arg()
-    asm_file_path = os.path.join(PROG_DIR, asm_file_name)
+    asm_file_path = os.path.join(MASM_DIR, asm_file_name)
 
     # read the assembly file
     asm_lines = read_lines(asm_file_path)
 
+    # resolve includes (<file>)
+    utils.resolve_includes(asm_lines, MASM_DIR)
+
     # remove comments and empty lines
-    asm_lines = utils.get_lines_without_empty_and_comments(asm_lines)
+    asm_lines = utils.get_without_empty_or_only_comment_lines(asm_lines)
 
     current_section_name = ""
     new_label = ""
     sections = {}
 
+
     # replace MOV with LD and ST
-    asm_lines = replace_mov_with_ld_st(asm_lines)
+    replace_mov_with_ld_st(asm_lines)
 
     # find all sections beforehand
     for i, line in enumerate(asm_lines):

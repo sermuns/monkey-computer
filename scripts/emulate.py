@@ -31,7 +31,7 @@ TILE_SIZE_PX = 48   # Commented out (MAP_SIZE_PX // MAP_SIZE_TILES) because it s
 FONT_PATH = os.path.join("scripts", "fonts", "jetbrainsmono.ttf")
 
 
-DEBUG_ASSEMBLY_FILE = "routine.s"  # change this to which file you want to debug
+DEBUG_ASSEMBLY_FILE = "key.s"  # change this to which file you want to debug
 
 def parse_vmem(vmem_lines: list) -> np.ndarray:
     """

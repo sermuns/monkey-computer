@@ -11,6 +11,24 @@ def change_dir_to_root():
         os.chdir(os.pardir)
 
 
+def resolve_includes(asm_lines: list, masm_dir: str):
+    """
+    Resolve all includes in the given assembly lines
+    """
+
+    for i, line in enumerate(asm_lines):
+        if "<" not in line:
+            continue
+
+        include_file_name = re.search(r"<(.+)>", line).group(1)
+        include_file_path = os.path.join(masm_dir, include_file_name)
+
+        include_lines = open(include_file_path, "r").readlines()
+
+        # replace the include line with the lines from the included file
+        asm_lines[i : i + 1] = include_lines
+
+
 def get_decimal_int(input_number_string: str) -> int:
     """
     Parse a single number in binary, decimal or hexadecimal format
@@ -123,9 +141,9 @@ def get_clean_lines(lines):
     ]
 
 
-def get_lines_without_empty_and_comments(lines):
+def get_without_empty_or_only_comment_lines(lines):
     """
-    Return lines that are not empty or only contain comments
+    Remove empty lines and lines that are only comments
     This allows code that has comments at the end of the line
     """
 
@@ -138,6 +156,7 @@ def get_lines_without_empty_and_comments(lines):
         if not line.strip():
             continue
         result.append(line)
+
     return result
 
 

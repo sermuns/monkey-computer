@@ -39,6 +39,7 @@ class Machine:
     def init_memory(self, assembly_lines):
         """
         Expand the assembly lines into the full memory.
+        - Includes are resolved,
         - Macros are expanded,
         - Sections are used
         """
@@ -46,11 +47,11 @@ class Machine:
         self.sections = {}  # section name -> Section object
         macros = {}  # macro name -> macro value
 
-        # init empty memory
-        self.memory = [""] * self.MEMORY_HEIGHT
+        # resolve includes (<file.s>)
+        utils.resolve_includes(assembly_lines, masm_dir="masm")
 
         # remove lines that are empty or only contain comments
-        clean_lines = utils.get_lines_without_empty_and_comments(assembly_lines)
+        clean_lines = utils.get_without_empty_or_only_comment_lines(assembly_lines)
 
         # begin by finding all sections
         for i, line in enumerate(clean_lines):
@@ -84,6 +85,9 @@ class Machine:
             line = use_sections(line, self.sections)
 
             current_section.lines.append(line)
+
+        # init empty memory
+        self.memory = [""] * self.MEMORY_HEIGHT
 
         # now that all macros and sections have been expanded, we can
         # fill the memory
@@ -122,7 +126,7 @@ class Machine:
         """
 
         if self.halted:
-            print("Machine is halted!")
+            print("Machine is halted! Press 'r' to reset")
             return
 
         # Fetch the next instruction
