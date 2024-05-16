@@ -98,7 +98,7 @@ delay:
     LDI GR7, 0x0FFFFF    
 delay1:
     SUBI GR7, 1
-    CMP GR7, 0
+    CMPI GR7, 0
     BNE delay1
 
     SUBI GR0, 1 ;b
@@ -113,7 +113,7 @@ delay:
     LDI GR7, 0x0FFFFF    
 delay1:
     SUBI GR7, 1
-    CMP GR7, 0
+    CMPI GR7, 0
     BNE delay1
 
     BRA balloon_animation ;b
