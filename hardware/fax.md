@@ -98,5 +98,15 @@ eller
 26-29: ballon 1 frame 1-4 BLÅ
 30-33: ballon 2 frame 1-4 TURKÅS tuqoiseeeeeeeeeeeeeee
 34-37: ballon 3 frame 1-4 ORANGE
+38: svart
+39: apa 1 highlighted
+40: apa 2 highlighted
+41: apa 3 highlighted
+42: apa 4 highlighted
+43: apa 5 highlighted
+44: apa 6 highlighted
+45-47: RESET text
+48-50: QUIT text
+
 
 

@@ -19,9 +19,13 @@ window_scale = 1
 # Constants
 SURFACE_WIDTH_PX = 640
 SURFACE_HEIGHT_PX = 480
-MAP_SIZE_PX = SURFACE_HEIGHT_PX
-MAP_SIZE_TILES = 10
-TILE_SIZE_PX = MAP_SIZE_PX // MAP_SIZE_TILES
+# With MENU implemented, map tile size is unsymmetrical can not use (MAP_SIZE_TILES = 10)
+MAP_SIZE_X_TILES = 13
+MAP_SIZE_Y_TILES = 10
+# With MENU implemented, map tile size is unsymmetrical can not use (MAP_SIZE_PX = SURFACE_HEIGHT_PX)
+MAP_SIZE_X_PX = MAP_SIZE_X_TILES*12*4   # ( amount of tiles x axis*amount of macropixels x axis*macropixel size)
+MAP_SIZE_y_PX = MAP_SIZE_Y_TILES*12*4   # ( amount of tiles y axis*amount of macropixels y axis*macropixel size)
+TILE_SIZE_PX = 48   # Commented out (MAP_SIZE_PX // MAP_SIZE_TILES) because it should not be dependent on neither of them
 FONT_PATH = os.path.join("scripts", "fonts", "jetbrainsmono.ttf")
 
 
@@ -122,7 +126,6 @@ def get_tile(tile_type: int, tile_rom: list) -> pg.Surface:
         for x in range(TILE_SIZE_MACROPIXELS):
             color = tile_colors[y * TILE_SIZE_MACROPIXELS + x]
             surface.set_at((x, y), color)
-
     return pg.transform.scale(surface, (TILE_SIZE_PX, TILE_SIZE_PX))
 
 
@@ -132,16 +135,14 @@ def get_map_surface(machine, tile_rom):
     """
 
     VMEM = machine.sections["VMEM"].start
-    VMEM_FIELD_BIT_WIDTH = 6
 
-    surface = pg.Surface((MAP_SIZE_PX, MAP_SIZE_PX))
+    surface = pg.Surface((MAP_SIZE_X_TILES*TILE_SIZE_PX, MAP_SIZE_Y_TILES*TILE_SIZE_PX))
 
-    for y in range(MAP_SIZE_TILES):
-        for x in range(MAP_SIZE_TILES):
-            id = y * MAP_SIZE_TILES + x
+    for y in range(MAP_SIZE_Y_TILES):
+        for x in range(MAP_SIZE_X_TILES):
+            id = y * MAP_SIZE_X_TILES + x
             vmem_row = machine.memory[VMEM + id]
             current_tile_type = utils.get_decimal_int(vmem_row)
-
             if current_tile_type > tile_rom.size // 144:
                 utils.ERROR(
                     f"Tile type {current_tile_type} is not defined in the tile ROM"
@@ -333,7 +334,7 @@ def update_screen(screen, machine, show_debug_pane, cursor_position):
     # Clear the screen
     screen.fill("black")
 
-    small_surface = pg.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX))
+    small_surface = pg.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX,))
 
     # Draw game map
     map_surface = get_map_surface(machine, TILE_ROM)
@@ -345,7 +346,7 @@ def update_screen(screen, machine, show_debug_pane, cursor_position):
     tile_size_screen_px = TILE_SIZE_PX * window_scale
     cursor_tile_x = cursor_position[0] // tile_size_screen_px
     cursor_tile_y = cursor_position[1] // tile_size_screen_px
-    if 0 <= cursor_tile_x < MAP_SIZE_TILES and 0 <= cursor_tile_y < MAP_SIZE_TILES:
+    if 0 <= cursor_tile_x < MAP_SIZE_X_TILES and 0 <= cursor_tile_y < MAP_SIZE_Y_TILES:
         cursor_rect = pg.Rect(
             cursor_tile_x * tile_size_screen_px,
             cursor_tile_y * tile_size_screen_px,
@@ -353,8 +354,8 @@ def update_screen(screen, machine, show_debug_pane, cursor_position):
             tile_size_screen_px,
         )
         pg.draw.rect(screen, "grey", cursor_rect, window_scale)
-        tile_pos_text = f"{cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x}({cursor_tile_x}, {cursor_tile_y})"
-        tiletype_text = f"type={utils.get_decimal_int(machine.memory[machine.sections['VMEM'].start + cursor_tile_y * MAP_SIZE_TILES + cursor_tile_x])}"
+        tile_pos_text = f"{cursor_tile_y * MAP_SIZE_X_TILES + cursor_tile_x}({cursor_tile_x}, {cursor_tile_y})"
+        tiletype_text = f"type={utils.get_decimal_int(machine.memory[machine.sections['VMEM'].start + cursor_tile_y * MAP_SIZE_X_TILES + cursor_tile_x])}"
         textlines = f"{tile_pos_text}, {tiletype_text}"
 
         font = pg.font.Font(FONT_PATH, window_scale * FONT_SIZE)
