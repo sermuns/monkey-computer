@@ -10,7 +10,7 @@ ENTITY cpu IS
         ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
         make_op : IN  STD_LOGIC;
         v_addr : IN unsigned(6 DOWNTO 0);
-        v_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0)
+        v_data : OUT unsigned(5 DOWNTO 0)
     );
 END ENTITY;
 
@@ -83,7 +83,7 @@ ARCHITECTURE func OF cpu IS
             cpu_data_in : IN unsigned(23 DOWNTO 0);
             cpu_we : IN STD_LOGIC;
             video_address : IN unsigned(6 DOWNTO 0);
-            video_data : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
+            video_data_out : OUT unsigned(5 DOWNTO 0);
             ScanCode_abs : IN STD_LOGIC_VECTOR(23 DOWNTO 0));
     END COMPONENT;
 
@@ -288,7 +288,7 @@ BEGIN
         cpu_data_in => data_bus,
         cpu_we => PM_we,
         video_address => v_addr,
-        video_data => v_data,
+        video_data_out => v_data,
         ScanCode_abs => ScanCode_to_pMem
     );
 

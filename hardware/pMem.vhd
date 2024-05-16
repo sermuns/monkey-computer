@@ -222,7 +222,7 @@ BEGIN
     BEGIN
         IF rising_edge(clk) THEN
             cpu_data_out <= p_mem(TO_INTEGER(cpu_address) + PROGRAM);
-            video_data_out <= unsigned(p_mem(TO_INTEGER(video_address) + VMEM));
+            video_data_out <= unsigned(p_mem(TO_INTEGER(video_address) + VMEM)(5 downto 0));
         END IF;
     END PROCESS;
 
