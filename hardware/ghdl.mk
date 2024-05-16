@@ -50,7 +50,7 @@ test: gcompile
 	-@ghdl -r $(GHDL_FLAGS) cpu_tb --wave=$(WAVEDIR)/cpu_tb.ghw $(GHDL_RUN_FLAGS)
 
 .PHONY: surfer
-surfer: test
+surfer:
 	@if ! pgrep -x "surfer" > /dev/null; then \
 		surfer wave/cpu_tb.ghw -s save/cpu_tb.ron -c command/qol.surfer > /dev/null & \
 	fi
