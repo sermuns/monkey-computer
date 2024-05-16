@@ -54,7 +54,6 @@ check_monke:
     BEQ monke_animation
 
     MOV GR3, GR4
-
     BRA loop
 
 player_dmg:
@@ -88,19 +87,18 @@ monke_animation:
     BEQ balloon_dmg
     ADDI GR6, 1
     STN %VMEM, GR6
+
+    LDI GR7, 0x0FFFFF
+wait:
+    SUBI GR7, 1
+    BNE wait
+    BRA loop 
+
     BRA monke_animation ;b
 
 reset_anim_state:
     SUBI GR0, 3
     STN %VMEM, GR0
-
-delay:
-    LDI GR7, 0x0FFFFF    
-delay1:
-    SUBI GR7, 1
-    CMPI GR7, 0
-    BNE delay1
-
     SUBI GR0, 1 ;b
     BRA check_monke
 balloon_animation:
@@ -109,18 +107,17 @@ balloon_animation:
     ADDI GR0, 1
     STN %VMEM, GR0
 
-delay:
-    LDI GR7, 0x0FFFFF    
-delay1:
+    LDI GR7, 0x0FFFFF
+wait:
     SUBI GR7, 1
-    CMPI GR7, 0
-    BNE delay1
+    BNE wait
 
     BRA balloon_animation ;b
+    
+
 
 dead:
-    BRA dead ;b
-
+BRA dead ;b
 
 
 %VMEM 1500 130
