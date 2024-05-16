@@ -180,15 +180,15 @@ BEGIN
             GR <= (Others => (OTHERS => '0'));
         elsif rising_edge(clk) then
             if key = '1' then
-            GR(15) <=  
-            b"1000000000000000000_00001" when  ScanCode = x"1C" else  -- A (left)
-            b"1000000000000000000_00010" when  ScanCode = x"23" else -- D (right)
-            b"1000000000000000000_00100" when  ScanCode = x"1D" else -- W (up)
-            b"1000000000000000000_01000" when  ScanCode = x"1B" else -- S (down)
-            b"1000000000000000000_00011" when  ScanCode = x"29"else -- Space (confirm) 
-            (others => '-'); 
-            end if;
-            else if (FB = "101") then
+                case ScanCode is
+                    when x"1C" => GR(15) <= b"1000000000000000000_00001"; -- A (left)
+                    when x"23" => GR(15) <= b"1000000000000000000_00010"; -- D (right)
+                    when x"1D" => GR(15) <= b"1000000000000000000_00100"; -- W (up)
+                    when x"1B" => GR(15) <= b"1000000000000000000_01000"; -- S (down)
+                    when x"29" => GR(15) <= b"1000000000000000000_00011"; -- Space (confirm)
+                    when others => GR(15) <= (others => '-');
+                end case;
+             elsif (FB = "101") then
                 GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus;
             end if;
         end if;

@@ -10,7 +10,7 @@ ENTITY pMem IS
         cpu_data_in : IN unsigned(23 DOWNTO 0);
         cpu_we : IN STD_LOGIC;
         video_address : IN unsigned(6 DOWNTO 0);
-        video_data_out : OUT unsigned(5 DOWNTO 0);
+        video_data_out : OUT unsigned(5 DOWNTO 0)
     );
 END pMem;
 
@@ -29,15 +29,7 @@ ARCHITECTURE func OF pMem IS
     -- 5     4    2  1   12  
     SIGNAL p_mem : p_mem_type := (
         -- PROGRAM
-        PROGRAM+0 => b"00000_010_01_--_------------", -- start : LDI GR2, 2
-        PROGRAM+1 => b"000000000000000000000010", -- 
-        PROGRAM+2 => b"00001_010_10_--_011010100100", -- STN 1700, GR2 // baloon spawn amount
-        PROGRAM+3 => b"00000_000_01_--_------------", -- LDI GR0, 34 //balloon tiletype
-        PROGRAM+4 => b"000000000000000000100010", -- 
-        PROGRAM+5 => b"00011_000_01_--_------------", -- SUBI GR0, 1 //weird fix
-        PROGRAM+6 => b"000000000000000000000001", -- 
-        PROGRAM+7 => b"01010_---_00_--_000000000010", -- BRA loop
-        PROGRAM+8 => b"11111_---_--_--_------------", -- end : HALT
+        PROGRAM+0 => b"11111_----_--_0_------------", -- start : HALT
         -- VMEM
         VMEM+0 => b"000000000000000000000000", -- 0
         VMEM+1 => b"000000000000000000000000", -- 0

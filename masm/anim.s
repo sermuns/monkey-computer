@@ -1,11 +1,10 @@
 %PROGRAM 0 1499
 start:
-    LDI GR0, 28
+LDI GR0, 4
+STN 30, GR0
 loop:
     STN %VMEM, GR0 
-
     ADDI GR3, 1
-    
     BRA loop
 
 end:

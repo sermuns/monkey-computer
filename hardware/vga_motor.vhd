@@ -139,8 +139,8 @@ BEGIN
             y_within_tile <= (OTHERS => '0');
         ELSIF rising_edge(clk) AND x_subpixel = 799 THEN
             IF clk25 = '1' THEN
-                IF (y_subpixel = 479) THEN
-                    y_within_tile <= (OTHERS => '0'); -- outside of map
+                IF (y_subpixel = 521) THEN
+                y_within_tile <= (OTHERS => '0'); -- time to restart
                 ELSE
                     IF (y_within_tile = 47) THEN
                         y_within_tile <= (OTHERS => '0'); -- bottom edge of tile
