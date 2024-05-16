@@ -107,6 +107,6 @@ eller
 44: apa 6 highlighted
 45-47: RESET text
 48-50: QUIT text
-
+51: Cursor
 
 
