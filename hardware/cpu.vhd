@@ -166,14 +166,10 @@ BEGIN
         END IF;
     END PROCESS;
 
-
-
     -- GENERAL REGISTERS (GRx) 
-    GRx <= GR(TO_INTEGER(unsigned(GRx_num))) WHEN GRx_num /= "----" and key  = '0' else 
-    GR(3) when M="11" Else (OTHERS => '-');
+    GRx <= GR(3) when (M="11" and uPC < 15) else GR(TO_INTEGER(unsigned(GRx_num)));
     
         
-
     process (clk, rst)
     begin
         if rst = '1' then
@@ -222,24 +218,24 @@ BEGIN
 
     K1 <=
     b"00001111"/*LOAD.b8*/ WHEN (OP = "00000") ELSE
-    b"00010000"/*STORE.b8*/ WHEN (OP = "00001") ELSE
-    b"00010001"/*ADD.b8*/ WHEN (OP = "00010") ELSE
-    b"00010100"/*SUB.b8*/ WHEN (OP = "00011") ELSE
-    b"00010111"/*CMP.b8*/ WHEN (OP = "00100") ELSE
-    b"00011001"/*AND.b8*/ WHEN (OP = "00101") ELSE
-    b"00100001"/*OR.b8*/ WHEN (OP = "00110") ELSE
-    b"00011100"/*LSR.b8*/ WHEN (OP = "00111") ELSE
-    b"00101010"/*JSR.b8*/ WHEN (OP = "01001") ELSE
-    b"00100100"/*BRA.b8*/ WHEN (OP = "01010") ELSE
-    b"00100110"/*BNE.b8*/ WHEN (OP = "01011") ELSE
-    b"00101000"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
-    b"00101101"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
-    b"00101111"/*POP.b8*/ WHEN (OP = "01110") ELSE
-    b"00011110"/*MUL.b8*/ WHEN (OP = "01111") ELSE
-    b"00110011"/*RET.b8*/ WHEN (OP = "10000") ELSE
-    b"00110101"/*MOV.b8*/ when (OP = "10010") else
-    b"00110111"/*SWAP.b8*/ when (OP = "10001") else
-    b"01000000"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+    b"00010001"/*STORE.b8*/ WHEN (OP = "00001") ELSE
+    b"00010011"/*ADD.b8*/ WHEN (OP = "00010") ELSE
+    b"00010110"/*SUB.b8*/ WHEN (OP = "00011") ELSE
+    b"00011001"/*CMP.b8*/ WHEN (OP = "00100") ELSE
+    b"00011011"/*AND.b8*/ WHEN (OP = "00101") ELSE
+    b"00100011"/*OR.b8*/ WHEN (OP = "00110") ELSE
+    b"00011110"/*LSR.b8*/ WHEN (OP = "00111") ELSE
+    b"00101100"/*JSR.b8*/ WHEN (OP = "01001") ELSE
+    b"00100110"/*BRA.b8*/ WHEN (OP = "01010") ELSE
+    b"00101000"/*BNE.b8*/ WHEN (OP = "01011") ELSE
+    b"00101010"/*BEQ.b8*/ WHEN (OP = "01100") ELSE
+    b"00101111"/*PUSH.b8*/ WHEN (OP = "01101") ELSE
+    b"00110001"/*POP.b8*/ WHEN (OP = "01110") ELSE
+    b"00100000"/*MUL.b8*/ WHEN (OP = "01111") ELSE
+    b"00110101"/*RET.b8*/ WHEN (OP = "10000") ELSE
+    b"00110111"/*MOV.b8*/ when (OP = "10010") else
+    b"00111001"/*SWAP.b8*/ when (OP = "10001") else
+    b"01000010"/*HALT.b8*/ WHEN (OP = "11111") ELSE
     (OTHERS => 'U'); -- something wrong
 
     K2 <=
