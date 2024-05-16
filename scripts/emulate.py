@@ -417,9 +417,9 @@ if __name__ == "__main__":
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 sys.exit()
-            elif event.type == pg.MOUSEBUTTONDOWN:
-                machine.continue_to_breakpoint()
-                update_screen(screen, machine, show_debug_pane, cursor_position)
+            # elif event.type == pg.MOUSEBUTTONDOWN:
+            #     machine.continue_to_breakpoint()
+            #     update_screen(screen, machine, show_debug_pane, cursor_position)
             elif event.type == pg.KEYDOWN:
                 emulation_event = KEYBINDINGS.get(event.key)
                 if emulation_event is None:

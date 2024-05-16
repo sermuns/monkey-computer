@@ -25,7 +25,7 @@ PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
 FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
 ADR_WIDTH = 12
-DEBUG_ARG = "test.s"
+DEBUG_ARG = "path.s"
 
 INSTRUCTION_WIDTH = 24
 
@@ -193,6 +193,24 @@ def main():
     current_section_name = ""
     new_label = ""
     sections = {}
+
+    # replace MOV with LD and ST
+    for i, line in enumerate(asm_lines):
+        if "MOV" not in line:
+            continue
+
+        # store source register value on %HEAP
+        source_register = re.findall(r"GR\d+", line)
+        st_line = f"ST %HEAP, {source_register[-1]}"
+        
+        # load source register value from %HEAP
+        destination_register = re.findall(r"GR\d+", line)
+        ld_line = f"LD {destination_register[0]}, %HEAP"
+
+        # remove original line, add new lines
+        asm_lines[i] = st_line
+        asm_lines.insert(i+1, ld_line)
+
 
     # find all sections beforehand
     for i, line in enumerate(asm_lines):
