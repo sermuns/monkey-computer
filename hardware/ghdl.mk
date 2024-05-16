@@ -46,7 +46,10 @@ test: gcompile
 	@ghdl -a $(GHDL_FLAGS) $(SRC_DIR)/cpu_tb.vhd
 	@ghdl -e $(GHDL_FLAGS) cpu_tb
 	@mkdir -p $(WAVEDIR)
-# Allow for simulation to fail
+# If stime is not defined, print error
+ifeq ($(stime),)
+	$(error $(shell echo -e '\033[1;31mstoptime not defined.\033[0m Run `make test stime=1000ns` to run simulation for 1000 ns'))
+endif
 	-@ghdl -r $(GHDL_FLAGS) cpu_tb --wave=$(WAVEDIR)/cpu_tb.ghw $(GHDL_RUN_FLAGS) --stop-time=$(stime)
 
 .PHONY: surfer
