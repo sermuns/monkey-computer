@@ -63,8 +63,11 @@ def parse_address_mode(addr: str, mode: str):
     elif mode == "I":  # immediate
         mode_bin = "01"
         immediate_value = f"{int(addr):0{INSTRUCTION_WIDTH}b}"
-    elif mode == "N": # indexed
+    elif mode == "X":  # indirect
         mode_bin = "10"
+        addr_bin = f"{int(addr):0{ADR_WIDTH}b}"
+    elif mode == "N": # indexed
+        mode_bin = "11"
         addr_bin = f"{int(addr):0{ADR_WIDTH}b}"
     else:
         ERROR(f"Unknown address mode {mode}")

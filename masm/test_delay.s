@@ -1,14 +1,24 @@
 %PROGRAM 0 1499
-start:
-    LDI GR0, 1
-    LDI GR3, 10
-    STN %VMEM, GR0
 
 
+delay:
+    LDI GR7, 0xFFFFFF    
+delay1:
+    SUBI GR7, 1
+    CMP GR7, 0
+    BNE delay1
 
-
-
+    LDI GR0, 28
+    ST %VMEM+20, GR0    
     
+    
+    
+     
+    
+    
+    
+    
+
 
 
 %VMEM 1500 130

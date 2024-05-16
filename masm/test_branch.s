@@ -1,14 +1,14 @@
 %PROGRAM 0 1499
+
 start:
-    LDI GR0, 1
-    LDI GR3, 10
-    STN %VMEM, GR0
+    BRA end
 
+neverrun:
+    LDI GR0, 5
+    ST %VMEM, GR0
 
-
-
-
-    
+end:
+    HALT // nothing 
 
 
 %VMEM 1500 130

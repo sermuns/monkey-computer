@@ -169,7 +169,10 @@ BEGIN
 
 
     -- GENERAL REGISTERS (GRx) 
-    GRx <= GR(TO_INTEGER(unsigned(GRx_num))) WHEN GRx_num /= "----" and key  = '0' else (OTHERS => '-');
+    GRx <= GR(TO_INTEGER(unsigned(GRx_num))) WHEN GRx_num /= "----" and key  = '0' else 
+    GR(3) when M="11" Else (OTHERS => '-');
+    
+        
 
     process (clk, rst)
     begin
