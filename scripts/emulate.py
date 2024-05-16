@@ -135,9 +135,8 @@ def get_map_surface(machine, tile_rom):
     """
 
     VMEM = machine.sections["VMEM"].start
-    VMEM_FIELD_BIT_WIDTH = 6
 
-    surface = pg.Surface((MAP_SIZE_X_TILES, MAP_SIZE_Y_TILES))
+    surface = pg.Surface((MAP_SIZE_X_TILES*TILE_SIZE_PX, MAP_SIZE_Y_TILES*TILE_SIZE_PX))
 
     for y in range(MAP_SIZE_Y_TILES):
         for x in range(MAP_SIZE_X_TILES):
