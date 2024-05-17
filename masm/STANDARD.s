@@ -1,6 +1,6 @@
 delay:
     PUSH GR0
-    LDI GR0, 0x0FFFFF
+    LDI GR0, 0xFF
 delay_loop:
     SUBI GR0, 1
     BNE delay_loop
@@ -9,7 +9,7 @@ delay_end:
     RET
 
 wait_for_player_input:
-   CMPI GR15, 3     // loop until user input
+    CMPI GR15, 3     // loop until user input
     BNE wait_for_player_input
     RET
 

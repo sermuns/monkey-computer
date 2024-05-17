@@ -10,7 +10,9 @@ intended to be run directly.
 """
 
 import numpy as np
+import pygame as pg
 import re
+import time
 
 import array_manip as am
 import utils
@@ -18,6 +20,7 @@ from section import Section, use_sections
 from macros import use_macros
 from instruction_decoding import parse_operation, parse_register_and_address
 
+TICK_DELAY_S = 1e-4
 
 class Machine:
     """
@@ -34,6 +37,7 @@ class Machine:
         self.find_all_breakpoints()
         self.init_registers()
         self.init_flags()
+        self.running_free = False
         self.halted = False
 
     def init_memory(self, assembly_lines):
@@ -95,6 +99,19 @@ class Machine:
             for i, line in enumerate(section.lines):
                 self.memory[section.start + i] = line.strip()
 
+    def set_register(self, register, value):
+        """
+        Set the value of a register
+        """
+
+        if register not in self.registers:
+            utils.ERROR(f"Unknown register {register}")
+
+        if value > 2**24 - 1:
+            utils.ERROR(f"Value {value} is too large for 24-bit register")
+
+        self.registers[register] = value
+
     def init_registers(self):
         self.registers = {
             "GR0": 0,
@@ -125,7 +142,27 @@ class Machine:
         Store the keypress in GR15
         """
 
-        self.registers["GR15"] = key
+        if key == pg.K_a:
+            key_num = 1
+        elif key == pg.K_d:
+            key_num = 2
+        elif key == pg.K_w:
+            key_num = 4
+        elif key == pg.K_s:
+            key_num = 8
+        elif key == pg.K_SPACE:
+            key_num = 3
+        else:
+            return  # no known key
+
+        self.set_register("GR15", key_num)
+
+    def increment_pc(self):
+        """
+        Increment the PC register
+        """
+
+        self.set_register("PC", self.registers["PC"] + 1)
 
     def execute_next_instruction(self):
         """
@@ -142,7 +179,7 @@ class Machine:
         if not instruction:
             utils.ERROR(f"Empty instruction at line {self.registers['PC']}")
 
-        self.registers["PC"] += 1
+        self.increment_pc()
 
         # Interpret the instruction
         self.execute_instruction(instruction)
@@ -187,7 +224,7 @@ class Machine:
             if re.match(r".*;b.*", line):
                 self.breakpoints.append(i)
 
-    def execute_instruction(self, assembly_line:str):
+    def execute_instruction(self, assembly_line: str):
         """
         Perform a single instruction
         """
@@ -198,11 +235,11 @@ class Machine:
         if mnemonic == "HALT":
             print("HALT instruction reached")
             self.halted = True
-            return # do nothing
+            return  # do nothing
         elif mnemonic == "RET":
             self.perform_stack_operation(["POP", "PC"])
             return
-        elif mnemonic in {"BRA", "JSR", "BNE", "BEQ"}: # branch instructions
+        elif mnemonic in {"BRA", "JSR", "BNE", "BEQ"}:  # branch instructions
             destination = parts[1]
             self.branch(mnemonic, destination)
             return
@@ -250,6 +287,32 @@ class Machine:
         """
         destination, source = parts[1], parts[2]
         self.registers[destination] = self.registers[source]
+
+    def halt(self):
+        """
+        Halt the machine
+        """
+
+        self.halted = True
+
+    def toggle_pause(self):
+        """
+        Toggle the pause state of the machine
+        """
+
+        self.running_free = not self.running_free
+
+    def run_fast(self):
+        """
+        Run the machine as fast as possible
+        """
+
+        while True:
+            if self.running_free:
+                self.execute_next_instruction()
+            if self.halted:
+                break
+            time.sleep(TICK_DELAY_S)
 
     def branch(self, mnemonic, destination):
         """
@@ -342,7 +405,7 @@ class Machine:
         self.flags["Z"] = 1 if result == 0 else 0
 
         if mnemonic == "CMP":
-            return # do not write result to register
+            return  # do not write result to register
 
         # write result to register
         self.registers[reg] = result

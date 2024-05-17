@@ -3,6 +3,7 @@
 # includes pygame and enum
 from emulation_config import *
 
+import threading
 import sys
 import numpy as np
 import re
@@ -19,19 +20,25 @@ PALETTE = []
 window_scale = 1
 
 # Constants
+FPS = 60
 SURFACE_WIDTH_PX = 640
 SURFACE_HEIGHT_PX = 480
 # With MENU implemented, map tile size is unsymmetrical can not use (MAP_SIZE_TILES = 10)
 MAP_SIZE_X_TILES = 13
 MAP_SIZE_Y_TILES = 10
 # With MENU implemented, map tile size is unsymmetrical can not use (MAP_SIZE_PX = SURFACE_HEIGHT_PX)
-MAP_SIZE_X_PX = MAP_SIZE_X_TILES*12*4   # ( amount of tiles x axis*amount of macropixels x axis*macropixel size)
-MAP_SIZE_y_PX = MAP_SIZE_Y_TILES*12*4   # ( amount of tiles y axis*amount of macropixels y axis*macropixel size)
-TILE_SIZE_PX = 48   # Commented out (MAP_SIZE_PX // MAP_SIZE_TILES) because it should not be dependent on neither of them
+MAP_SIZE_X_PX = (
+    MAP_SIZE_X_TILES * 12 * 4
+)  # ( amount of tiles x axis*amount of macropixels x axis*macropixel size)
+MAP_SIZE_y_PX = (
+    MAP_SIZE_Y_TILES * 12 * 4
+)  # ( amount of tiles y axis*amount of macropixels y axis*macropixel size)
+TILE_SIZE_PX = 48  # Commented out (MAP_SIZE_PX // MAP_SIZE_TILES) because it should not be dependent on neither of them
 FONT_PATH = os.path.join("scripts", "fonts", "jetbrainsmono.ttf")
 
 
-DEBUG_ASSEMBLY_FILE = "key.s"  # change this to which file you want to debug
+DEBUG_ASSEMBLY_FILE = "path.s"  # change this to which file you want to debug
+
 
 def parse_vmem(vmem_lines: list) -> np.ndarray:
     """
@@ -107,7 +114,6 @@ def get_tile(tile_type: int, tile_rom: list) -> pg.Surface:
     """
 
     TILE_SIZE_MACROPIXELS = TILE_SIZE_PX // 4  # 12x12 macropixels per tile
-    COLOR_CHANNELS = 3
 
     surface = pg.Surface((TILE_SIZE_MACROPIXELS, TILE_SIZE_MACROPIXELS))
 
@@ -137,7 +143,9 @@ def get_map_surface(machine, tile_rom):
 
     VMEM = machine.sections["VMEM"].start
 
-    surface = pg.Surface((MAP_SIZE_X_TILES*TILE_SIZE_PX, MAP_SIZE_Y_TILES*TILE_SIZE_PX))
+    surface = pg.Surface(
+        (MAP_SIZE_X_TILES * TILE_SIZE_PX, MAP_SIZE_Y_TILES * TILE_SIZE_PX)
+    )
 
     for y in range(MAP_SIZE_Y_TILES):
         for x in range(MAP_SIZE_X_TILES):
@@ -169,10 +177,9 @@ def handle_args():
         sys.argv[1] = DEBUG_ASSEMBLY_FILE
 
     for arg in sys.argv[1:]:
-        groups = re.match(r"--scale=(\d+)", arg)
-        if groups:
+        if "--scale=" in arg:
             global window_scale
-            window_scale = int(groups.group(1))
+            window_scale = int(arg.split("=")[1])
 
     assembly_file = os.path.join(MASM_DIR, sys.argv[1])
 
@@ -335,7 +342,12 @@ def update_screen(screen, machine, show_debug_pane, cursor_position):
     # Clear the screen
     screen.fill("black")
 
-    small_surface = pg.Surface((SURFACE_WIDTH_PX, SURFACE_HEIGHT_PX,))
+    small_surface = pg.Surface(
+        (
+            SURFACE_WIDTH_PX,
+            SURFACE_HEIGHT_PX,
+        )
+    )
 
     # Draw game map
     map_surface = get_map_surface(machine, TILE_ROM)
@@ -371,7 +383,67 @@ def update_screen(screen, machine, show_debug_pane, cursor_position):
         placement_pos = (screen.get_width() - debug_width, 0)
         screen.blit(debug_surface, placement_pos)
 
+    # Draw play or pause button
+    draw_play_or_pause_button(screen, machine.running_free)
+
     pg.display.flip()
+
+
+def draw_play_or_pause_button(screen, running_free):
+    """
+    Draw play or pause button in the top right corner
+    """
+
+    button_size = 20 * window_scale
+    button_pos = (screen.get_width() - button_size, 0)
+
+    # Create a new surface with the same size as the button
+    button_surface = pg.Surface((button_size, button_size))
+
+    # Draw the button on the new surface
+    if running_free:
+        pg.draw.rect(button_surface, "green", button_surface.get_rect())
+    else:
+        pg.draw.rect(button_surface, "red", button_surface.get_rect())
+
+    # Draw the play or pause symbol on the new surface
+    if running_free:
+        pg.draw.polygon(
+            button_surface,
+            "black",
+            [
+                (5 * window_scale, 5 * window_scale),
+                (5 * window_scale, 15 * window_scale),
+                (15 * window_scale, 10 * window_scale),
+            ],
+        )
+    else:
+        pg.draw.rect(
+            button_surface,
+            "black",
+            pg.Rect(
+                5 * window_scale,
+                5 * window_scale,
+                3 * window_scale,
+                10 * window_scale,
+            ),
+        )
+        pg.draw.rect(
+            button_surface,
+            "black",
+            pg.Rect(
+                12 * window_scale,
+                5 * window_scale,
+                3 * window_scale,
+                10 * window_scale,
+            ),
+        )
+
+    # Set the transparency of the surface
+    button_surface.set_alpha(128)  # 128 out of 255 for 50% transparency
+
+    # Blit the surface onto the screen
+    screen.blit(button_surface, button_pos)
 
 
 def create_screen(width: int, height: int) -> pg.Surface:
@@ -414,19 +486,23 @@ if __name__ == "__main__":
 
     clock = pg.time.Clock()
 
+    # Start a new thread that will run machine fast whenever `running_free` is True
+    # This is done to prevent the main thread from being blocked by the machine
+    thread = threading.Thread(target=machine.run_fast)
+    thread.daemon = True
+    thread.start()
+
     while True:
+        update_screen(screen, machine, show_debug_pane, cursor_position)
+        # clock.tick(FPS)
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 sys.exit()
-            # elif event.type == pg.MOUSEBUTTONDOWN:
-            #     machine.continue_to_breakpoint()
-            #     update_screen(screen, machine, show_debug_pane, cursor_position)
             elif event.type == pg.KEYDOWN:
-                
+
                 # handle in-game keypresses
                 if event.key not in KEYBINDINGS:
                     machine.register_keypress(event.key)
-                    update_screen(screen, machine, show_debug_pane, cursor_position)
                     continue
 
                 emulation_event = KEYBINDINGS.get(event.key)
@@ -452,16 +528,16 @@ if __name__ == "__main__":
                         easygui.msgbox(f"Error: {e}")
                 elif emulation_event == EmulationEvent.show_debug_pane:
                     show_debug_pane = not show_debug_pane
+                elif emulation_event == EmulationEvent.pause:
+                    machine.toggle_pause()
                 elif emulation_event == EmulationEvent.step:
                     machine.execute_next_instruction()
                 elif emulation_event == EmulationEvent.continue_to_breakpoint:
                     machine.continue_to_breakpoint()
-
-                update_screen(screen, machine, show_debug_pane, cursor_position)
+                else:
+                    utils.ERROR(f"Unhandled emulation event: {emulation_event}")
 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button != 1:
                     continue
                 cursor_position = event.pos
-
-                update_screen(screen, machine, show_debug_pane, cursor_position)

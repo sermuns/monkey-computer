@@ -23,10 +23,11 @@ class EmulationEvent(Enum):
     continue_to_breakpoint = auto()
     safe_continue_to_breakpoint = auto()
     interact_with_memory = auto()
+    pause = auto()
+    resume = auto()
 
 
 KEYBINDINGS = {
-    pg.K_SPACE: EmulationEvent.step,
     pg.K_n: EmulationEvent.step,
     pg.K_F10: EmulationEvent.step,
     pg.K_r: EmulationEvent.reset,
@@ -35,8 +36,8 @@ KEYBINDINGS = {
     pg.K_F1: EmulationEvent.show_debug_pane,
     pg.K_c: EmulationEvent.continue_to_breakpoint,
     pg.K_F5: EmulationEvent.continue_to_breakpoint,
-    pg.K_s: EmulationEvent.safe_continue_to_breakpoint,
     pg.K_F6: EmulationEvent.safe_continue_to_breakpoint,
-    pg.K_p: EmulationEvent.interact_with_memory,
     pg.K_F2: EmulationEvent.interact_with_memory,
+    pg.K_p: EmulationEvent.pause,
+    pg.K_RETURN: EmulationEvent.resume,
 }

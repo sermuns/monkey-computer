@@ -1,6 +1,16 @@
-import os, re, sys
+import os, re, sys, time
 
 COMMENT_INITIATORS = {"--", "//", "@"}
+
+def busywait(duration, get_now=time.perf_counter):
+    """
+    Busy wait for the given duration
+    """
+
+    now = get_now()
+    end = now + duration
+    while now < end:
+        now = get_now()
 
 
 def change_dir_to_root():
