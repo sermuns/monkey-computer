@@ -82,8 +82,9 @@ prog	: $(WORK)/$(BIT_NAME)
 
 .PHONY:	sim
 sim	: $(VHD) $(TBF) compile
+	cp dofile $(SIMDIR)/dofile
 	cd $(SIMDIR); vcom -2008 ../$(TBF)
-	cd $(SIMDIR); vsim -voptargs=+acc -L work $(TBF_BASE)
+	cd $(SIMDIR); vsim -voptargs=+acc -L work $(TBF_BASE) -do dofile
 
 .PHONY:	clean
 clean	:

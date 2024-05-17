@@ -34,7 +34,7 @@ ARCHITECTURE func OF tile_rom IS TYPE palette_rom_type IS ARRAY(0 TO 18) OF STD_
     );
     CONSTANT TILE_SIZE : INTEGER := 12 * 12;
 
-    TYPE tile_rom_type IS ARRAY(0 TO 9215) OF unsigned(4 DOWNTO 0);
+    TYPE tile_rom_type IS ARRAY(0 TO 9359) OF unsigned(4 DOWNTO 0);
     CONSTANT tile_rom_data : tile_rom_type := (
         -- 0
         "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001", "01001",

@@ -1,0 +1,7 @@
+vcom "+acc" -2008 ../main.vhd ../cpu.vhd ../uMem.vhd ../pMem.vhd ../alu.vhd ../vga_motor.vhd ../kbd_enc.vhd ../tile_rom.vhd
+vcom "+acc" -2008 ../cpu_tb.vhd
+vsim cpu_tb
+
+add wave -r /*
+
+restart -f
