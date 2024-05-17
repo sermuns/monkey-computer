@@ -120,6 +120,13 @@ class Machine:
     def init_flags(self):
         self.flags = {"Z": 0, "N": 0, "C": 0, "V": 0}
 
+    def register_keypress(self, key):
+        """
+        Store the keypress in GR15
+        """
+
+        self.registers["GR15"] = key
+
     def execute_next_instruction(self):
         """
         Perform the next instruction in the memory

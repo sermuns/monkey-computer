@@ -240,7 +240,7 @@ def create_register_lines(machine):
     register_lines = []
     register_line = ""
     for register, value in machine.registers.items():
-        register_line += f"{register:3}:{value:2}  "
+        register_line += f"{register:4}:{value:10}  "
         if len(register_line) > 40:
             register_lines.append(register_line)
             register_line = ""
@@ -422,7 +422,15 @@ if __name__ == "__main__":
             #     machine.continue_to_breakpoint()
             #     update_screen(screen, machine, show_debug_pane, cursor_position)
             elif event.type == pg.KEYDOWN:
+                
+                # handle in-game keypresses
+                if event.key not in KEYBINDINGS:
+                    machine.register_keypress(event.key)
+                    update_screen(screen, machine, show_debug_pane, cursor_position)
+                    continue
+
                 emulation_event = KEYBINDINGS.get(event.key)
+
                 if emulation_event is None:
                     continue
                 elif emulation_event == EmulationEvent.reset:

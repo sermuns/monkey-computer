@@ -28,7 +28,6 @@ class EmulationEvent(Enum):
 KEYBINDINGS = {
     pg.K_SPACE: EmulationEvent.step,
     pg.K_n: EmulationEvent.step,
-    pg.K_s: EmulationEvent.step,
     pg.K_F10: EmulationEvent.step,
     pg.K_r: EmulationEvent.reset,
     pg.K_q: EmulationEvent.quit,
