@@ -1,10 +1,15 @@
 _playerhp = %HEAP+1
+_playergold = %HEAP+2
+
 
 %PROGRAM 0 69 
 start:
     JSR wait_for_player_input
-    LDI GR2, 2
+    LDI GR2, 8
     ST _playerhp, GR2 // hp
+    LDI GR2, 100
+    ST _playergold, GR2 // gold
+    JSR update_hp
     LDI GR0, 34 //balloon tiletype
     SUBI GR0, 1 //weird fix
 
@@ -134,11 +139,9 @@ mark_input_as_read:
     RET
 
 update_hp:
-    LDI GR0, 54
-    LDI GR1, 11
-    LDI GR3, 4
-    STN %VMEM, GR1 
-    STN %VMEM, GR1
+    LD GR2, _playerhp //
+    ADDI GR2, 54 
+    ST %VMEM+12, GR2
     RET
 
 
