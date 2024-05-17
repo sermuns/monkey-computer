@@ -357,7 +357,7 @@ class Machine:
             value = self.memory[self.registers["GR3"] + adr]
         else:
             utils.ERROR(f"Unknown address mode {address_mode}")
-
+            
         self.registers[reg] = utils.get_decimal_int(value)
 
     def store_value(self, reg, adr: int, address_mode):

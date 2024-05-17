@@ -11,6 +11,7 @@ delay_end:
 wait_for_player_input:
     CMPI GR15, 3     // loop until user input
     BNE wait_for_player_input
+    LDI GR15, 0
     RET
 
 left_input:
@@ -206,4 +207,4 @@ down_input:
 114
 
 
-%HEAP 1700 000000001 
+%HEAP 1700 1000 

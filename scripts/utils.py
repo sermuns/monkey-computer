@@ -51,7 +51,6 @@ def get_decimal_int(input_number_string: str) -> int:
 
     # Find the base of the number and the number itself
     match = re.match(r"(0([bdx])|\$)?([0-9A-Fa-f]+)", input_number_string)
-
     if not match:
         ERROR(f"Could not parse number string {input_number_string}")
 
