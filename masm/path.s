@@ -111,18 +111,60 @@ balloon_animation:
     BEQ reset_anim_state
     ADDI GR0, 1
     STN %VMEM, GR0
-
     LDI GR7, 0x0FFFFF
 wait3:
     SUBI GR7, 1
     BNE wait3
-
     BRA balloon_animation ;b
-    
 
 
 dead:
 BRA dead ;b
+
+read_input:
+    CMPI GR15, 1
+    BEQ left_input // A key
+    CMPI GR15, 2
+    BEQ right_input // D key
+    CMPI GR15, 4 // W key
+    BEQ up_input
+    CMPI GR15, 8 // S key
+    BEQ down_input
+    CMPI GR15, 3 
+    RET
+
+mark_input_as_read:
+    LDI GR15, 0
+    RET
+
+update_hp:
+    LDI GR0, 54
+    LDI GR1, 11
+    LDI GR3, 4
+    STN %VMEM, GR1 
+    STN %VMEM, GR1
+    RET
+
+wait_for_player_input:
+   CMPI GR15, 3     // loop until user input
+    BNE wait_for_player_input
+
+left_input:
+    LDI GR0, 1
+    RET
+
+right_input:
+
+    LDI GR0, 2
+    RET
+
+up_input:
+    LDI GR0, 3
+    RET
+
+down_input:
+    LDI GR0, 4
+    RET
 
 
 %VMEM 1500 130
@@ -301,4 +343,4 @@ BRA dead ;b
 114
 
 
-%HEAP 1700 10 // Health?
+%HEAP 1700 10 

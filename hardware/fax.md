@@ -36,8 +36,8 @@
 1111  uADR := uADR
 ## Stack pekare
 00 SP = SP
-01 SP++
-10 SP--
+10 SP++
+01 SP--
 
 
 # Assembly 

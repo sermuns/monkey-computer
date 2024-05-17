@@ -77,6 +77,7 @@ ARCHITECTURE func OF cpu IS
     COMPONENT pMem IS
         PORT (
             clk : IN STD_LOGIC;
+            rst: IN STD_LOGIC;
             cpu_address : IN unsigned(11 DOWNTO 0);
             cpu_data_out : OUT STD_LOGIC_VECTOR(23 DOWNTO 0);
             cpu_data_in : IN unsigned(23 DOWNTO 0);
@@ -167,7 +168,8 @@ BEGIN
     END PROCESS;
 
     -- GENERAL REGISTERS (GRx) 
-    GRx <= GR(3) when (M="11" and uPC < 15) else GR(TO_INTEGER(unsigned(GRx_num)));
+    GRx <= GR(3) when (M="11" and uPC < 15) else
+        GR(TO_INTEGER(unsigned(GRx_num)));
     
         
     process (clk, rst)
@@ -175,17 +177,17 @@ BEGIN
         if rst = '1' then
             GR <= (Others => (OTHERS => '0'));
         elsif rising_edge(clk) then
-            if key = '1' then
-                case ScanCode is
-                    when x"1C" => GR(15) <= b"1000000000000000000_00001"; -- A (left)
-                    when x"23" => GR(15) <= b"1000000000000000000_00010"; -- D (right)
-                    when x"1D" => GR(15) <= b"1000000000000000000_00100"; -- W (up)
-                    when x"1B" => GR(15) <= b"1000000000000000000_01000"; -- S (down)
-                    when x"29" => GR(15) <= b"1000000000000000000_00011"; -- Space (confirm)
-                    when others => GR(15) <= (others => '-');
-                end case;
-             elsif (FB = "101") then
+            if (FB = "101") then
                 GR(TO_INTEGER(unsigned(GRx_num))) <= data_bus;
+            else
+                case ScanCode is
+                    when x"1C" => GR(15) <= b"0000000000000000000_00001"; -- A (left)
+                    when x"23" => GR(15) <= b"0000000000000000000_00010"; -- D (right)
+                    when x"1D" => GR(15) <= b"0000000000000000000_00100"; -- W (up)
+                    when x"1B" => GR(15) <= b"0000000000000000000_01000"; -- S (down)
+                    when x"29" => GR(15) <= b"0000000000000000000_00011"; -- Space (confirm)
+                    when others => null;
+                end case;
             end if;
         end if;
     end process;
@@ -233,9 +235,9 @@ BEGIN
     b"00110001"/*POP.b8*/ WHEN (OP = "01110") ELSE
     b"00100000"/*MUL.b8*/ WHEN (OP = "01111") ELSE
     b"00110101"/*RET.b8*/ WHEN (OP = "10000") ELSE
-    b"00110111"/*MOV.b8*/ when (OP = "10010") else
-    b"00111001"/*SWAP.b8*/ when (OP = "10001") else
-    b"01000010"/*HALT.b8*/ WHEN (OP = "11111") ELSE
+    b"00111001"/*MOV.b8*/ when (OP = "10010") else
+    b"00111011"/*SWAP.b8*/ when (OP = "10001") else
+    b"01000100"/*HALT.b8*/ WHEN (OP = "11111") ELSE
     (OTHERS => 'U'); -- something wrong
 
     K2 <=
@@ -278,6 +280,7 @@ BEGIN
     pMem_inst : pMem
     PORT MAP(
         clk => clk,
+        rst => rst,
         cpu_address => ASR,
         cpu_data_out => PM_out,
         cpu_data_in => data_bus,

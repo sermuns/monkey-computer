@@ -53,7 +53,7 @@ BEGIN
     TYPE pattern_array IS ARRAY(NATURAL RANGE <>) OF unsigned(7 DOWNTO 0);
     CONSTANT patterns : pattern_array :=
     (
-    "00011100", -- x"1C" = Make scancode 'A'
+    "00101001", -- x"1C" = Make scancode 'A'
     "11110000", -- x"F0" = Break ...
     "00011100", -- x"1C" = ... scancode 'A'
     "00110010", -- x"32" = Make scancode 'B'
@@ -61,8 +61,10 @@ BEGIN
     "00110010", -- x"32" = ... scancode 'B'
     "00110101", -- x"35" = Make scancode 'Y'
     "11110000", -- x"F0" = Break ...
-    "00110101" -- x"35" = ... scancode 'Y'
+    "00101001", -- x"29" = ... scancode 'SPCAE'
+    "11110000"
     );
+
   BEGIN
     PS2KeyboardData <= '1'; -- initial value
     PS2KeyboardCLK <= '1';

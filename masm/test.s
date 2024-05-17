@@ -1,4 +1,8 @@
 %PROGRAM 0 1499
+wait_for_player_input:
+    CMPI GR15, 3
+    BNE wait_for_player_input
+    
 start:
     LDI GR2, 1
     STN %HEAP, GR2 // baloon spawn amount
