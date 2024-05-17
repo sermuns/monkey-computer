@@ -1,4 +1,36 @@
-%VMEM 1500
+delay:
+    PUSH GR0
+    LDI GR0, 0x0FFFFF
+delay_loop:
+    SUBI GR0, 1
+    BNE delay_loop
+delay_end:
+    POP GR0
+    RET
+
+wait_for_player_input:
+   CMPI GR15, 3     // loop until user input
+    BNE wait_for_player_input
+    RET
+
+left_input:
+    LDI GR0, 1
+    RET
+
+right_input:
+
+    LDI GR0, 2
+    RET
+
+up_input:
+    LDI GR0, 3
+    RET
+
+down_input:
+    LDI GR0, 4
+    RET
+
+%VMEM 1500 420
 0
 0
 0
@@ -130,7 +162,7 @@
 38
 47
 
-%PATH 1630
+%PATH 1630 69420
 52
 53
 40
@@ -174,4 +206,4 @@
 114
 
 
-%HEAP 1700
+%HEAP 1700 000000001 

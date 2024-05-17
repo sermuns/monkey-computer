@@ -27,7 +27,7 @@ PMEM_FILE = os.path.join(HARDWARE_DIR, "pMem.vhd")
 FAX_FILE = os.path.join(HARDWARE_DIR, "fax.md")
 
 ADR_WIDTH = 12
-DEBUG_ARG = "key.s"
+DEBUG_ARG = "path.s"
 
 INSTRUCTION_WIDTH = 24
 
@@ -81,7 +81,7 @@ def parse_register(grx_name):
     if grx_name == "-":
         return "-" * 4
 
-    grx_num = re.search(r"GR([\d+])", grx_name)
+    grx_num = re.search(r"GR(\d+)", grx_name)
 
     if not grx_num:
         ERROR(f"Unknown register {grx_name}")

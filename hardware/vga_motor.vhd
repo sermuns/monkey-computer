@@ -7,7 +7,7 @@ ENTITY vga_motor IS
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
         vmem_address_out : OUT unsigned(7 DOWNTO 0); -- to ask the video memory
-        vmem_data : IN unsigned(5 DOWNTO 0); -- from the video memory
+        vmem_data : IN unsigned(6 DOWNTO 0); -- from the video memory
         vga_hsync : OUT STD_LOGIC;
         vga_vsync : OUT STD_LOGIC;
         vga_red : OUT STD_LOGIC_VECTOR(3 DOWNTO 0);
@@ -38,7 +38,7 @@ ARCHITECTURE behavioral OF vga_motor IS
 
     -- 100 tiles
     SIGNAL col_counter : unsigned(4 DOWNTO 0); -- which row of the video memory
-    SIGNAL current_tiletype : unsigned(5 DOWNTO 0); -- which tiletype is currently being displayed
+    SIGNAL current_tiletype : unsigned(6 DOWNTO 0); -- which tiletype is currently being displayed
 
     SIGNAL x_within_tile : unsigned(5 DOWNTO 0); -- value 0-47px
     SIGNAL y_within_tile : unsigned(5 DOWNTO 0); -- value 0-47px
@@ -202,8 +202,8 @@ BEGIN
     -- slice out the correct field from the video memory data
     current_tiletype <= vmem_data WHEN x_subpixel < 479 ELSE -- MAP
         --"000000"; -- could just make current_tiletype into a alias?
-                    vmem_data WHEN (479 < x_subpixel AND x_subpixel < 623) else -- MENU
-                    "100110"; -- Black to fill between last tile and end of screen
+                    vmem_data WHEN (480 < x_subpixel AND x_subpixel < 623) else -- MENU
+                    "0100110"; -- Black to fill between last tile and end of screen
 
     --TODO what does each bit in the tile_rom_address mean? and what else does it affect?
 

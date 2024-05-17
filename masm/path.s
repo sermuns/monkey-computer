@@ -1,13 +1,16 @@
-%PROGRAM 0 1499
+_playerhp = %HEAP+1
+
+%PROGRAM 0 69 
 start:
+    JSR wait_for_player_input
     LDI GR2, 2
-    STN %HEAP, GR2 // baloon spawn amount
+    ST _playerhp, GR2 // hp
     LDI GR0, 34 //balloon tiletype
     SUBI GR0, 1 //weird fix
 
 push_balloon_hp:
     //hårdkodat (ska öka för varje dödad ballong tex)
-    LDI GR6, 4
+    LDI GR6, 5
     PUSH GR6
     
 loop:
@@ -57,9 +60,9 @@ check_monke:
     BRA loop
 
 player_dmg:
-    LD GR2, %HEAP
+    LD GR2, _playerhp
     SUBI GR2, 1
-    ST %HEAP, GR2
+    ST _playerhp, GR2
     SUBI GR2, 0
     BEQ dead
 
@@ -88,10 +91,7 @@ monke_animation:
     ADDI GR6, 1
     STN %VMEM, GR6
 
-    LDI GR7, 0x0FFFFF
-wait1:
-    SUBI GR7, 1
-    BNE wait1
+    JSR delay
 
     BRA monke_animation ;b
 
@@ -99,10 +99,7 @@ reset_anim_state:
     SUBI GR0, 3
     STN %VMEM, GR0
 
-    LDI GR7, 0x0FFFFF
-wait2:
-    SUBI GR7, 1
-    BNE wait2
+    JSR delay
 
     SUBI GR0, 1 ;b
     BRA check_monke
@@ -111,10 +108,9 @@ balloon_animation:
     BEQ reset_anim_state
     ADDI GR0, 1
     STN %VMEM, GR0
-    LDI GR7, 0x0FFFFF
-wait3:
-    SUBI GR7, 1
-    BNE wait3
+
+    JSR delay
+
     BRA balloon_animation ;b
 
 
@@ -145,202 +141,6 @@ update_hp:
     STN %VMEM, GR1
     RET
 
-wait_for_player_input:
-   CMPI GR15, 3     // loop until user input
-    BNE wait_for_player_input
-
-left_input:
-    LDI GR0, 1
-    RET
-
-right_input:
-
-    LDI GR0, 2
-    RET
-
-up_input:
-    LDI GR0, 3
-    RET
-
-down_input:
-    LDI GR0, 4
-    RET
 
 
-%VMEM 1500 130
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-49
-63
-63
-0
-25
-25
-25
-25
-25
-25
-25
-25
-0
-51
-54
-54
-0
-25
-1
-0
-1
-0
-0
-0
-25
-0
-1
-38
-5
-0
-25
-0
-25
-25
-25
-25
-25
-25
-0
-38
-38
-38
-25
-25
-0
-25
-0
-0
-0
-0
-0
-0
-9
-53
-13
-0
-0
-0
-25
-0
-25
-25
-25
-0
-0
-38
-38
-38
-0
-25
-25
-25
-0
-25
-0
-25
-0
-0
-17
-38
-21
-0
-25
-0
-0
-0
-25
-0
-25
-0
-0
-38
-38
-38
-0
-25
-25
-25
-25
-25
-0
-25
-25
-25
-64
-64
-64
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-45
-38
-47
-
-%PATH 1630 40
-52
-53
-40
-27
-14
-15
-16
-17
-18
-19
-20
-21
-34
-47
-46
-45
-44
-43
-42
-55
-68
-81
-80
-79
-92
-105
-106
-107
-108
-109
-96
-83
-70
-71
-72
-85
-98
-111
-112
-113
-114
-
-
-%HEAP 1700 10 
+<STANDARD.s>
