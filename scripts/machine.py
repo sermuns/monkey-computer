@@ -39,6 +39,7 @@ class Machine:
         self.init_flags()
         self.running_free = False
         self.halted = False
+        self.stop_at_breakpoints = False
 
     def init_memory(self, assembly_lines):
         """
@@ -209,10 +210,9 @@ class Machine:
             print("No breakpoints set")
             return
 
-        while True:
-            self.execute_next_instruction()
-            if self.at_breakpoint() or self.halted:
-                break
+        self.stop_at_breakpoints = True
+        self.running_free = True
+
 
     def find_all_breakpoints(self):
         """
@@ -305,6 +305,7 @@ class Machine:
     def run_fast(self):
         """
         Run the machine as fast as possible
+        If breakpoint is True, stop at the next breakpoint
         """
 
         while True:
@@ -312,6 +313,8 @@ class Machine:
                 self.execute_next_instruction()
             if self.halted:
                 break
+            if self.stop_at_breakpoints and self.at_breakpoint():
+                self.toggle_pause()
             time.sleep(TICK_DELAY_S)
 
     def branch(self, mnemonic, destination):
