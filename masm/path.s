@@ -7,6 +7,9 @@ _currentround = %HEAP+5
 %PROGRAM 0 69 
 start:
     JSR wait_for_player_input
+    LDI GR2, 1
+    ST _currentround, GR2
+
     // update screen 
     LDI GR2, 8
     ST _playerhpdigit1, GR2 // hp
@@ -23,13 +26,9 @@ start:
     SUBI GR0, 1 //weird fix
 
 push_balloon_hp:
-    //hårdkodat (ska öka för varje dödad ballong tex)
-    PUSH GR3
     //* loads the current round and indexes in the round scaling to get correct hp
-    LD GR3, _currentround 
-    LDN GR6, %ROUND
-
-    POP GR3
+    LD GR6, _currentround 
+    ADDI GR6, 2
     PUSH GR6
     
 loop:
@@ -82,7 +81,7 @@ player_dmg:
     LD GR2, _playerhpdigit1
     SUBI GR2, 1
     ST _playerhpdigit1, GR2
-    JSR update_hp¨
+    JSR update_hp
 
     SUBI GR2, 0
     BEQ dead
@@ -107,14 +106,12 @@ balloon_dead:
 
     STN %VMEM, GR1
     LDI GR5, 0
-    // * get round
-    LD GR3, _currentround
 
     //* get gold dependent on enemy hp
-    LDN GR8, %ROUND
-    SUBI GR8, 2
-    LD GR9, _playergolddigit1
-    ADD GR9, GR8
+    
+    LD GR7, _playergolddigit1
+    ADD GR7, _currentround
+    ST _playergolddigit1, GR7
     JSR update_gold
 
     // * round increase it and store it
@@ -146,8 +143,7 @@ reset_anim_state:
     BRA check_monke
 
 //*hardcoded to work for specefic baloon that is being animated by looping through its frames/
-balloon_animation: 
-
+balloon_animation:
     CMPI GR0, 37
     BEQ reset_anim_state
     ADDI GR0, 1
@@ -206,12 +202,3 @@ update_gold:
 
 
 <STANDARD.s>
-
-%ROUND 1900 10
-5
-6
-7
-10
-12
-15
-18
