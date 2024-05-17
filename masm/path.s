@@ -1,14 +1,22 @@
-_playerhp = %HEAP+1
-_playergold = %HEAP+2
-
+_playerhpdigit1 = %HEAP+1 
+_playerhpdigit2 = %HEAP+2
+_playergolddigit1 = %HEAP+3
+_playergolddigit2 = %HEAP+4
 
 %PROGRAM 0 69 
 start:
     JSR wait_for_player_input
+
     LDI GR2, 8
-    ST _playerhp, GR2 // hp
-    LDI GR2, 100
-    ST _playergold, GR2 // gold
+    ST _playerhpdigit1, GR2 // hp
+    LDI GR2, 0
+    ST _playerhpdigit2, GR2 // hp
+
+
+    LDI GR2, 9
+    ST _playergolddigit1, GR2 // gold
+    ST _playergolddigit2, GR2 // gold
+    JSR update_gold
     JSR update_hp
     LDI GR0, 34 //balloon tiletype
     SUBI GR0, 1 //weird fix
@@ -65,10 +73,11 @@ check_monke:
     BRA loop
 
 player_dmg:
-    LD GR2, _playerhp
+    LD GR2, _playerhpdigit1
     SUBI GR2, 1
-    ST _playerhp, GR2
-    SUBI GR2, 0
+    ST _playerhpdigit1, GR2
+    JSR update_hp
+    SUBI GR2, 0 //no cmpi? 
     BEQ dead
 
     LDI GR5, 0
@@ -139,11 +148,22 @@ mark_input_as_read:
     RET
 
 update_hp:
-    LD GR2, _playerhp //
+    LD GR2, _playerhpdigit1
     ADDI GR2, 54 
     ST %VMEM+12, GR2
+    LD GR2, _playerhpdigit2
+    ADDI GR2, 54
+    ST %VMEM+11, GR2
     RET
 
+update_gold:
+    LD GR2, _playergolddigit1
+    ADDI GR2, 54
+    ST %VMEM+25, GR2
+    LD GR2, _playergolddigit2
+    ADDI GR2, 54
+    ST %VMEM+24, GR2
+    RET
 
 
 <STANDARD.s>
