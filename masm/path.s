@@ -155,7 +155,7 @@ balloon_animation:
 
 
 dead:
-BRA dead ;b
+    HALT
 
 //* Waits for player input which is saved in GR15. /
 read_input:
