@@ -21,7 +21,7 @@ from macros import use_macros
 from instruction_decoding import parse_operation, parse_register_and_address
 from preassemble import preassemble
 
-TICK_DELAY_S = 1e-4
+TICK_DELAY_S = 1e-3
 
 class Machine:
     """
@@ -50,7 +50,6 @@ class Machine:
         self.halted = False
         self.running_free = False
         self.stop_at_breakpoints = False
-
 
     def init_memory(self, asm_file_name):
         """
@@ -193,6 +192,16 @@ class Machine:
         # Interpret the instruction
         self.execute_instruction(instruction)
 
+    def get_register(self, register):
+        """
+        Get the value of a register
+        """
+
+        if register not in self.registers:
+            utils.ERROR(f"Unknown register {register}")
+
+        return self.registers[register]
+
     def get_from_memory(self, address):
         """
         Get the value at the given address in memory
@@ -220,7 +229,6 @@ class Machine:
 
         self.stop_at_breakpoints = True
         self.running_free = True
-
 
     def find_all_breakpoints(self):
         """
@@ -365,7 +373,7 @@ class Machine:
             value = self.memory[self.registers["GR3"] + adr]
         else:
             utils.ERROR(f"Unknown address mode {address_mode}")
-            
+
         self.registers[reg] = utils.get_decimal_int(value)
 
     def store_value(self, reg, adr: int, address_mode):

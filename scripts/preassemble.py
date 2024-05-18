@@ -23,8 +23,7 @@ def preassemble(asm_file_name: str) -> list[str]:
     # Remove comments and empty lines
     asm_lines = utils.get_without_empty_or_only_comment_lines(asm_lines)
 
-    # replace MOV with LD and ST
-    utils.replace_mov_with_ld_st(asm_lines)
+    utils.resolve_mov_on_stack(asm_lines)
 
     # check if program contains HALT, otherwise crash
     if not any("HALT" in line for line in asm_lines):

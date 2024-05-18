@@ -163,26 +163,22 @@ def get_clean_lines(lines):
     ]
 
 
-def replace_mov_with_ld_st(asm_lines):
+def resolve_mov_on_stack(asm_lines):
     """
-    Replace all MOV instructions with LD and ST instructions
+    Replace MOV instructions with PUSH and POP instructions
     """
 
     for i, line in enumerate(asm_lines):
         if "MOV" not in line:
             continue
 
-        # store source register value on %HEAP
-        source_register = re.findall(r"GR\d+", line)
-        st_line = f"ST %HEAP, {source_register[-1]}"
+        registers = re.findall(r"GR\d+", line)
 
-        # load source register value from %HEAP
-        destination_register = re.findall(r"GR\d+", line)
-        ld_line = f"LD {destination_register[0]}, %HEAP"
+        push_line = f"PUSH {registers[1]}"
+        pop_line = f"POP {registers[0]}"
 
         # remove original line, add new lines
-        asm_lines[i] = st_line
-        asm_lines.insert(i + 1, ld_line)
+        asm_lines[i : i + 1] = [push_line, pop_line]
 
 
 def get_without_empty_or_only_comment_lines(lines):

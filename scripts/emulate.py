@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-# includes pygame and enum
+# includes pg and enum
 from emulation_config import *
 
 import threading
@@ -8,10 +8,11 @@ import sys
 import numpy as np
 import re
 import easygui
+import time
 
 import utils
 import array_manip as am
-from machine import Machine
+from machine import Machine, TICK_DELAY_S
 
 
 # Global variables
@@ -20,6 +21,8 @@ PALETTE = []
 window_scale = 1
 
 # Constants
+BEEP_VOLUME = 0.05
+SAMPLE_RATE = 22050
 FPS = 60
 SURFACE_WIDTH_PX = 640
 SURFACE_HEIGHT_PX = 480
@@ -30,35 +33,14 @@ MAP_SIZE_Y_TILES = 10
 MAP_SIZE_X_PX = (
     MAP_SIZE_X_TILES * 12 * 4
 )  # ( amount of tiles x axis*amount of macropixels x axis*macropixel size)
-MAP_SIZE_y_PX = (
+MAP_SIZE_Y_PX = (
     MAP_SIZE_Y_TILES * 12 * 4
 )  # ( amount of tiles y axis*amount of macropixels y axis*macropixel size)
 TILE_SIZE_PX = 48  # Commented out (MAP_SIZE_PX // MAP_SIZE_TILES) because it should not be dependent on neither of them
 FONT_PATH = os.path.join("scripts", "fonts", "jetbrainsmono.ttf")
 
 
-DEBUG_ASSEMBLY_FILE = "path.s"  # change this to which file you want to debug
-
-
-def parse_vmem(vmem_lines: list) -> np.ndarray:
-    """
-    Parse the VHDL array elements into a 10x10 numpy array.
-    """
-
-    VMEM_FIELD_WIDTH = 6
-
-    flat_vmem = []
-
-    for i, line in enumerate(vmem_lines):
-        # Match all fields in the line (e.g. b"000000_000000_000000_000000"
-        fields = re.findall(rf"\d{{{VMEM_FIELD_WIDTH}}}", line)
-        # Parse each field into a 6-bit integer
-        flat_vmem += [int(field, 2) for field in fields]
-
-    vmem = np.zeros((10, 10), dtype=np.uint8)
-    for i, val in enumerate(flat_vmem):
-        vmem[i // 10, i % 10] = val
-    return vmem
+DEBUG_ASSEMBLY_FILE = "beep.s"  # change this to which file you want to debug
 
 
 def read_palette(tile_rom_lines: list) -> list:
@@ -154,7 +136,7 @@ def get_map_surface(machine, tile_rom):
             current_tile_type = utils.get_decimal_int(vmem_row)
             if current_tile_type > tile_rom.size // 144:
                 raise ValueError(
-    f"""
+                    f"""
     VMEM contains too big tile type {current_tile_type} at address VMEM+{id} (x={x}, y={y}).
     Tile ROM only has {tile_rom.size // 144} tiles.
     """
@@ -460,6 +442,94 @@ def create_screen(width: int, height: int) -> pg.Surface:
     return screen
 
 
+def calculate_buffer(frequency, duration=0.3):
+    """
+    Calculate the buffer for a square wave with the given frequency and duration
+    """
+
+    t = np.arange(
+        int(SAMPLE_RATE * duration)
+    )  # number of samples for the given duration
+    square_wave = np.sign(np.sin(2 * np.pi * frequency * t / SAMPLE_RATE))
+
+    # Convert the samples to 16-bit signed integers
+    square_wave = (square_wave * np.iinfo(np.int16).max).astype(np.int16)
+
+    # Interleave the samples for stereo sound
+    stereo_wave = np.column_stack((square_wave, square_wave)).ravel()
+
+    return stereo_wave
+
+
+sound_buffers = {
+    frequency: calculate_buffer(frequency) for frequency in range(0, 10000, 10)
+}
+
+# Store the currently playing sound
+current_sound = None
+current_frequency = 0
+
+
+def begin_beep(frequency):
+    """
+    Begin beeping the piezo at the given frequency
+    """
+
+    global current_sound, current_frequency
+
+    if frequency in {0, current_frequency}:
+        return
+
+    try:
+        buffer = sound_buffers[frequency]
+    except KeyError:
+        raise Exception(f"Frequency {frequency} not supported")
+
+    # Start the new sound
+    current_frequency = frequency
+    current_sound = pg.mixer.Sound(buffer)
+    current_sound.set_volume(BEEP_VOLUME)
+    current_sound.play(-1)  # Play the sound indefinitely
+
+
+def end_beep():
+    """
+    Stop beeping the piezo
+    """
+
+    global current_sound
+
+    # Stop the current sound if it's playing
+    if current_sound is None:
+        return
+
+    current_sound.stop()
+    current_sound = None
+
+
+def beeper_handler(machine):
+    """
+    Beep the piezo if the machine wants to beep
+    """
+
+    global current_frequency
+
+    while True:
+
+        if machine.running_free is False:
+            end_beep()
+            continue
+
+        frequency = machine.get_register("GR14")
+
+        if frequency != current_frequency:
+            end_beep()
+
+        begin_beep(frequency)
+
+        time.sleep(TICK_DELAY_S)
+
+
 if __name__ == "__main__":
     # change the working directory to the root of the project
     utils.change_dir_to_root()
@@ -479,6 +549,7 @@ if __name__ == "__main__":
 
     # initialise pg
     pg.init()
+    pg.mixer.init(channels=2, frequency=SAMPLE_RATE)
     screen = pg.display.set_mode(
         (window_scale * SURFACE_WIDTH_PX, window_scale * SURFACE_HEIGHT_PX),
         PYGAME_FLAGS,
@@ -491,13 +562,18 @@ if __name__ == "__main__":
 
     # Start a new thread that will run machine fast whenever `running_free` is True
     # This is done to prevent the main thread from being blocked by the machine
-    thread = threading.Thread(target=machine.run_fast)
-    thread.daemon = True
-    thread.start()
+    machine_run_thread = threading.Thread(target=machine.run_fast)
+    machine_run_thread.daemon = True
+    machine_run_thread.start()
+
+    beep_thread = threading.Thread(target=beeper_handler, args=(machine,))
+    beep_thread.daemon = True
+    beep_thread.start()
 
     while True:
         update_screen(screen, machine, show_debug_pane, cursor_position)
-        # clock.tick(FPS)
+
+        clock.tick(FPS)
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 sys.exit()
@@ -542,5 +618,6 @@ if __name__ == "__main__":
 
             elif event.type == pg.MOUSEBUTTONDOWN:
                 if event.button != 1:
+                    cursor_position = (-1, -1)
                     continue
                 cursor_position = event.pos
