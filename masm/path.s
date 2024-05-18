@@ -15,8 +15,9 @@ start:
     ST _playerhpdigit1, GR2 // hp
     LDI GR2, 0
     ST _playerhpdigit2, GR2 // hp
-    LDI GR2, 4
+    LDI GR2, 9
     ST _playergolddigit1, GR2 // gold
+    LDI GR2, 1
     ST _playergolddigit2, GR2 // gold
     JSR update_gold
     JSR update_hp
@@ -25,10 +26,11 @@ start:
     LDI GR0, 34 //balloon tiletype
     SUBI GR0, 1 //weird fix
 
+
 push_balloon_hp:
-    //* loads the current round and adds it to the balloon round + 2. /
+    //* loads the current round and adds it to the balloon round + 1. /
     LD GR6, _currentround 
-    ADDI GR6, 2
+    ADDI GR6, 1
     PUSH GR6
     
 loop:
@@ -88,7 +90,7 @@ player_dmg:
 
     LDI GR5, 0
     BRA new_ballon
-
+    
 balloon_dmg:
     LDI GR7, 1
     STN %VMEM, GR7
@@ -109,17 +111,19 @@ balloon_dead:
 
     //* get gold dependent on enemy hp
     LD GR7, _playergolddigit1
-    ADD GR7, _currentround
+    ADDI GR7, 1 // current gold reward.
+    CMPI GR7, 10
+    BEQ increment_of_gold
     ST _playergolddigit1, GR7
+balloon_dead2:
     JSR update_gold
-
     // * round increase it and store it
     LD GR3, _currentround
     ADDI GR3, 1
     ST _currentround, GR3
-
     POP GR3
     BRA push_balloon_hp
+
 
 //* Same as baloon animation but for the monkey. /
 monke_animation:
@@ -167,8 +171,7 @@ read_input:
     BEQ up_input
     CMPI GR15, 8 // S key
     BEQ down_input
-    CMPI GR15, 3 
-
+    //CMPI GR15, 3 // Space
     LDI GR15, 0
     RET
 
@@ -200,5 +203,29 @@ update_gold:
     POP GR2
     RET
 
+left_input:
+    LDI GR0, 1
+    RET
+
+right_input:
+
+    LDI GR0, 2
+    RET
+
+up_input:
+    LDI GR0, 3
+    RET
+
+down_input:
+    LDI GR0, 4
+    RET
+
+increment_of_gold:
+    LDI GR7, 0
+    ST _playergolddigit1, GR7
+    LD GR7, _playergolddigit2
+    ADDI GR7, 1
+    ST _playergolddigit2, GR7
+    BRA balloon_dead2
 
 <STANDARD.s>
