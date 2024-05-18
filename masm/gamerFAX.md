@@ -10,7 +10,8 @@
     Delay : defined in STANDARD.s
 
 ## Curret_errors:
-    Game_loop is not consistant... For example crashes on 2nd loop currently (not fixed)
+    Game_loop is not consistant... For example crashes on 2nd loop currently (fixed) 
+    Reason for error: GR5 was manipulated when it shouldnt have been.
 
 ## Loop flowchart:
     Game start -> push_balloon_hp -> Loop -> player_dmg or new_balloon
