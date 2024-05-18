@@ -26,7 +26,7 @@ start:
     SUBI GR0, 1 //weird fix
 
 push_balloon_hp:
-    //* loads the current round and indexes in the round scaling to get correct hp
+    //* loads the current round and adds it to the balloon round + 2. /
     LD GR6, _currentround 
     ADDI GR6, 2
     PUSH GR6
@@ -88,7 +88,7 @@ player_dmg:
 
     LDI GR5, 0
     BRA new_ballon
-// 
+
 balloon_dmg:
     LDI GR7, 1
     STN %VMEM, GR7
@@ -108,13 +108,13 @@ balloon_dead:
     LDI GR5, 0
 
     //* get gold dependent on enemy hp
-    
     LD GR7, _playergolddigit1
     ADD GR7, _currentround
     ST _playergolddigit1, GR7
     JSR update_gold
 
     // * round increase it and store it
+    LD GR3, _currentround
     ADDI GR3, 1
     ST _currentround, GR3
 
