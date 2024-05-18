@@ -2,6 +2,19 @@ import os, re, sys, time
 
 COMMENT_INITIATORS = {"--", "//", "@"}
 
+
+class COLORS:
+    HEADER = "\033[95m"
+    OKBLUE = "\033[94m"
+    OKCYAN = "\033[96m"
+    OKGREEN = "\033[92m"
+    WARNING = "\033[93m"
+    FAIL = "\033[91m"
+    ENDC = "\033[0m"
+    BOLD = "\033[1m"
+    UNDERLINE = "\033[4m"
+
+
 def busywait(duration, get_now=time.perf_counter):
     """
     Busy wait for the given duration
@@ -148,6 +161,28 @@ def get_clean_lines(lines):
         for line in lines
         if not re.match(rf"({'|'.join(COMMENT_INITIATORS)}).*", line) and line.strip()
     ]
+
+
+def replace_mov_with_ld_st(asm_lines):
+    """
+    Replace all MOV instructions with LD and ST instructions
+    """
+
+    for i, line in enumerate(asm_lines):
+        if "MOV" not in line:
+            continue
+
+        # store source register value on %HEAP
+        source_register = re.findall(r"GR\d+", line)
+        st_line = f"ST %HEAP, {source_register[-1]}"
+
+        # load source register value from %HEAP
+        destination_register = re.findall(r"GR\d+", line)
+        ld_line = f"LD {destination_register[0]}, %HEAP"
+
+        # remove original line, add new lines
+        asm_lines[i] = st_line
+        asm_lines.insert(i + 1, ld_line)
 
 
 def get_without_empty_or_only_comment_lines(lines):

@@ -153,8 +153,11 @@ def get_map_surface(machine, tile_rom):
             vmem_row = machine.memory[VMEM + id]
             current_tile_type = utils.get_decimal_int(vmem_row)
             if current_tile_type > tile_rom.size // 144:
-                utils.ERROR(
-                    f"Tile type {current_tile_type} is not defined in the tile ROM"
+                raise ValueError(
+    f"""
+    VMEM contains too big tile type {current_tile_type} at address VMEM+{id} (x={x}, y={y}).
+    Tile ROM only has {tile_rom.size // 144} tiles.
+    """
                 )
 
             tile = get_tile(current_tile_type, tile_rom)
@@ -181,9 +184,9 @@ def handle_args():
             global window_scale
             window_scale = int(arg.split("=")[1])
 
-    assembly_file = os.path.join(MASM_DIR, sys.argv[1])
+    asm_file_name = sys.argv[1]
 
-    return assembly_file
+    return asm_file_name
 
 
 def blit_textlines_to_surface(target_surface, text_lines, font):
@@ -467,11 +470,11 @@ if __name__ == "__main__":
     TILE_ROM = read_tile_rom(tile_rom_lines)
 
     # find which assembly file to emulate
-    assembly_file = handle_args()
+    asm_file_name = handle_args()
 
     # create machine object
-    assembly_lines = open(assembly_file).readlines()
-    machine = Machine(assembly_lines)
+    machine = Machine(asm_file_name)
+
     show_debug_pane = False  # show machine state on screen
 
     # initialise pg
@@ -510,7 +513,7 @@ if __name__ == "__main__":
                 if emulation_event is None:
                     continue
                 elif emulation_event == EmulationEvent.reset:
-                    machine = Machine(assembly_lines)  # reset the machine
+                    machine.reset()
                 elif emulation_event == EmulationEvent.quit:
                     sys.exit()
                 elif emulation_event == EmulationEvent.interact_with_memory:

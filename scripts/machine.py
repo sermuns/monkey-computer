@@ -19,6 +19,7 @@ import utils
 from section import Section, use_sections
 from macros import use_macros
 from instruction_decoding import parse_operation, parse_register_and_address
+from preassemble import preassemble
 
 TICK_DELAY_S = 1e-4
 
@@ -32,16 +33,26 @@ class Machine:
 
     MEMORY_HEIGHT = 4096
 
-    def __init__(self, assembly_lines):
-        self.init_memory(assembly_lines)
+    def __init__(self, asm_file_name):
+        self.asm_file_name = asm_file_name
+        self.reset()
+
+    def reset(self):
+        """
+        Reset the machine state, loading memory from the assembly file,
+        and resetting registers and flags.
+        """
+
+        self.init_memory(self.asm_file_name)
         self.find_all_breakpoints()
         self.init_registers()
         self.init_flags()
-        self.running_free = False
         self.halted = False
+        self.running_free = False
         self.stop_at_breakpoints = False
 
-    def init_memory(self, assembly_lines):
+
+    def init_memory(self, asm_file_name):
         """
         Expand the assembly lines into the full memory.
         - Includes are resolved,
@@ -49,17 +60,14 @@ class Machine:
         - Sections are used
         """
 
+        # read the assembly file
+        asm_lines = preassemble(asm_file_name)
+
         self.sections = {}  # section name -> Section object
         macros = {}  # macro name -> macro value
 
-        # resolve includes (<file.s>)
-        utils.resolve_includes(assembly_lines, masm_dir="masm")
-
-        # remove lines that are empty or only contain comments
-        clean_lines = utils.get_without_empty_or_only_comment_lines(assembly_lines)
-
         # begin by finding all sections
-        for i, line in enumerate(clean_lines):
+        for i, line in enumerate(asm_lines):
             if not line.startswith("%"):
                 continue  # not a section declaration
             new_section = Section(line)
@@ -67,7 +75,7 @@ class Machine:
 
         current_section = None
         self.labels = {}  # label name -> line number
-        for i, line in enumerate(clean_lines):
+        for i, line in enumerate(asm_lines):
             # macro declaration
             if line.startswith("_"):
                 parts = re.match(r"(_\w+)\s*=\s*(.+)", line).groups()

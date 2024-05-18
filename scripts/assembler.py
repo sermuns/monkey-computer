@@ -14,6 +14,7 @@ sys.path.append(str(Path(__file__).resolve().parents[1]))
 # custom imports
 from section import Section, use_sections
 from utils import ERROR
+from preassemble import preassemble
 import utils
 import array_manip as am
 from macros import use_macros
@@ -187,26 +188,6 @@ def assemble_data(line):
 
     return (binary_data, decimal_data, "")
 
-def replace_mov_with_ld_st(asm_lines):
-    """
-    Replace all MOV instructions with LD and ST instructions
-    """
-
-    for i, line in enumerate(asm_lines):
-        if "MOV" not in line:
-            continue
-
-        # store source register value on %HEAP
-        source_register = re.findall(r"GR\d+", line)
-        st_line = f"ST %HEAP, {source_register[-1]}"
-
-        # load source register value from %HEAP
-        destination_register = re.findall(r"GR\d+", line)
-        ld_line = f"LD {destination_register[0]}, %HEAP"
-
-        # remove original line, add new lines
-        asm_lines[i] = st_line
-        asm_lines.insert(i + 1, ld_line)
 
 
 def main():
@@ -216,24 +197,13 @@ def main():
 
     # find the file containing assembly code
     asm_file_name = get_arg()
-    asm_file_path = os.path.join(MASM_DIR, asm_file_name)
 
-    # read the assembly file
-    asm_lines = read_lines(asm_file_path)
-
-    # resolve includes (<file>)
-    utils.resolve_includes(asm_lines, MASM_DIR)
-
-    # remove comments and empty lines
-    asm_lines = utils.get_without_empty_or_only_comment_lines(asm_lines)
+    # preassemble
+    asm_lines = preassemble(asm_file_name)
 
     current_section_name = ""
     new_label = ""
     sections = {}
-
-
-    # replace MOV with LD and ST
-    replace_mov_with_ld_st(asm_lines)
 
     # find all sections beforehand
     for i, line in enumerate(asm_lines):
@@ -272,15 +242,6 @@ def main():
             new_line = [assemble_data(line=line.strip())]
 
         sections[current_section_name].lines += new_line
-
-    if sections["PROGRAM"].lines[-1][1] != "HALT":
-        print(
-            "\033[95mWarning:\033[0m Last instruction in given program is not HALT. This is added automatically."
-        )
-        # assume that HALT needs to be added
-        halt_opcode = KNOWN_OPCODES["HALT"]
-        halt_binary = (f"{halt_opcode}_---_--_--_------------", "HALT", "")
-        sections["PROGRAM"].lines.append(halt_binary)
 
     # read the program memory file
     mem_lines = read_lines(PMEM_FILE)
