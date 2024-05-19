@@ -18,7 +18,7 @@ def preassemble(asm_file_name: str) -> list[str]:
     asm_lines = open(asm_file_path, "r").readlines()
     
     # Resolve all includes in the assembly file
-    utils.resolve_includes(asm_lines, "masm")
+    utils.resolve_includes(asm_lines, masm_dir="masm")
     
     # Remove comments and empty lines
     asm_lines = utils.get_without_empty_or_only_comment_lines(asm_lines)

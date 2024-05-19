@@ -21,7 +21,7 @@ from macros import use_macros
 from instruction_decoding import parse_operation, parse_register_and_address
 from preassemble import preassemble
 
-TICK_DELAY_S = 1e-5
+TICK_DELAY_S = 1e-6
 
 class Machine:
     """
@@ -333,6 +333,7 @@ class Machine:
                 self.execute_next_instruction()
             if self.stop_at_breakpoints and self.at_breakpoint():
                 self.toggle_pause()
+
             time.sleep(TICK_DELAY_S)
 
     def branch(self, mnemonic, destination):
