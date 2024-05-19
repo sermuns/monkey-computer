@@ -3,3 +3,4 @@ wave/
 *.code-workspace
 simdir/
 **/__pycache__/
+*.swp
