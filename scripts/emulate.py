@@ -21,8 +21,8 @@ PALETTE = []
 window_scale = 1
 
 # Constants
-BEEP_VOLUME = 0.05
-SAMPLE_RATE = 22050
+BEEP_VOLUME = 0.1
+SAMPLE_RATE = 44100
 FPS = 60
 SURFACE_WIDTH_PX = 640
 SURFACE_HEIGHT_PX = 480
@@ -40,7 +40,7 @@ TILE_SIZE_PX = 48  # Commented out (MAP_SIZE_PX // MAP_SIZE_TILES) because it sh
 FONT_PATH = os.path.join("scripts", "fonts", "jetbrainsmono.ttf")
 
 
-DEBUG_ASSEMBLY_FILE = "beep.s"  # change this to which file you want to debug
+DEBUG_ASSEMBLY_FILE = "path.s"  # change this to which file you want to debug
 
 
 def read_palette(tile_rom_lines: list) -> list:

@@ -30,7 +30,8 @@ def change_dir_to_root():
     """
     Find the root directory of the project
     """
-    while not os.path.exists("masm"):
+
+    while not os.path.exists("hardware"):
         os.chdir(os.pardir)
 
 
