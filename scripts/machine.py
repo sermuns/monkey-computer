@@ -21,7 +21,7 @@ from macros import use_macros
 from instruction_decoding import parse_operation, parse_register_and_address
 from preassemble import preassemble
 
-TICK_DELAY_S = 1e-3
+TICK_DELAY_S = 1e-5
 
 class Machine:
     """
