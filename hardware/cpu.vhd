@@ -7,6 +7,7 @@ ENTITY cpu IS
     PORT (
         clk : IN STD_LOGIC;
         rst : IN STD_LOGIC;
+        -- buzz_frequency_reg : OUT unsigned(23 downto 0); -- connected to buzzer
         ScanCode : IN STD_LOGIC_VECTOR(7 DOWNTO 0);
         make_op : IN  STD_LOGIC;
         v_addr : IN unsigned(7 DOWNTO 0);
@@ -171,6 +172,7 @@ BEGIN
     GRx <= GR(3) when (M="11" and uPC < 15) else
         GR(TO_INTEGER(unsigned(GRx_num)));
     
+    -- buzz_frequency_reg <= GR(14);
         
     process (clk, rst)
     begin
