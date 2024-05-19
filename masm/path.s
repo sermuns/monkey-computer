@@ -219,7 +219,7 @@ up_input:
 down_input:
     LDI GR0, 4
     RET
-
+//* When player reaches an increment of 10 gold we increase digit2 and reset digit1. /
 increment_of_gold:
     LDI GR7, 0
     ST _playergolddigit1, GR7
