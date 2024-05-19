@@ -327,8 +327,6 @@ class Machine:
         while True:
             if self.running_free:
                 self.execute_next_instruction()
-            if self.halted:
-                break
             if self.stop_at_breakpoints and self.at_breakpoint():
                 self.toggle_pause()
             time.sleep(TICK_DELAY_S)
