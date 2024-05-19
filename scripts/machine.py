@@ -156,6 +156,8 @@ class Machine:
             key_num = 2
         elif key == pg.K_w:
             key_num = 4
+        elif key == pg.K_RETURN:
+            key_num = 5
         elif key == pg.K_s:
             key_num = 8
         elif key == pg.K_SPACE:

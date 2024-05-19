@@ -13,23 +13,61 @@ wait_for_player_input:
     BNE wait_for_player_input
     LDI GR15, 0
     RET
+    
+set_highlighted_grass:
+    LDI GR2, 65
+    STN %VMEM, GR2
+    BRA read_input_end
 
-left_input:
-    LDI GR0, 1
-    RET
+set_highlighted_path:
+    LDI GR2, 66
+    STN %VMEM, GR2
+    BRA read_input_end
 
-right_input:
+set_highlighted_continue:
+    LDI GR2, 52
+    STN %VMEM, GR2
+    BRA read_input_end
 
-    LDI GR0, 2
-    RET
+set_highlighted_black:
+    LDI GR2, 53
+    STN %VMEM, GR2
+    BRA read_input_end
 
-up_input:
-    LDI GR0, 3
-    RET
+set_highlighted_reset:
+    LDI GR2, 46
+    STN %VMEM, GR2
+    BRA read_input_end
 
-down_input:
-    LDI GR0, 4
-    RET
+set_highlighted_quit:
+    LDI GR2, 48
+    STN %VMEM, GR2
+    BRA read_input_end
+
+set_highlighted_monkey1:
+    LDI GR2, 39
+    STN %VMEM, GR2
+    BRA read_input_end
+set_highlighted_monkey2:
+    LDI GR2, 40
+    STN %VMEM, GR2
+    BRA read_input_end
+set_highlighted_monkey3:
+    LDI GR2, 41
+    STN %VMEM, GR2
+    BRA read_input_end
+set_highlighted_monkey4:
+    LDI GR2, 42
+    STN %VMEM, GR2
+    BRA read_input_end
+set_highlighted_monkey5:
+    LDI GR2, 43
+    STN %VMEM, GR2
+    BRA read_input_end
+set_highlighted_monkey6:
+    LDI GR2, 44
+    STN %VMEM, GR2
+    BRA read_input_end
 
 %VMEM 1500 420
 0
@@ -61,11 +99,11 @@ down_input:
 0
 25
 1
-0
-1
-0
-0
-0
+5
+9
+13
+17
+21
 25
 0
 1
@@ -95,7 +133,7 @@ down_input:
 0
 0
 9
-53
+38
 13
 0
 0
@@ -146,9 +184,9 @@ down_input:
 25
 25
 25
-64
-64
-64
+38
+38
+38
 0
 0
 0
@@ -160,7 +198,7 @@ down_input:
 0
 0
 45
-38
+50
 47
 
 %PATH 1630 69420

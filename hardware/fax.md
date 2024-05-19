@@ -110,10 +110,12 @@ eller
 47: Q
 48: Q highlighted
 49: HP 
-50: HP highlighted
+50: C 
 51: G
-52: G highlighted
+52: C highlighted
 53: Cursor
 54-63: Numbers 0-9
 64: NOTHING ATM
+65: gräs highlighted
+66: väg highlighted
 

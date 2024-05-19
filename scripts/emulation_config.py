@@ -39,5 +39,4 @@ KEYBINDINGS = {
     pg.K_F6: EmulationEvent.safe_continue_to_breakpoint,
     pg.K_F2: EmulationEvent.interact_with_memory,
     pg.K_p: EmulationEvent.pause,
-    pg.K_RETURN: EmulationEvent.resume,
 }

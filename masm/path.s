@@ -3,6 +3,8 @@ _playerhpdigit2 = %HEAP+2
 _playergolddigit1 = %HEAP+3
 _playergolddigit2 = %HEAP+4
 _currentround = %HEAP+5
+_cursorpos = %HEAP+6
+_cursortile = %HEAP+7
 
 %PROGRAM 0 69 
 start:
@@ -11,9 +13,9 @@ start:
     ST _currentround, GR2
 
     // update screen 
-    LDI GR2, 8
+    LDI GR2, 1
     ST _playerhpdigit1, GR2 // hp
-    LDI GR2, 0
+    LDI GR2, 1
     ST _playerhpdigit2, GR2 // hp
     LDI GR2, 9
     ST _playergolddigit1, GR2 // gold
@@ -33,6 +35,21 @@ push_balloon_hp:
     ADDI GR6, 1
     PUSH GR6
     
+reset_cursor:
+    LDI GR2, 0
+    ST _cursortile, GR2 // save tile that cursor replaces
+    LDI GR2, 56
+    ST _cursorpos, GR2 // put cursor in start pos
+    LDI GR2, 65
+    ST %VMEM+56, GR2 // update screen, ersätt 56 med cursorpos
+    
+shopping_phase:
+    JSR read_input
+    // should return with GR7 being 0 or 1
+    CMPI GR8, 1
+    LDI GR8, 0
+    BNE shopping_phase // continue shopping
+
 loop:
     STN %VMEM, GR1 // replace tiletype that was overwritten
     // find next path position
@@ -52,16 +69,37 @@ new_ballon:
 check_monke:
     ADDI GR5, 1 // increment path index
     MOV GR4, GR3 //save balloon pos         CHECKAR BARA FÖR APA 1, borde checka 5,9,13 osv (starttillstånd inte animation)
+    
     ADDI GR3, 1 //right neighbour
     LDN GR6, %VMEM
     CMPI GR6, 1
     BEQ monke_animation
-    //BEQ balloon_dmg
+    CMPI GR6, 5
+    BEQ monke_animation
+    CMPI GR6, 9
+    BEQ monke_animation
+    CMPI GR6, 13
+    BEQ monke_animation
+    CMPI GR6, 17
+    BEQ monke_animation
+    CMPI GR6, 21
+    BEQ monke_animation
+
 
     MOV GR3, GR4 //down
     ADDI GR3, 13
     LDN GR6, %VMEM
     CMPI GR6, 1
+    BEQ monke_animation
+    CMPI GR6, 5
+    BEQ monke_animation
+    CMPI GR6, 9
+    BEQ monke_animation
+    CMPI GR6, 13
+    BEQ monke_animation
+    CMPI GR6, 17
+    BEQ monke_animation
+    CMPI GR6, 21
     BEQ monke_animation
 
     MOV GR3, GR4 //left
@@ -69,11 +107,31 @@ check_monke:
     LDN GR6, %VMEM
     CMPI GR6, 1
     BEQ monke_animation
+    CMPI GR6, 5
+    BEQ monke_animation
+    CMPI GR6, 9
+    BEQ monke_animation
+    CMPI GR6, 13
+    BEQ monke_animation
+    CMPI GR6, 17
+    BEQ monke_animation
+    CMPI GR6, 21
+    BEQ monke_animation
 
     MOV GR3, GR4 //up
     SUBI GR3, 13
     LDN GR6, %VMEM
     CMPI GR6, 1
+    BEQ monke_animation
+    CMPI GR6, 5
+    BEQ monke_animation
+    CMPI GR6, 9
+    BEQ monke_animation
+    CMPI GR6, 13
+    BEQ monke_animation
+    CMPI GR6, 17
+    BEQ monke_animation
+    CMPI GR6, 21
     BEQ monke_animation
 
     MOV GR3, GR4
@@ -81,19 +139,22 @@ check_monke:
 
 player_dmg:
     LD GR2, _playerhpdigit1
+    CMPI GR2, 0
+    BEQ decrement_of_hp
     SUBI GR2, 1
     ST _playerhpdigit1, GR2
+player_dmg_2:
     JSR update_hp
-
-    SUBI GR2, 0
+    LD GR2, _playerhpdigit1
+    ADD GR2, _playerhpdigit2
     BEQ dead
 
     LDI GR5, 0
     BRA new_ballon
     
 balloon_dmg:
-    LDI GR7, 1
-    STN %VMEM, GR7
+    SUBI GR6, 3
+    STN %VMEM, GR6
     MOV GR3, GR4
     POP GR6
     SUBI GR6, 1  //different damage for diff monkeys?????
@@ -129,6 +190,17 @@ balloon_dead2:
 monke_animation:
     CMPI GR6, 4
     BEQ balloon_dmg
+    CMPI GR6, 8
+    BEQ balloon_dmg
+    CMPI GR6, 12
+    BEQ balloon_dmg
+    CMPI GR6, 16
+    BEQ balloon_dmg
+    CMPI GR6, 20
+    BEQ balloon_dmg
+    CMPI GR6, 24
+    BEQ balloon_dmg
+    
     ADDI GR6, 1
     STN %VMEM, GR6
 
@@ -171,7 +243,11 @@ read_input:
     BEQ up_input
     CMPI GR15, 8 // S key
     BEQ down_input
-    //CMPI GR15, 3 // Space
+    CMPI GR15, 3 // Space
+    BEQ confirm_input_pick
+    CMPI GR15, 5 // Enter key
+    BEQ continue_game
+read_input_end:
     LDI GR15, 0
     RET
 
@@ -204,21 +280,232 @@ update_gold:
     RET
 
 left_input:
-    LDI GR0, 1
-    RET
+    // replace current cursor to original tile
+    LD GR2, _cursortile
+    LD GR3, _cursorpos
+    STN %VMEM,GR2
+    // move left
+    SUBI GR3, 1
+    ST _cursorpos, GR3
+    // GR2 => _cursortile
+    LDN GR2, %VMEM
+    ST _cursortile, GR2
+
+    LD GR3, _cursorpos
+
+    LD GR2, _cursortile
+    CMPI GR2, 0
+    BEQ set_highlighted_grass
+    CMPI GR2, 1
+    BEQ set_highlighted_monkey1
+    CMPI GR2, 5
+    BEQ set_highlighted_monkey2
+    CMPI GR2, 9
+    BEQ set_highlighted_monkey3
+    CMPI GR2, 13
+    BEQ set_highlighted_monkey4
+    CMPI GR2, 17
+    BEQ set_highlighted_monkey5
+    CMPI GR2, 21
+    BEQ set_highlighted_monkey6
+    CMPI GR2, 25
+    BEQ set_highlighted_path
+    CMPI GR2, 38
+    BEQ set_highlighted_black
+    CMPI GR2, 45
+    BEQ set_highlighted_reset
+    CMPI GR2, 47
+    BEQ set_highlighted_quit
+    CMPI GR2, 50
+    BEQ set_highlighted_continue
+    // If no highlighted texture get standard cursor
+    LDI GR2, 53
+    STN %VMEM,GR2
+    BRA read_input_end
 
 right_input:
+    // replace current cursor to original tile
+    LD GR2, _cursortile
+    LD GR3, _cursorpos
+    STN %VMEM,GR2
+    // move right
+    ADDI GR3, 1
+    ST _cursorpos, GR3
+    // GR2 => _cursortile
+    LDN GR2, %VMEM
+    ST _cursortile, GR2
 
-    LDI GR0, 2
-    RET
+    LD GR3, _cursorpos
+
+    LD GR2, _cursortile
+    CMPI GR2, 0
+    BEQ set_highlighted_grass
+    CMPI GR2, 1
+    BEQ set_highlighted_monkey1
+    CMPI GR2, 5
+    BEQ set_highlighted_monkey2
+    CMPI GR2, 9
+    BEQ set_highlighted_monkey3
+    CMPI GR2, 13
+    BEQ set_highlighted_monkey4
+    CMPI GR2, 17
+    BEQ set_highlighted_monkey5
+    CMPI GR2, 21
+    BEQ set_highlighted_monkey6
+    CMPI GR2, 25
+    BEQ set_highlighted_path
+    CMPI GR2, 38
+    BEQ set_highlighted_black
+    CMPI GR2, 45
+    BEQ set_highlighted_reset
+    CMPI GR2, 47
+    BEQ set_highlighted_quit
+    CMPI GR2, 50
+    BEQ set_highlighted_continue
+    // If no highlighted texture get standard cursor
+    LDI GR2, 53
+    STN %VMEM,GR2
+    BRA read_input_end
 
 up_input:
-    LDI GR0, 3
-    RET
+    // replace current cursor to original tile
+    LD GR2, _cursortile
+    LD GR3, _cursorpos
+    STN %VMEM,GR2
+    // move up
+    SUBI GR3, 13
+    ST _cursorpos, GR3
+    // GR2 => _cursortile
+    LDN GR2, %VMEM
+    ST _cursortile, GR2
+
+    LD GR3, _cursorpos
+
+    LD GR2, _cursortile
+    CMPI GR2, 0
+    BEQ set_highlighted_grass
+    CMPI GR2, 1
+    BEQ set_highlighted_monkey1
+    CMPI GR2, 5
+    BEQ set_highlighted_monkey2
+    CMPI GR2, 9
+    BEQ set_highlighted_monkey3
+    CMPI GR2, 13
+    BEQ set_highlighted_monkey4
+    CMPI GR2, 17
+    BEQ set_highlighted_monkey5
+    CMPI GR2, 21
+    BEQ set_highlighted_monkey6
+    CMPI GR2, 25
+    BEQ set_highlighted_path
+    CMPI GR2, 38
+    BEQ set_highlighted_black
+    CMPI GR2, 45
+    BEQ set_highlighted_reset
+    CMPI GR2, 47
+    BEQ set_highlighted_quit
+    CMPI GR2, 50
+    BEQ set_highlighted_continue
+    // If no highlighted texture get standard cursor
+    LDI GR2, 53
+    STN %VMEM,GR2
+    BRA read_input_end
 
 down_input:
-    LDI GR0, 4
-    RET
+    // replace current cursor to original tile
+    LD GR2, _cursortile
+    LD GR3, _cursorpos
+    STN %VMEM,GR2
+    // move down
+    ADDI GR3, 13
+    ST _cursorpos, GR3
+    // GR2 => _cursortile
+    LDN GR2, %VMEM
+    ST _cursortile, GR2
+
+    LD GR3, _cursorpos
+    // change to highlighted
+    LD GR2, _cursortile
+    CMPI GR2, 0
+    BEQ set_highlighted_grass
+    CMPI GR2, 1
+    BEQ set_highlighted_monkey1
+    CMPI GR2, 5
+    BEQ set_highlighted_monkey2
+    CMPI GR2, 9
+    BEQ set_highlighted_monkey3
+    CMPI GR2, 13
+    BEQ set_highlighted_monkey4
+    CMPI GR2, 17
+    BEQ set_highlighted_monkey5
+    CMPI GR2, 21
+    BEQ set_highlighted_monkey6
+    CMPI GR2, 25
+    BEQ set_highlighted_path
+    CMPI GR2, 38
+    BEQ set_highlighted_black
+    CMPI GR2, 45
+    BEQ set_highlighted_reset
+    CMPI GR2, 47
+    BEQ set_highlighted_quit
+    CMPI GR2, 50
+    BEQ set_highlighted_continue
+    // If no highlighted texture get standard cursor
+    LDI GR2, 53
+    STN %VMEM,GR2
+    BRA read_input_end
+
+confirm_input_pick:
+    //Check if already picked monkey
+    CMP _cursortile, 1
+    LDI GR9, 39
+    BEQ confirm_input_place
+    CMP _cursortile, 5
+    LDI GR9, 40
+    BEQ confirm_input_place
+    CMP _cursortile, 9
+    LDI GR9, 41
+    BEQ confirm_input_place
+    CMP _cursortile, 13
+    LDI GR9, 42
+    BEQ confirm_input_place
+    CMP _cursortile, 17
+    LDI GR9, 43
+    BEQ confirm_input_place
+    CMP _cursortile, 21
+    LDI GR9, 44
+    BEQ confirm_input_place
+    // check if we should do something not regarding monkeys
+    CMP _cursortile, 45 // reset
+    BEQ dead
+    CMP _cursortile, 47 // quit
+    BEQ dead
+    CMP _cursortile, 50 // continue
+    BEQ continue_game
+   
+    BRA read_input_end
+
+    LD GR3, _cursorpos
+    LDI GR2, 1
+    ST _cursortile, GR2
+    STN %VMEM, GR2
+    BRA read_input_end
+
+confirm_input_place:
+    CMPI GR15, 3 // Space
+    BEQ confirm_squared
+    CMPI GR15, 1 // Space
+    BEQ place_up // W
+    CMPI GR15, 2 // Space
+    BEQ place_left // A
+    CMPI GR15, 4 // Space
+    BEQ place_right // S
+    CMPI GR15, 8 // Space
+    BEQ place_down // D
+
+continue_game:
+    LDI GR8,1
+    BRA read_input_end
 
 increment_of_gold:
     LDI GR7, 0
@@ -227,5 +514,16 @@ increment_of_gold:
     ADDI GR7, 1
     ST _playergolddigit2, GR7
     BRA balloon_dead2
+
+decrement_of_hp:
+    LD GR7, _playerhpdigit2
+    CMPI GR7, 0
+    BEQ player_dmg_2
+    LDI GR2, 9
+    ST _playerhpdigit1, GR2
+    LD GR2, _playerhpdigit2
+    SUBI GR2, 1
+    ST _playerhpdigit2, GR2
+    BRA player_dmg_2
 
 <STANDARD.s>
