@@ -456,52 +456,154 @@ down_input:
     BRA read_input_end
 
 confirm_input_pick:
+    LDI GR15, 0 // reset key input
     //Check if already picked monkey
-    CMP _cursortile, 1
+    LD GR2, _cursortile
+    CMPI GR2, 1
     LDI GR9, 39
     BEQ confirm_input_place
-    CMP _cursortile, 5
+    CMPI GR2, 5
     LDI GR9, 40
     BEQ confirm_input_place
-    CMP _cursortile, 9
+    CMPI GR2, 9
     LDI GR9, 41
     BEQ confirm_input_place
-    CMP _cursortile, 13
+    CMPI GR2, 13
     LDI GR9, 42
     BEQ confirm_input_place
-    CMP _cursortile, 17
+    CMPI GR2, 17
     LDI GR9, 43
     BEQ confirm_input_place
-    CMP _cursortile, 21
+    CMPI GR2, 21
     LDI GR9, 44
     BEQ confirm_input_place
+    // If no mokey is being hovered reset GR9 to 0
+    LDI GR9, 0
     // check if we should do something not regarding monkeys
-    CMP _cursortile, 45 // reset
+    CMPI GR2, 45 // reset
     BEQ dead
-    CMP _cursortile, 47 // quit
+    CMPI GR2, 47 // quit
     BEQ dead
-    CMP _cursortile, 50 // continue
+    CMPI GR2, 50 // continue
     BEQ continue_game
    
     BRA read_input_end
 
-    LD GR3, _cursorpos
-    LDI GR2, 1
-    ST _cursortile, GR2
-    STN %VMEM, GR2
-    BRA read_input_end
-
 confirm_input_place:
     CMPI GR15, 3 // Space
-    BEQ confirm_squared
-    CMPI GR15, 1 // Space
-    BEQ place_up // W
-    CMPI GR15, 2 // Space
-    BEQ place_left // A
-    CMPI GR15, 4 // Space
-    BEQ place_right // S
-    CMPI GR15, 8 // Space
-    BEQ place_down // D
+    BEQ place_check
+    CMPI GR15, 4 // W
+    BEQ place_up
+    CMPI GR15, 1 // A
+    BEQ place_left
+    CMPI GR15, 2 // S
+    BEQ place_right
+    CMPI GR15, 8 // D
+    BEQ place_down
+    BRA confirm_input_place // Check again
+
+place_check:
+    // GR9 is updated in confirm_input_pick
+    LD GR3, _cursorpos
+    LD GR2, _cursortile
+    CMPI GR2, 0
+    BNE confirm_input_place // if not being placed on grass keep checking for inputs
+    // check which monkey to place
+    CMPI GR9, 39
+    LDI GR2, 1 // load monkey 1 to gr2
+    BEQ place
+    CMPI GR9, 40
+    LDI GR2, 5 // load monkey 2 to gr2
+    BEQ place
+    CMPI GR9, 41
+    LDI GR2, 9 // load monkey 3 to gr2
+    BEQ place
+    CMPI GR9, 42
+    LDI GR2, 13 // load monkey 4 to gr2
+    BEQ place
+    CMPI GR9, 43
+    LDI GR2, 17 // load monkey 5 to gr2
+    BEQ place
+    LDI GR2, 21 // load monkey 6 to gr2
+
+place:
+    // place correct monkey(gr2)
+    ST _cursortile, GR2
+    STN %VMEM, GR2
+    LDI GR15, 0
+    BRA read_input_end
+
+place_up:
+    // replace current cursor to original tile
+    LD GR2, _cursortile
+    LD GR3, _cursorpos
+    STN %VMEM,GR2
+    // move up
+    SUBI GR3, 13
+    ST _cursorpos, GR3
+    // GR2 => _cursortile
+    LDN GR2, %VMEM
+    ST _cursortile, GR2
+
+    LD GR3, _cursorpos
+
+    STN %VMEM, GR9
+    LDI GR15, 0
+    BRA confirm_input_place
+    
+place_left:
+    // replace current cursor to original tile
+    LD GR2, _cursortile
+    LD GR3, _cursorpos
+    STN %VMEM,GR2
+    // move right
+    SUBI GR3, 1
+    ST _cursorpos, GR3
+    // GR2 => _cursortile
+    LDN GR2, %VMEM
+    ST _cursortile, GR2
+
+    LD GR3, _cursorpos
+
+    STN %VMEM, GR9
+    LDI GR15, 0
+    BRA confirm_input_place
+
+place_right:
+    // replace current cursor to original tile
+    LD GR2, _cursortile
+    LD GR3, _cursorpos
+    STN %VMEM,GR2
+    // move right
+    ADDI GR3, 1
+    ST _cursorpos, GR3
+    // GR2 => _cursortile
+    LDN GR2, %VMEM
+    ST _cursortile, GR2
+
+    LD GR3, _cursorpos
+
+    STN %VMEM, GR9
+    LDI GR15, 0
+    BRA confirm_input_place
+
+place_down:
+    // replace current cursor to original tile
+    LD GR2, _cursortile
+    LD GR3, _cursorpos
+    STN %VMEM,GR2
+    // move down
+    ADDI GR3, 13
+    ST _cursorpos, GR3
+    // GR2 => _cursortile
+    LDN GR2, %VMEM
+    ST _cursortile, GR2
+
+    LD GR3, _cursorpos
+
+    STN %VMEM, GR9
+    LDI GR15, 0
+    BRA confirm_input_place
 
 continue_game:
     LDI GR8,1
