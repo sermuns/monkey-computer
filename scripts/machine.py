@@ -35,6 +35,7 @@ class Machine:
 
     def __init__(self, asm_file_name):
         self.asm_file_name = asm_file_name
+        self.running_free = False
         self.reset()
 
     def reset(self):
@@ -48,7 +49,6 @@ class Machine:
         self.init_registers()
         self.init_flags()
         self.halted = False
-        self.running_free = False
         self.stop_at_breakpoints = False
 
     def init_memory(self, asm_file_name):
@@ -325,6 +325,8 @@ class Machine:
         """
 
         while True:
+            if self.halted:
+                continue
             if self.running_free:
                 self.execute_next_instruction()
             if self.stop_at_breakpoints and self.at_breakpoint():

@@ -40,7 +40,7 @@ TILE_SIZE_PX = 48  # Commented out (MAP_SIZE_PX // MAP_SIZE_TILES) because it sh
 FONT_PATH = os.path.join("scripts", "fonts", "jetbrainsmono.ttf")
 
 
-DEBUG_ASSEMBLY_FILE = "beep.s"  # change this to which file you want to debug
+DEBUG_ASSEMBLY_FILE = "path.s"  # change this to which file you want to debug
 
 
 def read_palette(tile_rom_lines: list) -> list:
