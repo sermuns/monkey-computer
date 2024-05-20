@@ -35,8 +35,44 @@ architecture Behavioral of main is
 	signal ScanCode_main : std_logic_vector(7 downto 0);
 	signal make_op_main : std_logic;
 
+	component cpu is
+		port (
+			clk : in std_logic;
+			rst : in std_logic;
+			ScanCode : out std_logic_vector(7 downto 0);
+			make_op : out std_logic;
+			v_addr : out unsigned(7 downto 0);
+			v_data : out unsigned(6 downto 0)
+		);
+	end component;
+
+	component vga_motor is
+		port (
+			clk : in std_logic;
+			rst : in std_logic;
+			vmem_address_out : out unsigned(7 downto 0);
+			vmem_data : in unsigned(6 downto 0);
+			vga_hsync : out std_logic;
+			vga_vsync : out std_logic;
+			vga_red : out std_logic_vector(3 downto 0);
+			vga_green : out std_logic_vector(3 downto 0);
+			vga_blue : out std_logic_vector(3 downto 0)
+		);
+	end component;
+
+	component kbd_enc is
+		port (
+			clk : in std_logic;
+			rst : in std_logic;
+			PS2KeyboardCLK : in std_logic;
+			PS2KeyboardData : in std_logic;
+			ScanCode : out std_logic_vector(7 downto 0);
+			make_op : out std_logic
+		);
+	end component;
+
 begin
-	U1 : entity work.cpu
+	U1 : cpu
 	port map (
 		clk => clk,
 		rst => btnC,
@@ -46,7 +82,7 @@ begin
 		v_data => video_data
 	);
 
-	U2 : entity work.vga_motor
+	U2 : vga_motor
 	port map (
 		clk => clk,
 		rst => btnC,
@@ -59,7 +95,7 @@ begin
 		vga_blue => vgaBlue
 	);
 	
-	U3 : entity work.kbd_enc
+	U3 : kbd_enc
 	port map (
 		clk => clk,
 		rst => btnC,
