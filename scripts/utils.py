@@ -44,7 +44,11 @@ def resolve_includes(asm_lines: list, masm_dir: str):
         if "<" not in line:
             continue
 
-        include_file_name = re.search(r"<(.+)>", line).group(1)
+        include_file_name_match = re.search(r"^<(.+)>$", line)
+        if not include_file_name_match:
+            continue # skip lines that don't match the include pattern
+
+        include_file_name = include_file_name_match.group(1)
         include_file_path = os.path.join(masm_dir, include_file_name)
 
         include_lines = open(include_file_path, "r").readlines()
@@ -105,7 +109,7 @@ def ERROR(msg: str):
     """
     Print error message and exit with code 1
     """
-    raise Exception(msg)
+    raise Exception(f"{COLORS.FAIL}ERROR:{COLORS.ENDC} {msg}")
 
 
 def get_mnemonics():
