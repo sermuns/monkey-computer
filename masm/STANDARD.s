@@ -69,7 +69,7 @@ set_highlighted_monkey6:
     STN %VMEM, GR2
     BRA read_input_end
 
-%VMEM 1500 420
+%VMEM 1500
 0
 0
 0
@@ -201,7 +201,7 @@ set_highlighted_monkey6:
 50
 47
 
-%PATH 1630 69420
+%PATH 1630
 52
 53
 40
@@ -245,4 +245,4 @@ set_highlighted_monkey6:
 114
 
 
-%HEAP 1700 1000 
+%HEAP 1700

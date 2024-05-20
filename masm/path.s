@@ -255,21 +255,28 @@ wait_until_break_is_gone:
     BEQ wait_until_break_is_gone
     RET
 
-low_delay:
+set_emu_delay:
+    PUSH GR0
+    LDI GR0, 0x0000FF
+    ST _delay_ticks, GR0
+    POP GR0
+    BRA read_input_end
+
+set_low_delay:
     PUSH GR0
     LDI GR0, 0x00FFFF
     ST _delay_ticks, GR0
     POP GR0
     BRA read_input_end
 
-mid_delay:
+set_mid_delay:
     PUSH GR0
     LDI GR0, 0x05FFFF
     ST _delay_ticks, GR0
     POP GR0
     BRA read_input_end
 
-high_delay:
+set_high_delay:
     PUSH GR0
     LDI GR0, 0x0FFFFF
     ST _delay_ticks, GR0
@@ -281,12 +288,14 @@ high_delay:
 read_input:
     JSR wait_for_break
     JSR wait_until_break_is_gone
-    CMPI GR15, 0b10001
-    BEQ low_delay
-    CMPI GR15, 0b10010
-    BEQ mid_delay
-    CMPI GR15, 0b10011
-    BEQ high_delay
+    CMPI GR15, 1<<4|0
+    BEQ set_emu_delay
+    CMPI GR15, 1<<4|1
+    BEQ set_low_delay
+    CMPI GR15, 1<<4|2
+    BEQ set_mid_delay
+    CMPI GR15, 1<<4|3
+    BEQ set_high_delay
     CMPI GR15, 1
     BEQ left_input // A key
     CMPI GR15, 2
