@@ -95,7 +95,7 @@ eller
 17-20: apa 5 frame 1-4
 21-24: apa 6 frame 1-4
 25: väg
-26-29: ballon 1 frame 1-4 BLÅ
+26-29: ballon 1 frame 1-4 GUL
 30-33: ballon 2 frame 1-4 TURKÅS tuqoiseeeeeeeeeeeeeee
 34-37: ballon 3 frame 1-4 ORANGE
 38: svart

@@ -17,9 +17,9 @@ start:
     ST _playerhpdigit1, GR2 // hp
     LDI GR2, 1
     ST _playerhpdigit2, GR2 // hp
-    LDI GR2, 9
+    LDI GR2, 3
     ST _playergolddigit1, GR2 // gold
-    LDI GR2, 1
+    LDI GR2, 0
     ST _playergolddigit2, GR2 // gold
     JSR update_gold
     JSR update_hp
@@ -462,6 +462,10 @@ down_input:
 
 confirm_input_pick:
     LDI GR15, 0 // reset key input
+    // if we donw have any money move out
+    LD GR10, _playergolddigit1
+    ADD GR10, _playergolddigit2
+    BEQ read_input_end
     //Check if already picked monkey
     LD GR2, _cursortile
     CMPI GR2, 1
@@ -514,24 +518,40 @@ place_check:
     CMPI GR2, 0
     BNE confirm_input_place // if not being placed on grass keep checking for inputs
     // check which monkey to place
+    // load monkey 1 to gr2
     CMPI GR9, 39
-    LDI GR2, 1 // load monkey 1 to gr2
-    BEQ place
+    LDI GR2, 1
+    BEQ purchase
+    // load monkey 2 to gr2
     CMPI GR9, 40
-    LDI GR2, 5 // load monkey 2 to gr2
-    BEQ place
+    LDI GR2, 5
+    BEQ purchase
+    // load monkey 3 to gr2
     CMPI GR9, 41
-    LDI GR2, 9 // load monkey 3 to gr2
-    BEQ place
+    LDI GR2, 9 
+    BEQ purchase
+    // load monkey 4 to gr2
     CMPI GR9, 42
-    LDI GR2, 13 // load monkey 4 to gr2
-    BEQ place
+    LDI GR2, 13
+    BEQ purchase
+    // load monkey 5 to gr2
     CMPI GR9, 43
-    LDI GR2, 17 // load monkey 5 to gr2
-    BEQ place
-    LDI GR2, 21 // load monkey 6 to gr2
+    LDI GR2, 17 
+    BEQ purchase
+    // load monkey 6 to gr2
+    LDI GR2, 21 
+
+purchase:
+    // decrease money
+    LD GR10, _playergolddigit1
+    CMPI GR10, 0
+    BEQ decrement_of_gold
+    SUBI GR10, 1
+    ST _playergolddigit1, GR10
 
 place:
+    // update gold 
+    JSR update_gold
     // place correct monkey(gr2)
     ST _cursortile, GR2
     STN %VMEM, GR2
@@ -621,6 +641,17 @@ increment_of_gold:
     ADDI GR7, 1
     ST _playergolddigit2, GR7
     BRA balloon_dead2
+
+decrement_of_gold:
+    LD GR7, _playergolddigit2
+    CMPI GR7, 0
+    BEQ confirm_input_place
+    LDI GR10, 9
+    ST _playergolddigit1, GR10
+    LD GR10, _playergolddigit2
+    SUBI GR10, 1
+    ST _playergolddigit2, GR10
+    BRA place
 
 decrement_of_hp:
     LD GR7, _playerhpdigit2
