@@ -23,6 +23,7 @@ from preassemble import preassemble
 
 TICK_DELAY_S = 1e-6
 
+
 class Machine:
     """
     Represent the state of the machine:
@@ -107,7 +108,7 @@ class Machine:
             for i, line in enumerate(section.lines):
                 self.memory[section.start + i] = line.strip()
 
-    def set_register(self, register, value):
+    def set_register(self, register: str, value: int):
         """
         Set the value of a register
         """
@@ -145,7 +146,7 @@ class Machine:
     def init_flags(self):
         self.flags = {"Z": 0, "N": 0, "C": 0, "V": 0}
 
-    def register_keypress(self, key):
+    def register_key(self, key):
         """
         Store the keypress in GR15
         """
@@ -162,6 +163,16 @@ class Machine:
             key_num = 8
         elif key == pg.K_SPACE:
             key_num = 3
+        elif key is None: # break 
+            key_num = 31
+        elif key == pg.K_1:
+            key_num = 1<<4 | 1
+        elif key == pg.K_2:
+            key_num = 1<<4 | 2
+        elif key == pg.K_3:
+            key_num = 1<<4 | 4
+        elif key == pg.K_0:
+            key_num = 1<<4 | 0    
         else:
             return  # no known key
 
