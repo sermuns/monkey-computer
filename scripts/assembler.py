@@ -108,6 +108,9 @@ def assemble_binary_line(instruction_line: str, label: str) -> list:
     # Initialize the list to hold the binary lines
     binary_lines = []
 
+    if "<<" in instruction_line:
+        pass
+
     # Split the instruction line into parts
     instruction_parts = re.split(r",\s*|\s+", instruction_line)
 
@@ -242,6 +245,17 @@ def main():
             new_line = [assemble_data(line=line.strip())]
 
         sections[current_section_name].lines += new_line
+
+    # check if any section has more lines than the next sections start address
+    for section_name, this_section in sections.items():
+        # if last section, skip
+        if list(sections.keys())[-1] == section_name:
+            continue
+
+        next_section = sections[list(sections.keys())[list(sections.keys()).index(section_name) + 1]]
+
+        if len(this_section.lines) > next_section.start:
+            ERROR(f"Section {section_name} has {len(this_section.lines)} lines, but next section {next_section.name} starts at {next_section.start}")
 
     # read the program memory file
     mem_lines = read_lines(PMEM_FILE)
