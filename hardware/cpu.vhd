@@ -45,6 +45,7 @@ ARCHITECTURE func OF cpu IS
     SIGNAL K1, K2 : unsigned(7 DOWNTO 0);
 
     SIGNAL data_bus : unsigned(23 DOWNTO 0);
+
     -- GENERAL REGISTERS
     TYPE GR_t IS ARRAY(0 TO 15) OF unsigned(23 DOWNTO 0);
     SIGNAL GR : GR_t;
@@ -187,8 +188,9 @@ BEGIN
                     when x"23" => GR(15) <= b"0000000000000000000_00010"; -- D (right)
                     when x"1D" => GR(15) <= b"0000000000000000000_00100"; -- W (up)
                     when x"1B" => GR(15) <= b"0000000000000000000_01000"; -- S (down)
-                     when x"5A" => GR(15) <= b"0000000000000000000_00101"; -- C (???)
+                    when x"5A" => GR(15) <= b"0000000000000000000_00101"; -- ENTER (continue)
                     when x"29" => GR(15) <= b"0000000000000000000_00011"; -- Space (confirm)
+                    when x"F0" => GR(15) <= b"0000000000000000000_11111"; -- Break
                     when others => null;
                 end case;
             end if;
