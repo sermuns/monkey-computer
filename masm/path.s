@@ -5,10 +5,9 @@ _playergolddigit2 = %HEAP+4
 _currentround = %HEAP+5
 _cursorpos = %HEAP+6
 _cursortile = %HEAP+7
-
-%PROGRAM 0 69 
+%PROGRAM 0
 start:
-    JSR wait_for_player_input
+    //JSR wait_for_player_input
     LDI GR2, 1
     ST _currentround, GR2
 
@@ -45,6 +44,7 @@ reset_cursor:
     
 shopping_phase:
     JSR read_input
+
     // should return with GR7 being 0 or 1
     CMPI GR8, 1
     LDI GR8, 0
@@ -238,8 +238,20 @@ balloon_animation:
 dead:
     HALT
 
+wait_for_break:
+    CMPI GR15, 0b11111
+    BNE wait_for_break
+    RET
+
+wait_until_break_is_gone:
+    CMPI GR15, 0b11111
+    BEQ wait_until_break_is_gone
+    RET
+
 //* Waits for player input which is saved in GR15. /
 read_input:
+    JSR wait_for_break
+    JSR wait_until_break_is_gone
     CMPI GR15, 1
     BEQ left_input // A key
     CMPI GR15, 2
@@ -503,6 +515,8 @@ confirm_input_pick:
     BRA read_input_end
 
 confirm_input_place:
+    JSR wait_for_break
+    JSR wait_until_break_is_gone
     CMPI GR15, 3 // Space
     BEQ place_check
     CMPI GR15, 4 // W

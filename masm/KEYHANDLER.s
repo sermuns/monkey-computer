@@ -1,4 +1,5 @@
 
+%PROGRAM
 //* Waits for player input which is saved in GR15. /
 read_input:
     CMPI GR15, 1

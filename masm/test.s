@@ -1,50 +1,35 @@
 %PROGRAM 0 1499
-wait_for_player_input:
-    CMPI GR15, 3
-    BNE wait_for_player_input
-    
 start:
-    LDI GR2, 1
-    STN %HEAP, GR2 // baloon spawn amount
-    LDI GR0, 35 // CONSTANT: balloon tiletype
+    LDI GR3, 2
+    LDI GR1, 37
+main:
+    JSR wait_for_break
+    CMPI GR15, 1 // A ?
+    BEQ drawmem
+    BRA main
     
-loop:
-    STN %VMEM, GR1 // replace tiletype that was overwritten
-    // find next path position
-    MOV GR6, GR5
-    SUBI GR6, 40
-    BEQ take_dmg
-new_ballon:
-    SUBI GR2, 0
-    BEQ dead
-    MOV GR3, GR5 // GR3 := GR5
-    LDN GR4, %PATH // GR4 := PATH[GR3]
-    MOV GR3, GR4 // GR3 := GR4
-                        
-    LDN GR1, %VMEM // GR1 := VMEM[GR3]
-    STN %VMEM, GR0 // overwrite with balloon
-    LDI GR7, 0x1FFFFF
-wait:
-    SUBI GR7, 1
-    BNE wait
-    ADDI GR5, 1 // increment path index
-    BRA loop 
+wait_for_break:
+    CMPI GR15, 0b11111 // break
+    BNE wait_for_break
+    RET
 
+drawmem:
+    STN %VMEM, GR1
+    ADDI GR3, 1
+    //LDI GR15, 0
+    CMPI GR3, 120
+    BEQ changeTile
+    BRA main
 
-take_dmg:
-    //TODO SUB players health
-    LD GR2, %HEAP ;b
-    SUBI GR2, 1
-    ST %HEAP, GR2
-    LDI GR5, 0
-    BRA new_ballon
+changeTile:
+    LDI GR3, 0
+    ADDI GR1, 1
+    BRA main
 
-dead:
-BRA dead ;b
+idkhow:
+    HALT
 
-
-
-%VMEM 1500 130
+%VMEM 1500 420
 0
 0
 0
@@ -55,9 +40,9 @@ BRA dead ;b
 0
 0
 0
-39
-38
-40
+49
+63
+63
 0
 25
 25
@@ -68,22 +53,22 @@ BRA dead ;b
 25
 25
 0
-38
-38
-38
+51
+54
+54
 0
 25
-1
+0
+0
+0
+0
+0
+0
+25
 0
 1
-0
-0
-0
-25
-0
-41
 38
-42
+5
 0
 25
 0
@@ -107,9 +92,9 @@ BRA dead ;b
 0
 0
 0
-43
+9
 38
-44
+13
 0
 0
 0
@@ -117,19 +102,6 @@ BRA dead ;b
 0
 25
 25
-25
-0
-0
-38
-38
-38
-0
-25
-25
-25
-0
-25
-0
 25
 0
 0
@@ -138,45 +110,58 @@ BRA dead ;b
 38
 0
 25
+25
+25
+0
+25
+0
+25
+0
+0
+17
+38
+21
+0
+25
 0
 0
 0
 25
 0
 25
+0
+0
+38
+38
+38
+0
+25
+25
+25
+25
+25
+0
+25
+25
+25
+38
+38
+38
+0
+0
+0
+0
+0
+0
+0
+0
 0
 0
 45
-46
-47
-0
-25
-25
-25
-25
-25
-0
-25
-25
-25
-38
-38
-38
-0
-0
-0
-0
-0
-0
-0
-0
-0
-0
-48
-49
 50
+47
 
-%PATH 1630 40
+%PATH 1630 69420
 52
 53
 40
@@ -219,4 +204,5 @@ BRA dead ;b
 113
 114
 
-%HEAP 1700 10 // Health?
+
+%HEAP 1700 1000 
