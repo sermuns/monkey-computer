@@ -252,6 +252,10 @@ read_input:
     BEQ confirm_input_pick
     CMPI GR15, 5 // Enter key
     BEQ continue_game
+
+    // If no key is pressed, return without resetting GR15
+    RET
+
 read_input_end:
     LDI GR15, 0
     RET
@@ -631,7 +635,7 @@ place_down:
     BRA confirm_input_place
 
 continue_game:
-    LDI GR8,1
+    LDI GR8, 1
     BRA read_input_end
 
 increment_of_gold:
