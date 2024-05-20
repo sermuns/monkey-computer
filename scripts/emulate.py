@@ -577,11 +577,16 @@ if __name__ == "__main__":
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 sys.exit()
+            elif event.type == pg.KEYUP:
+                if event.key not in KEYBINDINGS:
+                    machine.register_key(None) # send break
+                    continue
+
             elif event.type == pg.KEYDOWN:
 
                 # handle in-game keypresses
                 if event.key not in KEYBINDINGS:
-                    machine.register_keypress(event.key)
+                    machine.register_key(event.key)
                     continue
 
                 emulation_event = KEYBINDINGS.get(event.key)
