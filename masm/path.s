@@ -5,8 +5,14 @@ _playergolddigit2 = %HEAP+4
 _currentround = %HEAP+5
 _cursorpos = %HEAP+6
 _cursortile = %HEAP+7
+_delay_ticks = %HEAP+8
+
 %PROGRAM 0
 start:
+    
+    LDI GR0, 0x05FFFF
+    ST _delay_ticks, GR0
+
     //JSR wait_for_player_input
     LDI GR2, 1
     ST _currentround, GR2
@@ -23,6 +29,9 @@ start:
     JSR update_gold
     JSR update_hp
 
+    LDI GR2, 38
+    ST _cursortile, GR2 // save tile that cursor replaces
+
     //load inital balloon
     LDI GR0, 34 //balloon tiletype
     SUBI GR0, 1 //weird fix
@@ -35,12 +44,10 @@ push_balloon_hp:
     PUSH GR6
     
 reset_cursor:
-    LDI GR2, 0
-    ST _cursortile, GR2 // save tile that cursor replaces
-    LDI GR2, 56
+    LDI GR2, 63
     ST _cursorpos, GR2 // put cursor in start pos
-    LDI GR2, 65
-    ST %VMEM+56, GR2 // update screen, ersätt 56 med cursorpos
+    LD GR2, _cursortile
+    ST %VMEM+63, GR2 // update screen, ersätt 56 med cursorpos
     
 shopping_phase:
     JSR read_input
@@ -248,10 +255,38 @@ wait_until_break_is_gone:
     BEQ wait_until_break_is_gone
     RET
 
+low_delay:
+    PUSH GR0
+    LDI GR0, 0x00FFFF
+    ST _delay_ticks, GR0
+    POP GR0
+    BRA read_input_end
+
+mid_delay:
+    PUSH GR0
+    LDI GR0, 0x05FFFF
+    ST _delay_ticks, GR0
+    POP GR0
+    BRA read_input_end
+
+high_delay:
+    PUSH GR0
+    LDI GR0, 0x0FFFFF
+    ST _delay_ticks, GR0
+    POP GR0
+    BRA read_input_end
+
+
 //* Waits for player input which is saved in GR15. /
 read_input:
     JSR wait_for_break
     JSR wait_until_break_is_gone
+    CMPI GR15, 0b10001
+    BEQ low_delay
+    CMPI GR15, 0b10010
+    BEQ mid_delay
+    CMPI GR15, 0b10011
+    BEQ high_delay
     CMPI GR15, 1
     BEQ left_input // A key
     CMPI GR15, 2

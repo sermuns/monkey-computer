@@ -191,6 +191,9 @@ BEGIN
                     when x"5A" => GR(15) <= b"0000000000000000000_00101"; -- ENTER (continue)
                     when x"29" => GR(15) <= b"0000000000000000000_00011"; -- Space (confirm)
                     when x"F0" => GR(15) <= b"0000000000000000000_11111"; -- Break
+                    when x"16" => GR(15) <= b"0000000000000000000_10001"; -- 1 (min delay)
+                    when x"1E" => GR(15) <= b"0000000000000000000_10010"; -- 2 (mid delay)
+                    when x"26" => GR(15) <= b"0000000000000000000_10011"; -- 3 (max delay)
                     when others => null;
                 end case;
             end if;

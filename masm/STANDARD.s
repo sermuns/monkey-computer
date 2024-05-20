@@ -1,6 +1,6 @@
 delay:
     PUSH GR0
-    LDI GR0, 0x0FFFFF
+    LD GR0, _delay_ticks
 delay_loop:
     SUBI GR0, 1
     BNE delay_loop
