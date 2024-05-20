@@ -39,9 +39,9 @@ architecture Behavioral of main is
 		port (
 			clk : in std_logic;
 			rst : in std_logic;
-			ScanCode : out std_logic_vector(7 downto 0);
-			make_op : out std_logic;
-			v_addr : out unsigned(7 downto 0);
+			ScanCode : in std_logic_vector(7 downto 0);
+			make_op : in std_logic;
+			v_addr : in unsigned(7 downto 0);
 			v_data : out unsigned(6 downto 0)
 		);
 	end component;
