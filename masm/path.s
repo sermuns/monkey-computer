@@ -31,6 +31,8 @@ start:
 
     LDI GR2, 38
     ST _cursortile, GR2 // save tile that cursor replaces
+    LDI GR2, 63
+    ST _cursorpos, GR2 // save tile that cursor replaces
 
     //load inital balloon
     LDI GR0, 34 //balloon tiletype
@@ -42,12 +44,11 @@ push_balloon_hp:
     LD GR6, _currentround 
     ADDI GR6, 1
     PUSH GR6
-    
+
 reset_cursor:
-    LDI GR2, 63
-    ST _cursorpos, GR2 // put cursor in start pos
+    LD GR3, _cursorpos
     LD GR2, _cursortile
-    ST %VMEM+63, GR2 // update screen, ersätt 56 med cursorpos
+    STN %VMEM, GR2 // update screen, ersätt 56 med cursorpos
     
 shopping_phase:
     JSR read_input
@@ -56,9 +57,11 @@ shopping_phase:
     CMPI GR8, 1
     LDI GR8, 0
     BNE shopping_phase // continue shopping
+    BRA loop
 
-loop:
+pre_loop:
     STN %VMEM, GR1 // replace tiletype that was overwritten
+loop:
     // find next path position
     MOV GR6, GR5
     SUBI GR6, 40 // 40 is the end of the map! taken from path index. 
@@ -142,7 +145,7 @@ check_monke:
     BEQ monke_animation
 
     MOV GR3, GR4
-    BRA loop
+    BRA pre_loop
 
 player_dmg:
     LD GR2, _playerhpdigit1
@@ -168,7 +171,7 @@ balloon_dmg:
     BEQ balloon_dead
     //otherwise push decreased health
     PUSH GR6
-    BRA loop
+    BRA pre_loop
 
 //* If the balloon is dead, increase the round and update the gold. then push new baloon /
 balloon_dead:
@@ -541,7 +544,7 @@ confirm_input_pick:
     LDI GR9, 0
     // check if we should do something not regarding monkeys
     CMPI GR2, 45 // reset
-    BEQ dead
+    BEQ start
     CMPI GR2, 47 // quit
     BEQ dead
     CMPI GR2, 50 // continue
@@ -684,6 +687,9 @@ place_down:
     BRA confirm_input_place
 
 continue_game:
+    LD GR3, _cursorpos
+    LD GR2, _cursortile
+    STN %VMEM, GR2
     LDI GR8, 1
     BRA read_input_end
 
