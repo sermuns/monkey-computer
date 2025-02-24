@@ -1,0 +1,11 @@
+[tools]
+python = "latest"
+
+[env]
+_.python.venv = { path = ".venv", create = true }
+
+[hooks]
+postinstall = [
+  "pip install --upgrade pip",
+  "pip install -r {{ config_root }}/scripts/requirements.txt",
+]
