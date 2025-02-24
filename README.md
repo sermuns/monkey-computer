@@ -1,13 +1,8 @@
-# g47 monkey computer
+<div align="center">
+  <img width="70%"; src="docs/screenshot.png" />
+  <h1>monkey computer</h1>
+</div>
 
-**Kör dessa i roten av gitprojektet (code/)**
+Projekt som genomfördes inom kursen [Datorkonstruktion (TSEA83)](https://studieinfo.liu.se/kurs/TSEA83/vt-2024) på Linköpings universitet. Målet med projektet var att bygga en fungerande dator med hjälp av ett Basys3 FPGA-kort.
 
-för att få kommandot `emu` att köra `python emulate.py`
-```bash
-echo "alias emu=\"python $(pwd)/scripts/emulate.py\"" >> ~/.bashrc
-```
-
-för att få kommandot `ass` att köra `python assembler.py`
-```bash
-echo "alias ass=\"python $(pwd)/scripts/assemble.py\"" >> ~/.bashrc
-```
+Det implementerades även ett Tower-Defense spel för den egenbyggda datorn.
